@@ -4,6 +4,10 @@ var fs = require('fs');
 const host = 'localhost';
 const port = 8080;
 
+function init(){
+    dragula([document.querySelector("#dragparent")])
+}
+
 const requestListener = function (req, res) {
     fs.readFile('demo.html', function (err, data){
         if (err) throw err;
