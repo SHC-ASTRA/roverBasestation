@@ -22,4 +22,5 @@ To host the client locally, run the following command:
 ## Developers
 For anyone adding to this repository, please add your name to the README before making a pull request.
 - Jamie Roberson
+- Nathan Estep
 - Emann Rivero
