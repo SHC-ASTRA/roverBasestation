@@ -16,7 +16,9 @@ If you are debugging the base station, please run this command instead:
 This command will allow you to edit code and reinitialise the server without having to close the server entirely.
 
 ### Client-Side
-To host the client locally, run the following command:
+To host the client locally, run the following command to install its dependencies:  
+```npm install```  
+Then, you should be able to start the client with this command:  
 ```npm start```
 
 ## Developers
