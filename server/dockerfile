@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN source . /opt/ros/humble/setup.bash
+
 ENV PORT=8000
 
 EXPOSE 8000
