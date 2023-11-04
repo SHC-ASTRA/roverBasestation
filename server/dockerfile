@@ -4,11 +4,17 @@ WORKDIR /server/
 
 COPY /package*.json ./
 
+RUN wget https://raw.githubusercontent.com/Broken-Admin/ROS2/master/ROS_2_humble_base_install.sh
+RUN chmod +x ROS_2_humble_base_install.sh
+RUN ./ROS_2_humble_base_install.sh
+
+RUN ls /opt/ros/
+
+RUN source /opt/ros/humble/setup.bash
+
 RUN npm install
 
 COPY . .
-
-RUN source . /opt/ros/humble/setup.bash
 
 ENV PORT=8000
 
