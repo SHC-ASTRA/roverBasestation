@@ -1,5 +1,8 @@
 FROM ubuntu:22.04
 
+# Make use of bash, not the system shell
+RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
+
 ######################
 # WORK FILES
 ######################
@@ -34,19 +37,40 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/r
 RUN apt update && apt upgrade -y
 
 # Prevent interactive requests from tzdata
+# Install ROS2 humble from official repo
 RUN export DEBIAN_FRONTEND="noninteractive"; apt install ros-humble-ros-base ros-dev-tools -y
 
+# ROS2 has installed, yay
 RUN echo "ROS2 installed!"
 ######################
 
-RUN source /opt/ros/humble/setup.bash
+ENV PORT=8080
 
-RUN npm install
+EXPOSE 8080
 
-COPY . .
+ADD ./* .
 
-ENV PORT=8000
+# Install NVM
+# RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.20.0/install.sh | bash \
+#     && . /root/.nvm/nvm.sh \
+#     # NVM is not creating a versions directory
+#     && mkdir /root/.nvm/versions \
+#     && nvm install 20.9.0 \
+#     # Install node packages
+#     && source /opt/ros/humble/setup.bash \
+#     && npm install
 
-EXPOSE 8000
+# Add repo key
+RUN apt update
+RUN apt install -y ca-certificates curl gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+# Add repository
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+RUN apt update
+# Install node version
+RUN apt install nodejs -y
+# Source ROS, install node packages
+RUN source /opt/ros/humble/setup.bash && npm install
 
-# CMD ["npm", "start"]
+CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && npm start"]
