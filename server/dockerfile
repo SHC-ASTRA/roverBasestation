@@ -1,14 +1,43 @@
-FROM node:latest
+FROM ubuntu:22.04
 
-WORKDIR /server/
+######################
+# WORK FILES
+######################
 
-COPY /package*.json ./
+WORKDIR ./server/
+COPY ./package*.json ./
 
-RUN wget https://raw.githubusercontent.com/Broken-Admin/ROS2/master/ROS_2_humble_base_install.sh
-RUN chmod +x ROS_2_humble_base_install.sh
-RUN ./ROS_2_humble_base_install.sh
+######################
+# ROS2 Humble Install
+######################
 
-RUN ls /opt/ros/
+# Check language locale
+RUN lang_locale=$(locale | grep "LANG=")
+RUN anticipated_locale="LANG=en_US.UTF-8"
+
+# Assign and install locale if there is an issue
+# LONG IF STATEMENT
+RUN  if [ $lang_locale != $anticipated_locale ]; then apt update; apt install locales; locale-gen en_US en_US.UTF-8; update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8; export LANG=en_US.UTF-8; echo "----------------------"; echo "Locale has been updated"; fi
+
+# Add sources
+RUN apt install software-properties-common -y
+RUN add-apt-repository universe
+# Update the repositories again
+# Install curl, quiet automatic yes
+RUN apt update && apt install curl -y
+# ROS 2 specific, GPG key for the repository
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+# Add the ROS 2 repository
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+# Update package repository data and upgrade packages
+RUN apt update && apt upgrade -y
+
+# Prevent interactive requests from tzdata
+RUN export DEBIAN_FRONTEND="noninteractive"; apt install ros-humble-ros-base ros-dev-tools -y
+
+RUN echo "ROS2 installed!"
+######################
 
 RUN source /opt/ros/humble/setup.bash
 
@@ -20,4 +49,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
