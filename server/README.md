@@ -1,0 +1,1 @@
+docker build -t basestation . && docker run -p 0.0.0.0:8080:8000 -t basestation

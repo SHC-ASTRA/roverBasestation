@@ -44,10 +44,6 @@ RUN export DEBIAN_FRONTEND="noninteractive"; apt install ros-humble-ros-base ros
 RUN echo "ROS2 installed!"
 ######################
 
-ENV PORT=8080
-
-EXPOSE 8080
-
 ADD ./* .
 
 # Install NVM
