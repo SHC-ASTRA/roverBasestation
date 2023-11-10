@@ -1,25 +1,49 @@
+/* Base Imports */
+///////////////////////////////////////
 import * as rclnodejs from 'rclnodejs';
 //import * as express from 'express';
 import {Server, IncomingMessage, ServerResponse} from 'http';
 import * as http from 'http';
+import { readFile } from 'fs';
+/* Custom Imports */
+///////////////////////////////////////
+import {RosNode} from './ros_handler/ros'
 
 // const app = express();
-const port = process.env.PORT || 8000;
+const port: number = Number(process.env.PORT) || 8000;
 
 rclnodejs.init().then(() => {
-    const node = new rclnodejs.Node('publisher_example_node');
-    const publisher = node.createPublisher('std_msgs/msg/String', 'topic');
-    publisher.publish(new Buffer("Hello ROS 2 from rclnodejs")); // wtf
+    const node = new RosNode('/basestation/PUBLISHER');
+    // Regularly publish data
+    setInterval(
+        // Anonymous callback
+        () => {
+            node.publishData("Hello ROS 2 from rclnodejs"); // Publish data
+        }, 1000);
+    // Spin the node
     node.spin();
 });
 
 //app.listen(port, () => {console.log(`Base Station Server started on port ${port}`)});
 
-var server:Server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
+var server:Server = http.createServer(
+    // HTTP server request callback
+    (req: IncomingMessage, res: ServerResponse) => {
 	res.writeHead(200, { 'Content-Type': 'text/plain' });
 	res.end('okay')
+    return
+    // Never reached
+    readFile(__dirname + req.url, (err, data) => {
+        if (err) {
+          res.writeHead(404, { 'Content-Type': 'text/html' });
+          res.end('404: File not found');
+        } else {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(data);
+        }
+      });
 });
 
-server.listen(8000, '0.0.0.0', () => {
-	console.log("LISTENING ON 8000");
+server.listen(port, '0.0.0.0', () => {
+	console.log(`LISTENING ON ${port}`);
 });
