@@ -45,7 +45,6 @@ RUN echo "ROS2 installed!"
 ######################
 
 ADD ./* .
-ADD ./ros_handler/*
 
 # Install NVM
 # RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.20.0/install.sh | bash \
@@ -72,4 +71,4 @@ RUN source /opt/ros/humble/setup.bash && npm install
 # Build the Typescript
 RUN source /opt/ros/humble/setup.bash && npm run build 
 
-CMD ["/bin/bash", "-c", "npm start"]
+CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && npm start"]

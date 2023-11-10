@@ -7,7 +7,7 @@ import * as http from 'http';
 import { readFile } from 'fs';
 /* Custom Imports */
 ///////////////////////////////////////
-import {RosNode} from './ros_handler/ros'
+import {RosNode} from './ros'
 
 // const app = express();
 const port: number = Number(process.env.PORT) || 8000;
