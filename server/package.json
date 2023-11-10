@@ -2,11 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.ts",
-    "dev": "nodemon server.ts"
+    "dev": "nodemon node server.js",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
   },
   "keywords": [],
   "author": "",
