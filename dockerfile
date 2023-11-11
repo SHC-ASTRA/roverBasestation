@@ -7,7 +7,7 @@ RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
 # WORK FILES
 ######################
 
-WORKDIR ./server/
+WORKDIR /server/
 COPY ./package*.json ./
 
 ######################
