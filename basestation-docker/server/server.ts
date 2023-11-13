@@ -16,7 +16,9 @@ import {RosNode} from './ros'
 const port: number = Number(process.env.PORT) || 8000;
 
 rclnodejs.init().then(() => {
-    const node = new RosNode('/basestation/PUBLISHER');
+    const node = new RosNode('/basestation/PUBLISHER', (req, res) => {
+        return
+    });
     // Regularly publish data
     setInterval(
         // Anonymous callback
