@@ -52,9 +52,9 @@ RUN apt update
 # Install node version
 RUN apt install nodejs -y
 # Install node packages
-RUN (cd server && npm install)
+RUN (cd server && source /opt/ros/humble/setup.bash && npm install)
 RUN (cd react-app && npm install)
 # Build the Typescript
-RUN (cd server && npm run build) 
+RUN (cd server && source /opt/ros/humble/setup.bash && npm run build) 
 
 CMD ["/bin/bash", "-c", "cd server && npm start"]
