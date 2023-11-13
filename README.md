@@ -4,25 +4,31 @@ ASTRA is a project under the AutoSat branch of Space Hardware Club as part of th
 
 ## Running the Base Station
 ### Dependencies
-*This section has not been filled out yet. Please come back later once all of the information is here!*
+* Docker Engine
+* Network Connection
 
-### Server-Side
-To run the base station, first, you need to cd into the server folder. Then, you must type this command:
-```npm run```
+### React & ROS Node Basestation
+It is first important that you have the Docker commandline engine installed. The installation process can be found [here](https://docs.docker.com/engine/install/). It is recommended to install on Ubuntu Jammy (22.04.3) LTS.
 
-If you are debugging the base station, please run this command instead:
-```npm run dev```
-
-This command will allow you to edit code and reinitialise the server without having to close the server entirely.
-
-### Client-Side
-To host the client locally, run the following command to install its dependencies:  
-```npm install```  
-Then, you should be able to start the client with this command:  
-```npm start```
+It is then possible to clone this repository. SSH is recommended if you intend to make any changes. The documentation for how to add an SSH key to your Github account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+```
+git clone git@github.com:SHC-ASTRA/rover-Basestation.git
+```
+After cloning the repository the following can be run
+```bash
+# Change directories into the repo's docker folder
+cd rover-basestation/basestation-docker
+# Build the docker image from the directory
+# A network connection is necessary for this portion
+docker build -t basestation .
+# Run the docker image and expose the necessary port
+# The server will be broadcast to all network interfaces
+docker run -p 8000:8000 basestation
+```
 
 ## Developers
 For anyone adding to this repository, please add your name to the README before making a pull request.
 - Jamie Roberson
 - Nathan Estep
 - Emann Rivero
+- Alexander Resurreccion
