@@ -44,7 +44,7 @@ RUN apt install -y make build-essential cmake
 # Install nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | /bin/bash
 # Install node version (Hydrogen LTS v18.18.2)
-RUN \. $HOME/.nvm/nvm.sh && nvm install hydrogen
+RUN \. $HOME/.nvm/nvm.sh && nvm install 18.18.2
 # Enable yarn
 RUN corepack enable
 # Install node packages
