@@ -1,0 +1,25 @@
+# CLIENT REQUEST, the rover
+
+# UNIT TIMESTAMP, seconds since 01/01/1970 (UTC)
+# Unsigned 32-bit integer (C++ uint32_t), 82 more years left before overflow
+uint32 timestamp
+
+---
+# SERVER RESPONSE, the basestation
+
+# Response with the last timestamp in order to let the rover know the connection is active
+uint32 timestamp
+
+# Sensors data, server is expected to fetch
+# TODO: These will need to change as the sensors are implemented
+
+# TODO: The server is expected to handle the sensor signals and clamp
+#  them within the datatype ranges
+uint8 battery_charge
+
+# TODO: How would this be returned in a range? Likely will need a
+#  larger data type in order to retain precision
+uint8 cpu_temperature
+
+# TODO: GPS, other sensors
+# Other sensor data we may want
