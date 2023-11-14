@@ -101,9 +101,12 @@ RUN cd health_interface && source /opt/ros/humble/setup.bash && colcon build
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
 RUN cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn rclnodejs-cli generate-ros-messages
 
-#############
-# Final build
-#############
+##############
+# Final builds
+##############
+
+# Build the React
+RUN (cd server && yarn react-build
 
 # Build the Typescript
 RUN (cd server && source /opt/ros/humble/setup.bash && yarn tsc-build) 
