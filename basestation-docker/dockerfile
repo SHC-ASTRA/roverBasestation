@@ -27,9 +27,9 @@ RUN rm -rf node_modules server/node_modules react-app/node_modules
 # See the dockerfile here:
 # https://github.com/osrf/docker_images/tree/20e3ba685bb353a3c00be9ba01c1b7a6823c9472/ros/humble/ubuntu/jammy 
 
-#############################
-# NodeJS and packages install
-#############################
+##################
+# Packages install
+##################
 
 # Update packages repositories
 RUN apt update
@@ -41,24 +41,70 @@ RUN add-apt-repository -y universe
 RUN apt update && apt install -y curl
 # Install make and build tools
 RUN apt install -y make build-essential cmake
-# Remove any prior Node packages
-RUN apt remove nodejs
-# Install nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | /bin/bash
-# Install node version (Hydrogen LTS v18.18.2)
-RUN \. $HOME/.nvm/nvm.sh && nvm install 18.18.2
+
+################
+# Install packages
+################
+
+# Add standard packages
+RUN add-apt-repository -y universe
+# Update packages repositories
+RUN apt update
+# Repository keys & certificates
+RUN apt install -y ca-certificates gnupg
+RUN mkdir -p /etc/apt/keyrings
+# common software properties, curl, make, build-essentials, cmake
+RUN apt install -y software-properties-common curl make build-essential cmake
+
+# Add colcon repository
+# https://colcon.readthedocs.io/en/released/user/installation.html
+RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+
+# Add nodejs repository
+# Specifically the node_18.x repo, for the supported rclnodejs version
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+# Add nodejs repo key
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+#####################
+# Update repositories
+#####################
+ 
+RUN apt update
+
+# Install colcon
+RUN apt install -y python3-colcon-common-extensions
+
+# Install nodejs
+RUN apt install -y nodejs
+
 # Install corepack
 RUN npm install -g corepack
 # Enable yarn
 RUN corepack enable
+
+#######################
 # Install node packages
-RUN (cd server && source /opt/ros/humble/setup.bash && yarn install)
-RUN (cd react-app && yarn install)
+######################
+
+RUN cd server && source /opt/ros/humble/setup.bash && yarn install
+RUN cd react-app && yarn install
+
+##############
+# ROS Building
+##############
+
 # Build the ROS interface
-RUN (cd health_interface && source /opt/ros/humble/setup.bash && colcon build)
+RUN cd health_interface && source /opt/ros/humble/setup.bash && colcon build
 # Compile the interface to Javascript
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
-RUN (cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn rclnodejs-cli generate-ros-messages)
+RUN cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn rclnodejs-cli generate-ros-messages
+
+#############
+# Final build
+#############
+
 # Build the Typescript
 RUN (cd server && source /opt/ros/humble/setup.bash && yarn tsc-build) 
 # Source the health_interface and start the server
