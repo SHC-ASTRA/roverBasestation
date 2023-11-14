@@ -24,7 +24,7 @@ rclnodejs.init().then(() => {
         // Anonymous callback
         () => {
             node.publishData("Hello ROS 2 from rclnodejs"); // Publish data
-        }, 1000);
+        }, 5000);
     // Spin the node
     node.spin();
 });
