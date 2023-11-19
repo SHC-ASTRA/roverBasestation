@@ -81,13 +81,13 @@ cd server && yarn build
 yarn prod
 ```
 
-If you are only performing client-side updates it is possible to rebuild the React while the program is running (in another command terminal). This is possile without restarting the program and rebuilding the Typescript with the below command in the `basestation-docker/server` directory.
+If you are only performing client-side updates it is possible to rebuild the React while the program is running (in another command terminal). This is possible - without restarting the program and rebuilding the Typescript - with the below command in the `basestation-docker/server` directory.
 ```bash
 yarn build-react
 ```
 Refresh the browser page after running this command, and the UI will update. This is possible because the web-page is served as a static HTML page by an Express HTTP handler. When you refresh the page, Express re-fetches the page from the `basestation-docker/react/build` directory.
 
-After building the ROS2 interface package, compiling it into `rclnodejs` Javascript, it is possible to only worry about sourcing ROS2 packages, and running the program withoutpre-emptively building the React & Typescript. This can be done with the below command - that builds the Typescript and React - in the `basestation-docker/server` directory.
+After building the ROS2 interface package, compiling it into `rclnodejs` Javascript, it is possible to only worry about sourcing ROS2 packages, and running the program without pre-emptively building the React & Typescript. This can be done with the below command - that builds the Typescript and React - in the `basestation-docker/server` directory.
 ```bash
 source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash
 yarn dev
