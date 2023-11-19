@@ -37,7 +37,7 @@ docker run -p 8000:8000 basestation
 ```
 
 ## Non-Docker Development
-### Optional Non-Docker Development Dependencies
+### Development Dependencies
 * NodeJS v18.18.2 (Recommended install with [Node Version Manager](https://github.com/nvm-sh/nvm#installing-and-updating))
     * `corepack` npm package for use of Yarn (Recommended)
 * ROS2 Humble ([Install](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html))
