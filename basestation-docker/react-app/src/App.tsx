@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
+import { SimpleGamepadDisplay } from './widgets/simpleGamepad.tsx';
 
 function Header() {
   return (
@@ -40,17 +41,6 @@ function ProgressBar() {
     )
 }
 
-function GamepadWidget() {
-  const [gamepadStatus, setStatus] = useState({});
-  /*
-  setStatus(prevState => {
-    return Object.assign({}, prevState, { key: value });
-  });
-  */
-
-  
-}
-
 function App() {
   // useEffect(() => {
   //   fetch("/api").then(
@@ -66,7 +56,7 @@ function App() {
   return (
     <div>
       <Header />
-      <ProgressBar />
+      <SimpleGamepadDisplay />
     </div>
   )
 }
