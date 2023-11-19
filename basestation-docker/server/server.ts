@@ -1,37 +1,41 @@
 /* Base Imports */
 import * as path from 'path'
-/* Application Specifci Imports */
+/* RCLNodejs */
 import * as rclnodejs from 'rclnodejs';
-// HTTP
+/* Custom ROS2 Node Implementation */
+import {RosNode} from './ros'
+/* HTTP */
 import * as http from 'http';
 import {Server, IncomingMessage, ServerResponse} from 'http';
-// Express
+/* Express */
 import * as express from 'express';
 const app = express();
-/* Custom Imports */
-///////////////////////////////////////
-import {RosNode} from './ros'
 
 // const app = express();
 const port: number = Number(process.env.PORT) || 8000;
 
 rclnodejs.init().then(() => {
-    const node = new RosNode('/basestation/PUBLISHER', (req, res) => {
-        return
-    });
-    // Regularly publish data
+    // Create the node
+    const node = new RosNode();
+    node.createTopic('astra/core/control');
     setInterval(
-        // Anonymous callback
-        () => {
-            node.publishData("Hello ROS 2 from rclnodejs"); // Publish data
-        }, 5000);
-    // Spin the node
+        () => node.publishData('astra/core/control', 'Hello from the Basestation!'),
+        5000        
+    );
     node.spin();
 });
 
+// Host the build react page root
 app.use(
+    '/',
     express.static(path.join(__dirname, "..", "react-app", "build"))
-  );
+);
+
+app.get(
+    '/api/:id', (req, res) => {
+        return res.send(`API in Progress. Received ID ${req.params.id}`);
+    }
+);
 
 var server:Server = http.createServer(app);
 
