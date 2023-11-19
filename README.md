@@ -85,7 +85,7 @@ If you are only performing client-side updates it is possible to rebuild the Rea
 ```bash
 yarn build-react
 ```
-Refresh the browser page after running this command, and the UI will update This is possible because the web-page is served as a static HTML page by an Express HTTP handler. When you refresh the page, Express re-fetches the page from the `basestation-docker/react/build` directory.
+Refresh the browser page after running this command, and the UI will update. This is possible because the web-page is served as a static HTML page by an Express HTTP handler. When you refresh the page, Express re-fetches the page from the `basestation-docker/react/build` directory.
 
 After building the ROS2 interface package, compiling it into `rclnodejs` Javascript, it is possible to only worry about sourcing ROS2 packages, and running the program withoutpre-emptively building the React & Typescript. This can be done with the below command - that builds the Typescript and React - in the `basestation-docker/server` directory.
 ```bash
