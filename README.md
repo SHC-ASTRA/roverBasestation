@@ -48,7 +48,7 @@ docker run -p 8000:8000 basestation
 
 
 ### Running the Basestation without Docker
-The basestation can be run outside of the Docker image by similarly following the docker `RUN` commands. The below makes use of Yarn, which is build to be faster and easier than NPM.
+The basestation can be run outside of the Docker image by similarly following the docker `RUN` commands. The below makes use of Yarn, which is designed to be faster and easier than NPM.
 
 ```bash
 # Enable yarn with corepack
