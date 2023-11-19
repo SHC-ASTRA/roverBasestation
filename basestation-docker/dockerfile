@@ -27,9 +27,9 @@ RUN rm -rf node_modules server/node_modules react-app/node_modules
 # See the dockerfile here:
 # https://github.com/osrf/docker_images/tree/20e3ba685bb353a3c00be9ba01c1b7a6823c9472/ros/humble/ubuntu/jammy 
 
-##################
+#####################
 # Packages install
-##################
+#####################
 
 # Update packages repositories
 RUN apt update
@@ -42,9 +42,9 @@ RUN apt update && apt install -y curl
 # Install make and build tools
 RUN apt install -y make build-essential cmake
 
-################
+#####################
 # Install packages
-################
+#####################
 
 # Add standard packages
 RUN add-apt-repository -y universe
@@ -67,9 +67,9 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 # Add nodejs repo key
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 
-#####################
+########################
 # Update repositories
-#####################
+########################
  
 RUN apt update
 
@@ -84,16 +84,16 @@ RUN npm install -g corepack
 # Enable yarn
 RUN corepack enable
 
-#######################
+##########################
 # Install node packages
-######################
+##########################
 
 RUN cd server && source /opt/ros/humble/setup.bash && yarn install
 RUN cd react-app && yarn install
 
-##############
+#################
 # ROS Building
-##############
+#################
 
 # Build the ROS interface
 RUN cd health_interface && source /opt/ros/humble/setup.bash && colcon build
@@ -101,14 +101,11 @@ RUN cd health_interface && source /opt/ros/humble/setup.bash && colcon build
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
 RUN cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn rclnodejs-cli generate-ros-messages
 
-##############
+#################
 # Final builds
-##############
+#################
 
-# Build the React
-RUN (cd server && yarn react-build)
-
-# Build the Typescript
-RUN (cd server && source /opt/ros/humble/setup.bash && yarn tsc-build) 
+# Build the Typescript & React
+RUN cd server && source /opt/ros/humble/setup.bash && yarn build
 # Source the health_interface and start the server
-CMD ["/bin/bash", "-c", "cd server && source ../health_interface/install/setup.bash && yarn prod"]
+CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn prod"]
