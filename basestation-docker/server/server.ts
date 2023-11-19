@@ -31,20 +31,25 @@ app.use(
     express.static(path.join(__dirname, "..", "react-app", "build"))
 );
 
+// Implement Application/JSON POST request handling middleware
+// for all /api/ paths
 app.use(
     '/api/*',
     express.json()
 );
 
+// Handle GET requests that provide an ID path
 app.get(
     '/api/:id', (req, res) => {
         return res.send(`API in Progress. Received ID ${req.params.id}`);
     }
 );
 
+// Handle POST requests that provide an Application/JSON body
 app.post(
     '/api/arm/control', (req, res) => {
         console.log(JSON.stringify(req.body));
+        // Return the provided body
         return res.send(req.body);
     }
 )
