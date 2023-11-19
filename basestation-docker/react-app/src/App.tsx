@@ -40,6 +40,17 @@ function ProgressBar() {
     )
 }
 
+function GamepadWidget() {
+  const [gamepadStatus, setStatus] = useState({});
+  /*
+  setStatus(prevState => {
+    return Object.assign({}, prevState, { key: value });
+  });
+  */
+
+  
+}
+
 function App() {
   // useEffect(() => {
   //   fetch("/api").then(
