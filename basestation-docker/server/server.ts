@@ -31,11 +31,23 @@ app.use(
     express.static(path.join(__dirname, "..", "react-app", "build"))
 );
 
+app.use(
+    '/api/*',
+    express.json()
+);
+
 app.get(
     '/api/:id', (req, res) => {
         return res.send(`API in Progress. Received ID ${req.params.id}`);
     }
 );
+
+app.post(
+    '/api/arm/control', (req, res) => {
+        console.log(JSON.stringify(req.body));
+        return res.send(req.body);
+    }
+)
 
 var server:Server = http.createServer(app);
 
