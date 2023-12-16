@@ -1,30 +1,33 @@
-import React, { useState, useEffect } from 'react'; 
-import { SimpleGamepadDisplay } from './widgets/simpleGamepad.tsx';
+import React, { useState, useEffect } from 'react';
+import { SimpleGamepadDisplay } from './components/simpleGamepad.tsx';
 
 function Header() {
-  return (
-    <></>
-  )
-
+    return (
+        <>
+        </>
+    )
 }
 
 function ProgressBar() {
-  const [progress_value, setProgress] = useState(0); 
-  
-    useEffect(() => { 
+    const [progress_value, setProgress] = useState(0);
+
+    useEffect(() => {
+
 
         //Implementing the setInterval method 
-        const interval = setInterval(() => { 
-            if(progress_value >= 100) {
+        const interval = setInterval(() => {
+            if (progress_value >= 100) {
                 setProgress(0);
             } else {
                 setProgress(progress_value + 0.5);
             }
-        }, 250); 
-    
+        }, 250);
+
         //Clearing the interval 
-        return () => clearInterval(interval); 
-    }, [progress_value]); 
+        return () => {
+            clearInterval(interval);
+        }
+    }, [progress_value]);
     return (
         <div
             className="progress"
@@ -42,23 +45,25 @@ function ProgressBar() {
 }
 
 function App() {
-  // useEffect(() => {
-  //   fetch("/api").then(
-  //     response => response.json()
-  //   ).then(
-  //     data => {
-  //       setBackendData(data)
-  //     }
-  //   )
-  // }, []);
-  // [] is the list of dependencies
+    // useEffect(() => {
+    //   fetch("/api").then(
+    //     response => response.json()
+    //   ).then(
+    //     data => {
+    //       setBackendData(data)
+    //     }
+    //   )
+    // }, []);
+    // [] is the list of dependencies
 
-  return (
-    <div>
-      <Header />
-      <SimpleGamepadDisplay />
-    </div>
-  )
+    return (
+        <div>
+            <Header />
+            <ProgressBar />
+            <hr />
+            <SimpleGamepadDisplay />
+        </div>
+    )
 }
 
 export default App
