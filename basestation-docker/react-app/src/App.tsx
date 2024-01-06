@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { SimpleGamepadDisplay } from './components/simpleGamepad.tsx';
+// import SimpleGamepadDisplay from './components/simpleGamepad.tsx';
+// import VisualGamepad from './components/VisualGamepad.tsx';
+import TestbedControl from './components/testbedMotorControl.tsx';
 
 function Header() {
     return (
@@ -59,9 +61,9 @@ function App() {
     return (
         <div>
             <Header />
-            <ProgressBar />
-            <hr />
-            <SimpleGamepadDisplay />
+            {/* <SimpleGamepadDisplay /> */}
+            {/* <VisualGamepad scale={1/3}/> */}
+            <TestbedControl/>
         </div>
     )
 }
