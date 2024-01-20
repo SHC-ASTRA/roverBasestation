@@ -30,10 +30,10 @@ export class RosNode extends rclnodejs.Node {
     // The callback should just return a simple timestamp
     // as defined by the ROS2 interface
     initalizeHealthPackets(serviceCallback: (request, response) => void) {
-        this.healthService = this.createService(
-            'health_interface/srv/HealthReport',
-            'astra/core/health',
-            serviceCallback
-        );
+        // this.healthService = this.createService(
+        //     'health_interface/srv/HealthReport',
+        //     'astra/core/health',
+        //     serviceCallback
+        // );
     }
 }
