@@ -16,9 +16,12 @@ import { Server as SocketServer } from "socket.io";
 // const app = express();
 const port: number = Number(process.env.PORT) || 8000;
 
+// The ROSNode
+var node;
+
 rclnodejs.init().then(() => {
     // Create the node
-    const node = new RosNode();
+    node = new RosNode();
     node.createTopic('astra/core/control');
     /* setInterval(
         () => node.publishData('astra/core/control', 'Hello from the Basestation!'),
@@ -46,38 +49,6 @@ app.get(
         return res.send(`API in Progress. Received ID ${req.params.id}`);
     }
 );
-
-// Gamepad status
-{/* 
-{
-    buttons: {
-        a: bool,
-        b: bool,
-        x: bool,
-        y: bool,
-        left_bumper: bool,
-        right_bumper: bool,
-        left_trigger: bool,
-        right_trigger: bool,
-        view: bool,
-        menu: bool,
-        d_up: bool,
-        d_down: bool,
-        d_left: bool,
-        d_right: bool
-    },
-    trigger_vals: {
-        left_trigger_val: float,
-        right_trigger_val: float
-    },
-    stick_vals: {
-        left_hval: float,
-        left_vval: float,
-        right_hval: float,
-        right_vval: float
-    }
-}
-*/}
 
 // Arm control API endpoint
 app.post(
@@ -117,6 +88,20 @@ io.on('connection', (socket) => {
     socket.on('debug', (data) => {
         console.log(`Websocket Debug: ${data}`);
     });
+
+    // Basic Controller Event Handler, TEST
+    // Left X, Left Y, Right X, Right Y
+    socket.on('axes', (lx, ly, rx, ry) => {
+        console.log(`Axes Event: ${lx}, ${ly}, ${rx}, ${ry}`);
+    })
+
+    socket.on('/core/control', (lx, ly, rx, ry) => {
+        // If they are all zeroed out
+        // the controller is disconnected or the page is unfocused
+        if((lx + ly + rx + ry) == 0) return
+        console.log(`/core/control Event: ${lx}, ${ly}, ${rx}, ${ry}`);
+        node.publishData('astra/core/control', `ctrl,${lx.toFixed(4)},${ly.toFixed(4)},${rx.toFixed(4)},${ry.toFixed(4)}`)
+    })
 });
 
 server.listen(port, '0.0.0.0', () => {
