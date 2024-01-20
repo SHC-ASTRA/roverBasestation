@@ -95,12 +95,12 @@ io.on('connection', (socket) => {
         console.log(`Axes Event: ${lx}, ${ly}, ${rx}, ${ry}`);
     })
 
-    socket.on('/core/control', (lx, ly, rx, ry) => {
+    socket.on('/core/control', (ly, ry) => {
         // If they are all zeroed out
         // the controller is disconnected or the page is unfocused
-        if((lx + ly + rx + ry) == 0) return
-        console.log(`/core/control Event: ${lx}, ${ly}, ${rx}, ${ry}`);
-        node.publishData('astra/core/control', `ctrl,${lx.toFixed(4)},${ly.toFixed(4)},${rx.toFixed(4)},${ry.toFixed(4)}`)
+        // if((ly + ry) == 0) return
+        console.log(`/core/control Event: ${ly}, ${ry}`);
+        node.publishData('astra/core/control', `ctrl,${ly.toFixed(4)},${ry.toFixed(4)}`)
     })
 });
 

@@ -16,7 +16,7 @@ export default function TestbedControl() {
         console.log(gamepad);
         if(!gamepad) return;
 
-        socket.emit('/core/control', gamepad.axes[0], gamepad.axes[1], gamepad.axes[2], gamepad.axes[3]);
+        socket.emit('/core/control', gamepad.axes[1], gamepad.axes[3]);
     })
 
     return (
