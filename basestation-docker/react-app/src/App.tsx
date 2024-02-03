@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-// import SimpleGamepadDisplay from './components/simpleGamepad.tsx';
-// import VisualGamepad from './components/VisualGamepad.tsx';
+import SimpleGamepadDisplay from './components/simpleGamepad.tsx';
+import VisualGamepad from './components/VisualGamepad.tsx';
 import TestbedControl from './components/testbedMotorControl.tsx';
 import SideBar from './components/sidebar.tsx'
+import { WidgetSpace } from './widgets/widget_space.tsx';
 import "./App.css";
+import { DndContext } from '@dnd-kit/core';
 
 function Header() {
     return (
@@ -18,10 +20,7 @@ function Header() {
 function Body() {
     return (
         <div className="body-background">
-            <div className="widget-space">
-                {<TestbedControl/>}
-            </div>
-
+            <WidgetSpace />
         </div>
     )
 }
@@ -42,9 +41,6 @@ function App() {
         <div className="layout">
             <Header />
             <Body />
-            {/* <SimpleGamepadDisplay /> */}
-            {/* <VisualGamepad scale={1/3}/> */}
-            
         </div>
     )
 }

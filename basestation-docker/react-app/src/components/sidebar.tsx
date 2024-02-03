@@ -1,6 +1,8 @@
 import {useState} from "react";
 import "./sidebar.css";
+import "../widgets/widgets.tsx"
 import React from "react";
+import { WidgetSpace } from '../widgets/widget_space.tsx'
 
 function SideBar() {
     const [sidebarActive, showSideBar] = useState(false);
@@ -26,13 +28,7 @@ function SideBar() {
             >
                 <div className="sidebar-data">
                     <span className="hide-icon" onClick={toggleSideBar}>X</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
-                    <span>Hello!</span>
+                    <WidgetSpace></WidgetSpace>
                 </div>
             </div>
         </div>

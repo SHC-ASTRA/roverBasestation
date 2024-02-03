@@ -1,5 +1,11 @@
 .sidebar-button {
+    padding: 0.5em;
+    background-color: #000080;
+}
+
+.sidebar-button:hover {
     cursor: pointer;
+    background-color: #5D81D9;
 }
 
 .sidebar {
