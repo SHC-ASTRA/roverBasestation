@@ -27,6 +27,15 @@ rclnodejs.init().then(() => {
         () => node.publishData('astra/core/control', 'Hello from the Basestation!'),
         10000        
     ); */
+    node.initalizeHealthPackets((request, response) => {
+        console.log(request);
+        
+        let result = response.template;
+        result.success = true;
+        result.message = "Some data";
+
+        response.send(result);
+    })
     node.spin();
 });
 
