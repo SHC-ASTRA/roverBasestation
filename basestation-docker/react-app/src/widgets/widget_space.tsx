@@ -10,31 +10,15 @@ type ContainerType = {
     content: WidgetType[]
 }
 
-const testWidgets: WidgetType[] = []
-
-testWidgets.push({
-  id: 1,
-  title: "Gamepad",
-  data: <VisualGamepad scale={4/5}/>,
-  container: "main"
-})
-
-for (let i = 2; i <= 25; i++){
-  testWidgets.push({
-    id: i,
-    title: "widget " + i,
-    data: "bruh " + i,
-    container: "main" 
-  });
-}
+const testWidgets: Widget[] = []
 
 export const WidgetSpace = () => {
     // const [containers, setContainers] = useState<ContainerType[]>([]);
   
-    const [items, setItems] = useState<WidgetType[]>(testWidgets);
+    const [items, setItems] = useState<Widget[]>(testWidgets);
   
     // for drag overlay
-    const [activeItem, setActiveItem] = useState<WidgetType>();
+    const [activeItem, setActiveItem] = useState<Widget>();
   
     // for input methods detection
     const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
@@ -42,7 +26,7 @@ export const WidgetSpace = () => {
     // triggered when dragging starts
     const handleDragStart = (event: DragStartEvent) => {
       const { active } = event;
-      setActiveItem(items.find((item) => item.id === active.id));
+      setActiveItem(items.find((item) => item.state.id === active.id));
     }
   
     // const isInsideContainer = (over: any) => {
@@ -55,8 +39,8 @@ export const WidgetSpace = () => {
       const { active, over } = event;
       if (!over) return;
   
-      const activeItem = items.find((item) => item.id === active.id);
-      const overItem = items.find((item) => item.id === over.id);
+      const activeItem = items.find((item) => item.state.id === active.id);
+      const overItem = items.find((item) => item.state.id === over.id);
   
       // Check if the card is outside the container
       // const isOutsideContainer = !isInsideContainer(over);
@@ -66,11 +50,11 @@ export const WidgetSpace = () => {
       //   setItems((prev) => prev.filter((item) => item.id !== activeItem.id));
       // } else {
         // Reorder cards
-        const activeIndex = items.findIndex((item) => item.id === active.id);
-        const overIndex = items.findIndex((item) => item.id === over.id);
+        const activeIndex = items.findIndex((item) => item.state.id === active.id);
+        const overIndex = items.findIndex((item) => item.state.id === over.id);
   
         if (activeIndex !== overIndex) {
-          setItems((prev) => arrayMove<WidgetType>(prev, activeIndex, overIndex));
+          setItems((prev) => arrayMove<Widget>(prev, activeIndex, overIndex));
         }
       //}
   
@@ -84,6 +68,10 @@ export const WidgetSpace = () => {
     const handleDragCancel = () => {
       setActiveItem(undefined);
     }
+
+    let item_ids: number[] = [];
+
+    for (let widget of )
 
     return (
         <div className="widget-space">
@@ -105,7 +93,7 @@ export const WidgetSpace = () => {
             }} 
             >
                 {items.map((item) => (
-                <SortableWidget key={item.id} item={item} />
+                <SortableWidget key={item.state.id} item={item} />
             ))}
             </div>
             </SortableContext>

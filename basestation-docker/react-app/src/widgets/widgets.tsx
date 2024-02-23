@@ -9,7 +9,7 @@ import "./widgets.css";
 // DO NOT ASSIGN ID TO 0
 // THE WIDGET WILL BE FUCKED
 // DON'T ASK ME WHY
-type WidgetType = {
+export type WidgetType = {
     id: number,
     title: string,
     data: string | JSX.Element,
@@ -17,6 +17,7 @@ type WidgetType = {
 }
 
 type WidgetProps = {
+    id: number,
     title: string,
     data: string | JSX.Element,
     container: string
@@ -24,20 +25,16 @@ type WidgetProps = {
     isDragging?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-let iterID = 1;
-
 export class Widget extends React.Component<WidgetProps, WidgetType> {
     constructor(props: WidgetProps) {
         super(props);
 
         this.state = {
-            id: iterID,
+            id: this.props.id,
             title: this.props.title,
             data: this.props.data,
             container: this.props.container
         }
-
-        iterID++;
     }
 
     updateData(data: string | JSX.Element) {
@@ -45,12 +42,8 @@ export class Widget extends React.Component<WidgetProps, WidgetType> {
     }
 
     render() {
-        const { attributes, isDragging, listeners, transform, transition } = useSortable({
-            id: this.state.id,
-        })
 
         const styles: CSSProperties = {
-            transition: transition || undefined,
             opacity: this.props.isOpacityEnabled ? "0.4" : "1",
             cursor: this.props.isDragging ? "grabbing" : "grab",
             lineHeight: "3.5",
@@ -79,4 +72,29 @@ export class Widget extends React.Component<WidgetProps, WidgetType> {
             </div>
         );
     }
+}
+
+let iterID = 1;
+
+export const SortableWidget = ({...props}: WidgetProps) => {
+    const widget_id = iterID;
+    iterID++;
+
+    const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
+        id: widget_id,
+    })
+
+    const styles = {
+        transform: CSS.Transform.toString(transform),
+        transition: transition || undefined,
+    }
+
+    return (
+        <Widget
+            isOpacityEnabled={isDragging}
+            {...props}
+            {...attributes}
+            {...listeners}
+        />
+    )
 }
