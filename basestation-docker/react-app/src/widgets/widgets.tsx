@@ -1,5 +1,5 @@
 import React from "react";
-import { forwardRef, HTMLAttributes, CSSProperties } from "react";
+import { FC, forwardRef, HTMLAttributes, CSSProperties } from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
@@ -9,92 +9,73 @@ import "./widgets.css";
 // DO NOT ASSIGN ID TO 0
 // THE WIDGET WILL BE FUCKED
 // DON'T ASK ME WHY
-export type WidgetType = {
-    id: number,
-    title: string,
-    data: string | JSX.Element,
-    container: string
-}
-
 type WidgetProps = {
-    id: number,
-    title: string,
-    data: string | JSX.Element,
-    container: string
+    title: string
+    data: JSX.Element
     isOpacityEnabled?: boolean
     isDragging?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-export class Widget extends React.Component<WidgetProps, WidgetType> {
-    constructor(props: WidgetProps) {
-        super(props);
+export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isDragging, isOpacityEnabled, style, ...props}, ref) => {
 
-        this.state = {
-            id: this.props.id,
-            title: this.props.title,
-            data: this.props.data,
-            container: this.props.container
-        }
-    }
+    // CSS styles based on props, particularly isDragging
+    const styles: CSSProperties = {
+        opacity: isDragging ? "0.4" : "1",
+        cursor: isDragging ? "grabbing" : "grab",
+        lineHeight: "3.5",
+        transform: isDragging ? "scale(1.05)" : "scale(1)",
+        ...style,
+    };
 
-    updateData(data: string | JSX.Element) {
-        this.setState({data: data});
-    }
-
-    render() {
-
-        const styles: CSSProperties = {
-            opacity: this.props.isOpacityEnabled ? "0.4" : "1",
-            cursor: this.props.isDragging ? "grabbing" : "grab",
-            lineHeight: "3.5",
-            transform: this.props.isDragging ? "scale(1.05)" : "scale(1)",
-            ...this.props.style,
-        };
-    
-        return (
-            <div style={styles} {...this.props}>
-                <div className="widget" style={{
-                    borderRadius: "8px",
-                    boxShadow: this.props.isDragging
-                        ? "none"
-                        : "rgb(63 63 68 / 5%) 0px 0px 0px 1px, rgb(34 33 81 / 15%) 0px 1px 3px 0px",
-                    maxWidth: "100%",
-                    objectFit: "cover"
-                }}>
-             
-                    <div className="widget-title">
-                        {this.state.title}
-                    </div>
-                    <div className="widget-content">
-                        {this.state.data}
-                    </div>
+    return (
+        <div ref={ref} style={styles} {...props}>
+            {/* wrapper widget. this is the thing that actually moves */}
+            <div className="widget" style={{
+                borderRadius: "8px",
+                boxShadow: isDragging
+                    ? "none"
+                    : "rgb(63 63 68 / 5%) 0px 0px 0px 1px, rgb(34 33 81 / 15%) 0px 1px 3px 0px",
+                maxWidth: "100%",
+                objectFit: "cover"
+            }}>
+                <div className="widget-title">
+                    {title}
+                </div>
+                <div className="widget-content">
+                    {data}
                 </div>
             </div>
-        );
-    }
-}
+        </div>
+    )
+});
 
-let iterID = 1;
+// essentially acts as a wrapper around the widget with dragging capabilities that handles changes when drags start
+export const SortableWidget: FC<WidgetProps> = ({title, data, ...props}) => {
+    const {
+        isDragging,
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition
+    } = useSortable({ id: title });
+    // widgets are identified by their title. please make sure to name the titles different things when adding new widgets
 
-export const SortableWidget = ({...props}: WidgetProps) => {
-    const widget_id = iterID;
-    iterID++;
-
-    const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
-        id: widget_id,
-    })
-
-    const styles = {
+    const style = {
         transform: CSS.Transform.toString(transform),
         transition: transition || undefined,
-    }
+    };
 
     return (
         <Widget
+            title={title}
+            data={data}
+            ref={setNodeRef}
+            style={style}
             isOpacityEnabled={isDragging}
             {...props}
             {...attributes}
             {...listeners}
         />
-    )
+    );
 }

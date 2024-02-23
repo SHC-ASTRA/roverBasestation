@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import SimpleGamepadDisplay from './components/simpleGamepad.tsx';
-import VisualGamepad from './components/VisualGamepad.tsx';
-import TestbedControl from './components/testbedMotorControl.tsx';
+import React from 'react';
 import SideBar from './components/sidebar.tsx'
 import { WidgetSpace } from './widgets/widget_space.tsx';
 import "./App.css";
-import { DndContext } from '@dnd-kit/core';
 
 function Header() {
     return (
@@ -20,7 +16,9 @@ function Header() {
 function Body() {
     return (
         <div className="body-background">
-            <WidgetSpace />
+            <div className="widget-space">
+                <WidgetSpace />
+            </div>  
         </div>
     )
 }

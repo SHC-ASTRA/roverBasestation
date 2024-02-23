@@ -1,6 +1,5 @@
 import {useState} from "react";
 import "./sidebar.css";
-import "../widgets/widgets.tsx"
 import React from "react";
 import { WidgetSpace } from '../widgets/widget_space.tsx'
 
