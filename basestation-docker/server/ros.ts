@@ -1,8 +1,9 @@
 import * as rclnodejs from 'rclnodejs';
 
-export class RosNode extends rclnodejs.Node {
+export class RosNode extends rclnodejs.Node  {
     publishers = {};
-    healthService;
+    corehealthService;
+    armhealthService;
 
     constructor() {
         // outTopic: string, serviceCallback: (request, response) => void
@@ -11,7 +12,7 @@ export class RosNode extends rclnodejs.Node {
         super('astra_base');
     }
 
-    createTopic(topicName: string): rclnodejs.Publisher<'std_msgs/msg/String'> {
+    createTopic(topicName /* string */) /* rclnodejs.Publisher<'std_msgs/msg/String'> */ {
         this.publishers[topicName] = this.createPublisher(
             'std_msgs/msg/String',
             topicName
@@ -20,7 +21,7 @@ export class RosNode extends rclnodejs.Node {
     }
 
     // Do not define the type of the message, otherwise Typescript freaks out
-    publishData(topicName, message): void {
+    publishData(topicName, message) {
         this.publishers[topicName].publish(message);
         console.log(`Publishing data: ${message}`);
     }
@@ -29,11 +30,24 @@ export class RosNode extends rclnodejs.Node {
     // a connection to the basestation
     // The callback should just return a simple timestamp
     // as defined by the ROS2 interface
+
+    // In order to test the functionality of this service, make use of
+    // the below command
+    // `ros2 service call /astra/MODULE/health std_srvs/srv/Trigger`
+
+
     initalizeHealthPackets(serviceCallback: (request, response) => void) {
-        // this.healthService = this.createService(
-        //     'health_interface/srv/HealthReport',
-        //     'astra/core/health',
-        //     serviceCallback
-        // );
+        this.corehealthService = this.createService(
+            {package: 'std_srvs', type: 'srv', name: 'Trigger'},
+            '/astra/core/health',
+            serviceCallback
+        );
+        this.armhealthService = this.createService(
+            {package: 'std_srvs', type: 'srv', name: 'Trigger'},
+            '/astra/arm/health',
+            serviceCallback
+        )
     }
+
+    
 }

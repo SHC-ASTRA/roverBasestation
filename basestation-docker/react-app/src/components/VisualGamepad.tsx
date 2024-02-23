@@ -6,6 +6,7 @@ import GamepadSvg from './GamepadSvg.tsx';
 
 export default function VisualGamepad({
     scale=1,
+    gamepadIndex=0,
     ...props
 }) {
   const [gamepads, setGamepads] = useState({});
@@ -21,7 +22,6 @@ export default function VisualGamepad({
       return "down";
     }
   };
-
   const calcDirectionHorizontal = (axe) => {
     // Left
     if (axe < -0.2) {
@@ -37,42 +37,42 @@ export default function VisualGamepad({
     <div
       className="Gamepads"
     >
-      {gamepads && gamepads[0] && (
+      {gamepads && gamepads[gamepadIndex] && (
         <>
           <GamepadSvg
-            directionUp={gamepads[0].buttons[12].pressed}
-            directionDown={gamepads[0].buttons[13].pressed}
-            directionLeft={gamepads[0].buttons[14].pressed}
-            directionRight={gamepads[0].buttons[15].pressed}
-            buttonDown={gamepads[0].buttons[0].pressed}
-            buttonRight={gamepads[0].buttons[1].pressed}
-            buttonLeft={gamepads[0].buttons[2].pressed}
-            buttonUp={gamepads[0].buttons[3].pressed}
-            bumperLeft={gamepads[0].buttons[4].pressed}
-            bumperRight={gamepads[0].buttons[5].pressed}
-            triggerLeft={gamepads[0].buttons[6].value}
-            triggerRight={gamepads[0].buttons[7].value}
-            select={gamepads[0].buttons[8].pressed}
-            start={gamepads[0].buttons[9].pressed}
+            directionUp={gamepads[gamepadIndex].buttons[12].pressed}
+            directionDown={gamepads[gamepadIndex].buttons[13].pressed}
+            directionLeft={gamepads[gamepadIndex].buttons[14].pressed}
+            directionRight={gamepads[gamepadIndex].buttons[15].pressed}
+            buttonDown={gamepads[gamepadIndex].buttons[0].pressed}
+            buttonRight={gamepads[gamepadIndex].buttons[1].pressed}
+            buttonLeft={gamepads[gamepadIndex].buttons[2].pressed}
+            buttonUp={gamepads[gamepadIndex].buttons[3].pressed}
+            bumperLeft={gamepads[gamepadIndex].buttons[4].pressed}
+            bumperRight={gamepads[gamepadIndex].buttons[5].pressed}
+            triggerLeft={gamepads[gamepadIndex].buttons[6].value}
+            triggerRight={gamepads[gamepadIndex].buttons[7].value}
+            select={gamepads[gamepadIndex].buttons[8].pressed}
+            start={gamepads[gamepadIndex].buttons[9].pressed}
             analogLeft={
-              gamepads[0].axes[0] > 0.1 ||
-              gamepads[0].axes[0] < -0.1 ||
-              gamepads[0].axes[1] > 0.1 ||
-              gamepads[0].axes[1] < -0.1
+              gamepads[gamepadIndex].axes[0] > 0.1 ||
+              gamepads[gamepadIndex].axes[0] < -0.1 ||
+              gamepads[gamepadIndex].axes[1] > 0.1 ||
+              gamepads[gamepadIndex].axes[1] < -0.1
             }
             analogRight={
-              gamepads[0].axes[2] > 0.1 ||
-              gamepads[0].axes[2] < -0.1 ||
-              gamepads[0].axes[3] > 0.1 ||
-              gamepads[0].axes[3] < -0.1
+              gamepads[gamepadIndex].axes[2] > 0.1 ||
+              gamepads[gamepadIndex].axes[2] < -0.1 ||
+              gamepads[gamepadIndex].axes[3] > 0.1 ||
+              gamepads[gamepadIndex].axes[3] < -0.1
             }
             analogLeftDirection={[
-              calcDirectionHorizontal(gamepads[0].axes[0]),
-              calcDirectionVertical(gamepads[0].axes[1])
+              calcDirectionHorizontal(gamepads[gamepadIndex].axes[0]),
+              calcDirectionVertical(gamepads[gamepadIndex].axes[1])
             ]}
             analogRightDirection={[
-              calcDirectionHorizontal(gamepads[0].axes[2]),
-              calcDirectionVertical(gamepads[0].axes[3])
+              calcDirectionHorizontal(gamepads[gamepadIndex].axes[2]),
+              calcDirectionVertical(gamepads[gamepadIndex].axes[3])
             ]}
             scale={scale}
           />

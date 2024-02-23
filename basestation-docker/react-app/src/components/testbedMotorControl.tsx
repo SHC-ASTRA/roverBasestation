@@ -8,10 +8,15 @@ export default function TestbedControl() {
     useGamepads(gamepads => setGamepads(gamepads), 250);
 
     useEffect(() => {
-        if(!gamepads[0]) return;
-        const gamepad = gamepads[0];
+        let gamepad;
+        for (let i in gamepads) {
+            if(!gamepads[i]) continue;
+            gamepad = gamepads[i];
+        }
+        console.log(gamepad);
+        if(!gamepad) return;
 
-        socket.emit('/core/control', gamepad.axes[0], gamepad.axes[1], gamepad.axes[2], gamepad.axes[3]);
+        socket.emit('/core/control', gamepad.axes[1], gamepad.axes[3]);
     })
 
     return (
