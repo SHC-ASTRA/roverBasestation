@@ -1,6 +1,5 @@
 // base react
-import React from "react"
-import {FC, useState} from "react"
+import React, {FC, useState} from "react"
 
 // sensors
 import {PointerSensor, TouchSensor, useSensors, useSensor, DndContext} from "@dnd-kit/core"
@@ -16,6 +15,7 @@ import {Widget, SortableWidget} from "./widgets.tsx"
 
 // component imports
 import VisualGamepad from "../components/VisualGamepad.tsx"
+import {CurrentTime} from "../components/time.tsx"
 
 type WidgetData = {
     title: string
@@ -23,21 +23,26 @@ type WidgetData = {
 }
 
 // once the widgets have titles and data put them here
+// the title should be a string that goes on top of the widget
+// the data should be a component that you make, import, and add here
 let widgets = [
     {
-        id: 1,
         title: "Visual Gamepad",
         data: <VisualGamepad scale={4/5}/>
     },
+    {
+        title: "Live Updating",
+        data: <CurrentTime/>
+    }
 ];
 
-for (let i = 2; i <= 25; i++) {
+for (let i = 1; i <= 25; i++) {
     widgets.push({
-        id: i+1,
         title: i.toString(),
         data: <div>{i}</div>
     })
 }
+
 
 export const WidgetSpace: FC = () => {
     const [items, setItems] = useState<WidgetData[]>(widgets);
