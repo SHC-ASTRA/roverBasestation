@@ -114,5 +114,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, '0.0.0.0', () => {
-	console.log(`LISTENING ON ${port}`);
+	console.log(`LISTENING ON 127.0.0.1:${port}`);
 });
