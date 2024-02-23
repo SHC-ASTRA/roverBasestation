@@ -18,7 +18,6 @@ import {Widget, SortableWidget} from "./widgets.tsx"
 import VisualGamepad from "../components/VisualGamepad.tsx"
 
 type WidgetData = {
-    id: number
     title: string
     data: JSX.Element
 }
@@ -46,18 +45,18 @@ export const WidgetSpace: FC = () => {
     const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
 
     const handleDragStart = (event: DragStartEvent) => {
-        setActiveItem(items.find((item) => item.id === event.active.id));
+        setActiveItem(items.find((item) => item.title === event.active.id));
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
         if (!over) return;
 
-        const activeItem = items.find((item) => item.id === active.id);
-        const overItem = items.find((item) => item.id === over.id);
+        const activeItem = items.find((item) => item.title === active.id);
+        const overItem = items.find((item) => item.title === over.id);
   
-        const activeIndex = items.findIndex((item) => item.id === active.id);
-        const overIndex = items.findIndex((item) => item.id === over.id);
+        const activeIndex = items.findIndex((item) => item.title === active.id);
+        const overIndex = items.findIndex((item) => item.title === over.id);
 
         if (activeIndex !== overIndex) {
             setItems((prev) => arrayMove<WidgetData>(prev, activeIndex, overIndex));
@@ -81,7 +80,7 @@ export const WidgetSpace: FC = () => {
             onDragCancel={handleDragCancel}
         >
 
-            <SortableContext items={items} strategy={rectSortingStrategy}>
+            <SortableContext items={items.map((item) => item.title)} strategy={rectSortingStrategy}>
                 <div style={{
                 display: "grid",
                 gridTemplateColumns: `repeat(6, 1fr)`,
@@ -89,8 +88,8 @@ export const WidgetSpace: FC = () => {
                 margin: "16px auto 20px"
                 }} 
                 >
-                    {items.map(({id, title, data}) => (
-                        <SortableWidget key={id} id={id.toString()} title={title} data={data}/>
+                    {items.map((item) => (
+                        <SortableWidget key={item.title} title={item.title} data={item.data}/>
                     ))}
                 </div>
 
