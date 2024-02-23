@@ -1,47 +1,24 @@
-import React, { useState, useEffect } from 'react';
-// import SimpleGamepadDisplay from './components/simpleGamepad.tsx';
-// import VisualGamepad from './components/VisualGamepad.tsx';
-import TestbedControl from './components/testbedMotorControl.tsx';
+import React from 'react';
+import SideBar from './components/sidebar.tsx'
+import { WidgetSpace } from './widgets/widget_space.tsx';
+import "./App.css";
 
 function Header() {
     return (
-        <>
-        </>
+        <div className="header">
+            <img className="logo" src="../ASTRA_Logo_512x512.png" alt="ASTRA Logo"></img>
+            <h1>SHC ASTRA</h1>
+            <SideBar />
+        </div>
     )
 }
 
-function ProgressBar() {
-    const [progress_value, setProgress] = useState(0);
-
-    useEffect(() => {
-
-
-        //Implementing the setInterval method 
-        const interval = setInterval(() => {
-            if (progress_value >= 100) {
-                setProgress(0);
-            } else {
-                setProgress(progress_value + 0.5);
-            }
-        }, 250);
-
-        //Clearing the interval 
-        return () => {
-            clearInterval(interval);
-        }
-    }, [progress_value]);
+function Body() {
     return (
-        <div
-            className="progress"
-            role="progressbar"
-            aria-label="Example with label"
-            aria-valuenow={progress_value}
-            aria-valuemin={0}
-            aria-valuemax={100}
-        >
-            <div className="progress-bar" style={{ width: `${progress_value}%` }}>
-                {progress_value}%
-            </div>
+        <div className="body-background">
+            <div className="widget-space">
+                <WidgetSpace />
+            </div>  
         </div>
     )
 }
@@ -59,11 +36,9 @@ function App() {
     // [] is the list of dependencies
 
     return (
-        <div>
+        <div className="layout">
             <Header />
-            {/* <SimpleGamepadDisplay /> */}
-            {/* <VisualGamepad scale={1/3}/> */}
-            <TestbedControl/>
+            <Body />
         </div>
     )
 }

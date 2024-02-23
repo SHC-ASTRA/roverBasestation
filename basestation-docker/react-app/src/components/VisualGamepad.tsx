@@ -36,7 +36,6 @@ export default function VisualGamepad({
   return (
     <div
       className="Gamepads"
-    //   style={{ position: "fixed", bottom: 0, right: 0 }}
     >
       {gamepads && gamepads[gamepadIndex] && (
         <>

@@ -20,6 +20,6 @@ export default function TestbedControl() {
     })
 
     return (
-        <VisualGamepad scale={1/2} gamepadIndex={0}/>
+        <VisualGamepad scale={1/4}/>
     )
 }
