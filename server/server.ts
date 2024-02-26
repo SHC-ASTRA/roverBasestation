@@ -12,32 +12,10 @@ import * as express from 'express';
 const app = express();
 /* Socket.io */ 
 import { Server as SocketServer } from "socket.io";
+import { Socket } from 'dgram';
 
 // const app = express();
 const port: number = Number(process.env.PORT) || 8000;
-
-// The ROSNode
-var node;
-
-rclnodejs.init().then(() => {
-    // Create the node
-    node = new RosNode();
-    node.createTopic('astra/core/control');
-    /* setInterval(
-        () => node.publishData('astra/core/control', 'Hello from the Basestation!'),
-        10000        
-    ); */
-    node.initalizeHealthPackets((request, response) => {
-        console.log(request);
-        
-        let result = response.template;
-        result.success = true;
-        result.message = "Some data";
-
-        response.send(result);
-    })
-    node.spin();
-});
 
 // Host the build react page root
 app.use(
@@ -82,9 +60,13 @@ var server: HttpServer = http.createServer(app);
 // Create an socket connection to the HTTP server session
 const io = new SocketServer(server);
 
+// Open sockets
+let openSockets = [];
+
 // Socket connection handlers
 io.on('connection', (socket) => {
     console.log('Websocket Connection');
+    openSockets.push(socket);
     
     // Disconnection event handler
     socket.on('disconnect', () => {
@@ -113,6 +95,50 @@ io.on('connection', (socket) => {
     })
 });
 
+// The ROSNode
+var node;
+
+rclnodejs.init().then(() => {
+    // Create the node
+    node = new RosNode();
+    node.createTopic('astra/core/control');
+    
+    /* setInterval(
+        () => node.publishData('astra/core/control', 'Hello from the Basestation!'),
+        10000        
+    ); */
+    
+    node.initalizeHealthPackets((request, response) => {
+        console.log(request);
+        
+        let result = response.template;
+        result.success = true;
+        result.message = "Some data";
+
+        response.send(result);
+    })
+
+    node.createSubscription('std_msgs/msg/String', 'astra/core/feedback', (msg) => {
+        for(let i in openSockets) {
+            console.log(openSockets[i]);
+            openSockets[i].emit('/core/feedback', msg.data);
+        }
+    })
+
+    node.spin();
+});
+
 server.listen(port, '0.0.0.0', () => {
-	console.log(`LISTENING ON 127.0.0.1:${port}`);
+	console.log(`LISTENING ON 0.0.0.0:${port}`);
+});
+
+// Ensure that the server stops when it is attempted to stop
+process.on('SIGINT', function() {
+    console.log( "\nShutting down from SIGINT (Ctrl-C)" );
+    // Close the HTTP server
+    server.close();
+    // Shut the node down
+    node.stop();
+    // Exit the process, stop the server
+    process.exit(0);
 });
