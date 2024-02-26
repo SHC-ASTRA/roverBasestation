@@ -10,7 +10,8 @@
     "react-build": "cd ../react-app && yarn build",
     "tsc-build": "tsc --build",
     "build": "yarn react-build && yarn tsc-build",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean",
+    "nmon": "yarn nodemon server.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,10 +21,11 @@
     "rclnodejs": "^0.23.1",
     "rclnodejs-cli": "^0.3.1",
     "socket.io": "^4.7.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2"
   }
 }
