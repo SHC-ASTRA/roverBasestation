@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 function GamepadSvg({
     buttonDown,
@@ -198,13 +198,13 @@ function GamepadSvg({
 
             {/* Left */}
             <linearGradient spreadMethod="reflect" y2="0%" x2="100%" y1="100%" x1="100%" id="leftTriggerGradient">
-                <stop stop-opacity="1" stop-color={activeColor} offset={`${triggerLeft * 100}%`}/>
-                <stop stop-opacity="1" stop-color={inactiveColor} offset={`${triggerLeft * 100}%`}/>
+                <stop stopOpacity="1" stopColor={activeColor} offset={`${triggerLeft * 100}%`}/>
+                <stop stopOpacity="1" stopColor={inactiveColor} offset={`${triggerLeft * 100}%`}/>
             </linearGradient>
             {/* Right */}
             <linearGradient spreadMethod="reflect" y2="0%" x2="100%" y1="100%" x1="100%" id="rightTriggerGradient">
-                <stop stop-opacity="1" stop-color={activeColor} offset={`${triggerRight * 100}%`}/>
-                <stop stop-opacity="1" stop-color={inactiveColor} offset={`${triggerRight * 100}%`}/>
+                <stop stopOpacity="1" stopColor={activeColor} offset={`${triggerRight * 100}%`}/>
+                <stop stopOpacity="1" stopColor={inactiveColor} offset={`${triggerRight * 100}%`}/>
             </linearGradient>
 
         </svg>
