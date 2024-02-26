@@ -14,8 +14,9 @@ import {SortableContext, arrayMove, rectSortingStrategy} from "@dnd-kit/sortable
 import {Widget, SortableWidget} from "./widgets.tsx"
 
 // component imports
-import VisualGamepad from "../components/VisualGamepad.tsx"
+import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
+import LiveData from "../components/liveData.tsx"
 
 type WidgetData = {
     title: string
@@ -28,11 +29,15 @@ type WidgetData = {
 let widgets = [
     {
         title: "Visual Gamepad",
-        data: <VisualGamepad scale={4/5}/>
+        data: <TestbedControl controllerScale={2/3}/>
     },
     {
         title: "Live Updating",
         data: <CurrentTime/>
+    },
+    {
+        title: "Live Socket Data",
+        data: <LiveData eventName="/core/feedback"></LiveData>
     }
 ];
 

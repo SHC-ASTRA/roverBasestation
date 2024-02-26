@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-export default function VisualGamepad({
-    eventName = "/feedback/livedata",
+export default function LiveData({
+    eventName = "/feedback/livedata", // String socketio event
+    children,
     ...props
 }) {
 
@@ -12,12 +13,14 @@ export default function VisualGamepad({
         // Socket events
         socket.on(eventName, (data) => {
             setData(data);
+            console.log(data);
         });
     });
 
     return (
-        <div>
-
-        </div>
+        <>
+            {data}
+            {children}
+        </>
     );
 }
