@@ -120,7 +120,6 @@ rclnodejs.init().then(() => {
 
     node.createSubscription('std_msgs/msg/String', 'astra/core/feedback', (msg) => {
         for(let i in openSockets) {
-            console.log(openSockets[i]);
             openSockets[i].emit('/core/feedback', msg.data);
         }
     })

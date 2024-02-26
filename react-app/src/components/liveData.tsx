@@ -13,7 +13,6 @@ export default function LiveData({
         // Socket events
         socket.on(eventName, (data) => {
             setData(data);
-            console.log(data);
         });
     });
 
