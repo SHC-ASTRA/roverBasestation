@@ -71,6 +71,7 @@ io.on('connection', (socket) => {
     // Disconnection event handler
     socket.on('disconnect', () => {
       console.log('Websocket Disconnection.');
+      openSockets.splice(openSockets.indexOf(socket), 1);
     });
 
     /* Other Event Handlers */
@@ -94,6 +95,14 @@ io.on('connection', (socket) => {
         node.publishData('astra/core/control', `ctrl,${ly.toFixed(4)},${ry.toFixed(4)}`)
     })
 });
+
+// Callback function for ROS2 subscriptions that need to send data to
+// all websocket connections
+function subscriptionToSockets(socketEvent, socketData) {
+    for(let i in openSockets) {
+        openSockets[i].emit(socketEvent, socketData);
+    }
+}
 
 // The ROSNode
 var node;
@@ -119,9 +128,7 @@ rclnodejs.init().then(() => {
     })
 
     node.createSubscription('std_msgs/msg/String', 'astra/core/feedback', (msg) => {
-        for(let i in openSockets) {
-            openSockets[i].emit('/core/feedback', msg.data);
-        }
+        subscriptionToSockets('/core/feedback', msg.data)
     })
 
     node.spin();
