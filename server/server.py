@@ -3,7 +3,10 @@ import signal
 from rclpy.node import Node
 from std_msgs.msg import String
 import threading
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, send_file
+# Path handling
+import os
+from pathlib import Path
 
 
 class TestPublisher(Node):
@@ -50,14 +53,19 @@ def sigint_handler(signal, frame):
 
 rclpy.init(args=None)
 ros2_node = TestPublisher()
-app = Flask(__name__, static_folder='/react-app/build/static', static_url_path='/')
+# Static folder is not equivalent to the static react build folder. React stores static build in 
+app = Flask(__name__, static_folder=Path(f"{os.getcwd()}/../react-app/build/"), static_url_path='/')
 threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 prev_sigint_handler = signal.signal(signal.SIGINT, sigint_handler)
 
 # TODO
 @app.route('/')
 def serve_page():
-    return send_from_directory(app.static_folder, 'index.html') # currently not serving the webpage, 404 error
+    data = send_from_directory(app.static_folder, 'index.html')
+    try:
+        return data
+    except:
+        return "Error serving page!"
 
 @app.route('/latest_message')
 def get_current_time():
