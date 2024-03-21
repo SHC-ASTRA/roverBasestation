@@ -26,25 +26,27 @@ def sigint_handler(signal, frame):
         prev_sigint_handler(signal, frame)
 
 
-rclpy.init(args=None)
-node = RosNode()
 # Static folder is not equivalent to the static react build folder. React stores static build in 
 app = Flask(__name__, static_folder=Path(f"{os.getcwd()}/../react-app/build/"), static_url_path='/')
+
+# ROS Initialization
+rclpy.init(args=None)
+node = RosNode()
+# ROS2 threading
 threading.Thread(target=ros2_thread, args=[node]).start()
 prev_sigint_handler = signal.signal(signal.SIGINT, sigint_handler)
 
-# TODO
 @app.route('/')
 def serve_page():
     data = send_from_directory(app.static_folder, 'index.html')
     try:
         return data
     except:
-        return "Error serving page!"
+        return "500: error serving page!"
 
-@app.route('/latest_message')
-def get_current_time():
-    return {'message': node.latest_message}
+@app.route('/message_data')
+def get_node_data():
+    return node.message_data
 
 @app.route('/publish_message')
 def get_publish_message():
