@@ -9,11 +9,7 @@ export default function LiveData({
     const [data, setData] = useState("");
 
     useEffect(() => {
-
-        // Socket events
-        socket.on(eventName, (data) => {
-            setData(data);
-        });
+        // TODO: Reimplement using fetch handling to the backend api
     });
 
     return (
