@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 export default function LiveData({
     topicName = "/astra/core/feedback", // String socketio event
-    children,
     ...props
 }) {
 
@@ -13,7 +12,7 @@ export default function LiveData({
         let intervalValue = setInterval(() => {
             fetch('/message_data')
                 .then((response) => response.json())
-                .then((responseData) => setData(responseData[topicName]))
+                .then((data) => setData(data[topicName]))
         }, 1000);
 
         return(() => {
@@ -21,16 +20,9 @@ export default function LiveData({
         })
     }, [data]);
 
-    let listElements = [];
-
-    data.forEach((message, index) => {
-        listElements.push(<li key={index}>{message}</li>);
-      });
-
     return (
         <>
             <div>{data}</div>
-            {children}
         </>
     );
 }

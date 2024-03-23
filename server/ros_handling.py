@@ -58,7 +58,7 @@ class RosNode(Node):
     # Publish data to a String topic
     def publish_string_data(self, topic_name, message):
         self.publishers[topic_name].publish(message)
-        console.log(f"Publishing data: {message}")
+        print(f"Publishing data: {message}")
 
     # Create a subscriber with a given callback
     def create_subscriber(self, topic_name, callback):
