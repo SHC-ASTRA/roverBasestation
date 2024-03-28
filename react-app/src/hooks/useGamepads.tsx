@@ -12,7 +12,7 @@ interface GamepadRef {
 export default function useGamepads(hookCallback: (data: GamepadRef) => void, millisecondInterval: number) {
   // Reference values that are is stored outside of the component render scope
   const gamepads = useRef<GamepadRef>([]); // Currently connected gamepads
-  const requestRef = useRef<number>(); // Current animation frame request
+  // const requestRef = useRef<number>(); // Current animation frame request
   const intervalRef = useRef<number>(); // Current interval request
 
   var haveEvents = 'ongamepadconnected' in window;

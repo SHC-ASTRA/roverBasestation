@@ -1,5 +1,5 @@
 // base react
-import React, {FC, useState} from "react"
+import React, {FC, useState, useEffect} from "react"
 
 // sensors
 import {PointerSensor, TouchSensor, useSensors, useSensor, DndContext} from "@dnd-kit/core"
@@ -14,8 +14,9 @@ import {SortableContext, arrayMove, rectSortingStrategy} from "@dnd-kit/sortable
 import {Widget, SortableWidget} from "./widgets.tsx"
 
 // component imports
-import VisualGamepad from "../components/VisualGamepad.tsx"
+import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
+import LiveData from "../components/liveData.tsx"
 
 type WidgetData = {
     title: string
@@ -28,11 +29,15 @@ type WidgetData = {
 let widgets = [
     {
         title: "Visual Gamepad",
-        data: <VisualGamepad scale={4/5}/>
+        data: <TestbedControl controllerScale={2/3}/>
     },
     {
         title: "Live Updating",
         data: <CurrentTime/>
+    },
+    {
+        title: "Live Data",
+        data: <LiveData topicName="/topic"></LiveData>
     }
 ];
 
@@ -43,11 +48,35 @@ for (let i = 1; i <= 25; i++) {
     })
 }
 
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height
+    };
+}
+  
+export default function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+}
+
 
 export const WidgetSpace: FC = () => {
     const [items, setItems] = useState<WidgetData[]>(widgets);
     const [activeItem, setActiveItem] = useState<WidgetData>();
     const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
+    const {height, width} = useWindowDimensions();
 
     const handleDragStart = (event: DragStartEvent) => {
         setActiveItem(items.find((item) => item.title === event.active.id));
@@ -88,7 +117,7 @@ export const WidgetSpace: FC = () => {
             <SortableContext items={items.map((item) => item.title)} strategy={rectSortingStrategy}>
                 <div style={{
                 display: "grid",
-                gridTemplateColumns: `repeat(6, 1fr)`,
+                gridTemplateColumns: `repeat(${(Math.floor(width / 267))}, 1fr)`,
                 gridGap: 16,
                 margin: "16px auto 20px"
                 }} 
