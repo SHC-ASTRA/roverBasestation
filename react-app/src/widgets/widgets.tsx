@@ -1,7 +1,5 @@
 import React from "react";
 import { FC, forwardRef, HTMLAttributes, CSSProperties } from "react";
-import { CSS } from "@dnd-kit/utilities";
-import { useSortable } from "@dnd-kit/sortable";
 
 import "./widgets.css";
 
@@ -47,34 +45,3 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
         </div>
     )
 });
-
-// essentially acts as a wrapper around the widget with dragging capabilities that handles changes when drags start
-export const SortableWidget: FC<WidgetProps> = ({title, data, ...props}) => {
-    const {
-        isDragging,
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition
-    } = useSortable({ id: title });
-    // widgets are identified by their title. please make sure to name the titles different things when adding new widgets
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition: transition || undefined,
-    };
-
-    return (
-        <Widget
-            title={title}
-            data={data}
-            ref={setNodeRef}
-            style={style}
-            isOpacityEnabled={isDragging}
-            {...props}
-            {...attributes}
-            {...listeners}
-        />
-    );
-}

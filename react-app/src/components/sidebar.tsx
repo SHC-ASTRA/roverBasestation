@@ -27,7 +27,6 @@ function SideBar() {
             >
                 <div className="sidebar-data">
                     <span className="hide-icon" onClick={toggleSideBar}>X</span>
-                    <WidgetSpace></WidgetSpace>
                 </div>
             </div>
         </div>

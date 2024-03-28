@@ -1,52 +1,18 @@
 // base react
 import React, {FC, useState, useEffect} from "react"
+import "../../node_modules/react-grid-layout/css/styles.css";
+import "../../node_modules/react-resizable/css/styles.css";
 
-// sensors
-import {PointerSensor, TouchSensor, useSensors, useSensor, DndContext} from "@dnd-kit/core"
+import RGL, {WidthProvider} from "react-grid-layout"
 
-// dragging
-import {DragStartEvent, DragEndEvent, closestCenter, DragOverlay} from "@dnd-kit/core"
-
-// sorting
-import {SortableContext, arrayMove, rectSortingStrategy} from "@dnd-kit/sortable"
-
-// widgets
-import {Widget, SortableWidget} from "./widgets.tsx"
+import { Widget } from "./widgets.tsx"
 
 // component imports
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
 
-type WidgetData = {
-    title: string
-    data: JSX.Element
-}
-
-// once the widgets have titles and data put them here
-// the title should be a string that goes on top of the widget
-// the data should be a component that you make, import, and add here
-let widgets = [
-    {
-        title: "Visual Gamepad",
-        data: <TestbedControl controllerScale={2/3}/>
-    },
-    {
-        title: "Live Updating",
-        data: <CurrentTime/>
-    },
-    {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
-    }
-];
-
-for (let i = 1; i <= 25; i++) {
-    widgets.push({
-        title: i.toString(),
-        data: <div>{i}</div>
-    })
-}
+const ReactGridLayout = WidthProvider(RGL);
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -71,68 +37,81 @@ export default function useWindowDimensions() {
     return windowDimensions;
 }
 
+type WidgetData = {
+    title: string
+    data: JSX.Element
+}
 
-export const WidgetSpace: FC = () => {
-    const [items, setItems] = useState<WidgetData[]>(widgets);
-    const [activeItem, setActiveItem] = useState<WidgetData>();
-    const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
-    const {height, width} = useWindowDimensions();
+let widgets: WidgetData[] = [
+    {
+        title: "Visual Gamepad",
+        data: <TestbedControl controllerScale={2/3}/>
+    },
+    {
+        title: "Live Updating",
+        data: <CurrentTime/>
+    },
+    {
+        title: "Live Data",
+        data: <LiveData topicName="/topic"></LiveData>
+    }
+];
 
-    const handleDragStart = (event: DragStartEvent) => {
-        setActiveItem(items.find((item) => item.title === event.active.id));
-    };
+for (let i = 1; i <= 25; i++) {
+    widgets.push({
+        title: i.toString(),
+        data: <div>{i}</div>
+    })
+}
 
-    const handleDragEnd = (event: DragEndEvent) => {
-        const {active, over} = event;
-        if (!over) return;
+let layout: any[] = [];
 
-        const activeItem = items.find((item) => item.title === active.id);
-        const overItem = items.find((item) => item.title === over.id);
-  
-        const activeIndex = items.findIndex((item) => item.title === active.id);
-        const overIndex = items.findIndex((item) => item.title === over.id);
+for (let i = 0; i < widgets.length; i++) {
+    layout[i] = {
+        i: widgets[i].title,
+        x: (i * 2) % 12,
+        y: Math.floor(i / 6),
+        w: 2,
+        h: 2
+    }
+}
 
-        if (activeIndex !== overIndex) {
-            setItems((prev) => arrayMove<WidgetData>(prev, activeIndex, overIndex));
-        }
-  
-        if (!activeItem || !overItem) return;
+export class WidgetSpace extends React.PureComponent<any, any> {
 
-        setActiveItem(undefined);
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+          layout: layout
+        };
+        this.onLayoutChange = this.onLayoutChange.bind(this);
+    }
 
-    const handleDragCancel = () => {
-        setActiveItem(undefined);
-    };
+    onLayoutChange(layout) {
+        this.setState({ layout: layout });
+    }
 
-    return (
-        <DndContext 
-            sensors={sensors} 
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}
-        >
-
-            <SortableContext items={items.map((item) => item.title)} strategy={rectSortingStrategy}>
-                <div style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${(Math.floor(width / 267))}, 1fr)`,
-                gridGap: 16,
-                margin: "16px auto 20px"
-                }} 
+    render() {
+        return (
+            <React.Fragment>
+                <ReactGridLayout
+                    className="layout"
+                    layout={this.state.layout}
+                    cols={12}
+                    rowHeight={70}
+                    width={1200}
+                    isResizable="true"
+                    onLayoutChange={this.onLayoutChange}
+                    verticalCompact={false}
                 >
-                    {items.map((item) => (
-                        <SortableWidget key={item.title} title={item.title} data={item.data}/>
-                    ))}
-                </div>
-
-            </SortableContext>
-
-            <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
-            {activeItem ? <Widget title={activeItem.title} data={activeItem.data} isDragging /> : null}
-            </DragOverlay>
-
-        </DndContext>
-    )
+                    {/* {this.state.layout.map(el => this.createElement(el)} */}
+                    {widgets.map((widget) => {
+                        return <Widget key={widget.title} title={widget.title} data={widget.data}/>
+                    })}
+                </ReactGridLayout>
+            </React.Fragment>
+        );
+    }
+    componentDidMount() {
+    // fetch data and set state
+    }
 }
