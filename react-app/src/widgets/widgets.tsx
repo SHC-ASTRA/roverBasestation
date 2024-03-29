@@ -27,7 +27,7 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
     return (
         <div ref={ref} style={styles} {...props}>
             {/* wrapper widget. this is the thing that actually moves */}
-            <div className="widget" style={{
+            <div style={{
                 borderRadius: "8px",
                 boxShadow: isDragging
                     ? "none"

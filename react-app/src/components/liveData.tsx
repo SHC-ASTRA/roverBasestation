@@ -22,7 +22,7 @@ export default function LiveData({
 
     return (
         <>
-            <div>{data}</div>
+            {data}
         </>
     );
 }

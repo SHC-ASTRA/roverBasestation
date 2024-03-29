@@ -57,20 +57,13 @@ let widgets: WidgetData[] = [
     }
 ];
 
-for (let i = 1; i <= 25; i++) {
-    widgets.push({
-        title: i.toString(),
-        data: <div>{i}</div>
-    })
-}
-
 let layout: any[] = [];
 
 for (let i = 0; i < widgets.length; i++) {
     layout[i] = {
         i: widgets[i].title,
         x: (i * 2) % 12,
-        y: Math.floor(i / 6),
+        y: Math.floor(i / 4),
         w: 2,
         h: 2
     }
@@ -92,23 +85,26 @@ export class WidgetSpace extends React.PureComponent<any, any> {
 
     render() {
         return (
-            <React.Fragment>
-                <ReactGridLayout
-                    className="layout"
-                    layout={this.state.layout}
-                    cols={12}
-                    rowHeight={70}
-                    width={1200}
-                    isResizable="true"
-                    onLayoutChange={this.onLayoutChange}
-                    verticalCompact={false}
-                >
-                    {/* {this.state.layout.map(el => this.createElement(el)} */}
-                    {widgets.map((widget) => {
-                        return <Widget key={widget.title} title={widget.title} data={widget.data}/>
-                    })}
-                </ReactGridLayout>
-            </React.Fragment>
+            <ReactGridLayout
+                className="layout"
+                layout={this.state.layout}
+                cols={12}
+                rowHeight={70}
+                width={1200}
+                isResizable="true"
+                onLayoutChange={this.onLayoutChange}
+                verticalCompact={false}
+                resizeHandles={['se', 's', 'e']}
+            >
+                {/* {this.state.layout.map(el => this.createElement(el)} */}
+                {widgets.map((widget) => {
+                    return (
+                        <div key={widget.title} className="widget">
+                            <Widget title={widget.title} data={widget.data}/>
+                        </div>
+                    )
+                })}
+            </ReactGridLayout>
         );
     }
     componentDidMount() {
