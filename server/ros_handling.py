@@ -8,6 +8,7 @@ import std_msgs.msg
 import std_srvs.srv
 
 FEEDBACK_TOPIC = "/astra/core/feedback"
+CONTROL_TOPIC = "/astra/core/control"
 CHATTER_TOPIC = "/topic"
 
 class RosNode(Node):
@@ -35,14 +36,12 @@ class RosNode(Node):
         self.message_data[CHATTER_TOPIC] = msg.data
 
     def core_feedback_callback(self, msg):
-        print(f"Recieved data from feedback topic: {msg.data}")
-        # Check if the key is defined in the dictionary
-        try:
-            self.message_data[FEEDBACK_TOPIC]
-        except:
-            self.message_data[FEEDBACK_TOPIC] = []
-        # Append to the key's list
-        self.message_data[FEEDBACK_TOPIC].append(msg.data)
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(FEEDBACK_TOPIC, msg)
+
+    def core_control_callback(self, msg):
+        print(f"Received data from control topic: {msg.data}")
+        self.append_key_list(CONTROL_TOPIC, msg)
 
     ## Helper Functions
 
@@ -68,6 +67,15 @@ class RosNode(Node):
             callback,
             0
         )
+
+    def append_key_list(self, topic, msg):
+        # Check if key is in dictionary
+        try:
+            self.message_data[topic]
+        except KeyError:
+            self.message_data[topic] = []
+        # Append to the key's list
+        self.message_data[topic].append(msg.data)
 
     # Health Packet Service
 

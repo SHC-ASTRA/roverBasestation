@@ -17,7 +17,6 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
 
     // CSS styles based on props, particularly isDragging
     const styles: CSSProperties = {
-        opacity: isDragging ? "0.4" : "1",
         cursor: isDragging ? "grabbing" : "grab",
         lineHeight: "3.5",
         transform: isDragging ? "scale(1.05)" : "scale(1)",
@@ -29,7 +28,7 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
             {/* wrapper widget. this is the thing that actually moves */}
             <div style={{
                 maxWidth: "100%",
-                objectFit: "cover"
+                objectFit: "cover",
             }}>
                 <div className="widget-title">
                     {title}

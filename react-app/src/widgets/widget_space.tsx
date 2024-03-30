@@ -40,12 +40,18 @@ export default function useWindowDimensions() {
 type WidgetData = {
     title: string
     data: JSX.Element
+    width?: number
+    height?: number
+    minW?: number
+    minH?: number
 }
 
 let widgets: WidgetData[] = [
     {
         title: "Visual Gamepad",
-        data: <TestbedControl controllerScale={2/3}/>
+        data: <TestbedControl controllerScale={2/3}/>,
+        width: 3,
+        height: 3,
     },
     {
         title: "Live Updating",
@@ -64,10 +70,10 @@ for (let i = 0; i < widgets.length; i++) {
         i: widgets[i].title,
         x: (i * 2) % 12,
         y: Math.floor(i / 4),
-        w: 2,
-        h: 2,
-        minW: 2,
-        minH: 2
+        w: widgets[i].width ? widgets[i].width : 2,
+        h: widgets[i].height ? widgets[i].height : 2,
+        minW: widgets[i].minW ? widgets[i].minW : 2,
+        minH: widgets[i].minH ? widgets[i].minH : 2,
     }
 }
 
@@ -93,12 +99,11 @@ export class WidgetSpace extends React.PureComponent<any, any> {
                 cols={12}
                 rowHeight={70}
                 width={1200}
-                isResizable="true"
+                height={2400}
                 onLayoutChange={this.onLayoutChange}
                 verticalCompact={false}
                 resizeHandles={['se', 's', 'e']}
             >
-                {/* {this.state.layout.map(el => this.createElement(el)} */}
                 {widgets.map((widget) => {
                     return (
                         <div key={widget.title} className="widget">
