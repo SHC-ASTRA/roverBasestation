@@ -65,7 +65,9 @@ for (let i = 0; i < widgets.length; i++) {
         x: (i * 2) % 12,
         y: Math.floor(i / 4),
         w: 2,
-        h: 2
+        h: 2,
+        minW: 2,
+        minH: 2
     }
 }
 

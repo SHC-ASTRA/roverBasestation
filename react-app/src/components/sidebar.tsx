@@ -10,9 +10,9 @@ function SideBar() {
 
     return (
         <div className="sidebar-filter">
-            <div className="sidebar-button" onClick={toggleSideBar}>
-                <h2>Widgets</h2>
-            </div>
+            <button className="sidebar-button" onClick={toggleSideBar}>
+                Widgets
+            </button>
             <div 
             className={
                 sidebarActive ? "sidebar active" : "sidebar"

@@ -6,8 +6,16 @@ import "./App.css";
 function Header() {
     return (
         <div className="header">
-            <img className="logo" src="../ASTRA_Logo_512x512.png" alt="ASTRA Logo"></img>
+            <img className="astra-logo" src="../ASTRA_Logo.png" alt="ASTRA Logo"></img>
             <h1>SHC ASTRA</h1>
+            <img className="shc-logo" src="../SHC_Logo.png" alt="Space Hardware Club Logo"></img>
+        </div>
+    )
+}
+
+function Taskbar() {
+    return (
+        <div className="taskbar">
             <SideBar />
         </div>
     )
@@ -38,6 +46,7 @@ function App() {
     return (
         <div className="layout">
             <Header />
+            <Taskbar />
             <Body />
         </div>
     )
