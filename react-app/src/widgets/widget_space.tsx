@@ -12,10 +12,38 @@ import { Widget } from "./widgets.tsx"
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
+import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
+import { CoreControl } from "../components/core/CoreControl.tsx";
+import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
+import { Map } from "../components/auto/Map.tsx";
 
-const ReactGridLayout = WidthProvider(Responsive);
 
-type WidgetData = {
+const ReactGridLayout = WidthProvider(RGL);
+
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height
+    };
+}
+  
+export default function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+}
+
+export type WidgetData = {
     title: string
     data: JSX.Element
     width?: number
@@ -30,12 +58,34 @@ export let widgets: WidgetData[] = [
         data: <TestbedControl controllerScale={2/3}/>,
     },
     {
-        title: "Current Time",
-        data: <CurrentTime/>
+        title: "Live Updating",
+        data: <CurrentTime/>,
+        width: 3,
+        height: 5
     },
     {
-        title: "Topic Feedback",
-        data: <LiveData topicName="/topic" />
+        title: "Live Data",
+        data: <LiveData topicName="/topic"></LiveData>
+    },
+    {
+        title: "Autonomy Feedback",
+        data: <AutoFeedback/>,
+        width: 2,
+        height: 10
+    },
+    {
+        title: "Core Control",
+        data: <CoreControl />
+    },
+    {
+        title: "Core Feedback",
+        data: <CoreFeedback />
+    },
+    {
+        title: "Map",
+        data: <Map />,
+        width: 5,
+        height: 10
     }
 ];
 
@@ -43,13 +93,13 @@ const layout: LayoutItem[] = [];
 
 export class WidgetSpace extends React.PureComponent<any, any> {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-          layout: layout
-        };
-        this.onLayoutChange = this.onLayoutChange.bind(this);
-    }
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //       layout: layout
+    //     };
+    //     this.onLayoutChange = this.onLayoutChange.bind(this);
+    // }
 
     onLayoutChange(layout_) {
         this.setState({ layout: layout_ });
@@ -121,7 +171,5 @@ export class WidgetSpace extends React.PureComponent<any, any> {
             </ReactGridLayout>
         );
     }
-    componentDidMount() {
-    // fetch data and set state
-    }
+    
 }
