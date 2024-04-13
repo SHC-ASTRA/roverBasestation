@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import SideBar from './components/sidebar.tsx'
 import { WidgetSpace } from './widgets/widget_space.tsx';
 import "./App.css";
@@ -32,16 +32,6 @@ function Body() {
 }
 
 function App() {
-    // useEffect(() => {
-    //   fetch("/api").then(
-    //     response => response.json()
-    //   ).then(
-    //     data => {
-    //       setBackendData(data)
-    //     }
-    //   )
-    // }, []);
-    // [] is the list of dependencies
 
     return (
         <div className="layout">

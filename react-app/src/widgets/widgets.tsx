@@ -1,4 +1,4 @@
-import React from "react";
+import React, {MouseEventHandler} from "react";
 import { FC, forwardRef, HTMLAttributes, CSSProperties } from "react";
 
 import "./widgets.css";
@@ -11,9 +11,10 @@ type WidgetProps = {
     data: JSX.Element
     isOpacityEnabled?: boolean
     isDragging?: boolean
+    handleDelete?: MouseEventHandler<HTMLSpanElement>
 } & HTMLAttributes<HTMLDivElement>
 
-export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isDragging, isOpacityEnabled, style, ...props}, ref) => {
+export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isDragging, isOpacityEnabled, handleDelete, style, ...props}, ref) => {
 
     // CSS styles based on props, particularly isDragging
     const styles: CSSProperties = {
@@ -32,6 +33,7 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
             }}>
                 <div className="widget-title">
                     {title}
+                    <span onClick={handleDelete}>X</span>
                 </div>
                 <div className="widget-content">
                     {data}

@@ -65,6 +65,7 @@ h1 {
 .widget-space {
     background-color: black;
     width: 95vw;
+    height: 75vh;
     padding: 2px 2px;
     padding-bottom: 2.5vw;
 }

@@ -5,7 +5,7 @@ import threading
 # Custom ROS class
 from ros_handling import RosNode, ros2_thread
 # Flask
-from flask import Flask, send_from_directory, send_file
+from flask import Flask, send_from_directory
 # Path handling
 import os
 from pathlib import Path

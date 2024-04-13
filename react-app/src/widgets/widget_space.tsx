@@ -1,9 +1,10 @@
 // base react
-import React, {FC, useState, useEffect} from "react"
+import React, { MouseEventHandler } from "react"
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
 
-import RGL, {WidthProvider} from "react-grid-layout"
+import Responsive, {WidthProvider} from "react-grid-layout"
+import {LayoutItem} from "react-grid-layout"
 
 import { Widget } from "./widgets.tsx"
 
@@ -12,30 +13,7 @@ import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
 
-const ReactGridLayout = WidthProvider(RGL);
-
-function getWindowDimensions() {
-    const { innerWidth: width, innerHeight: height } = window;
-    return {
-        width,
-        height
-    };
-}
-  
-export default function useWindowDimensions() {
-    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowDimensions(getWindowDimensions());
-        }
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    return windowDimensions;
-}
+const ReactGridLayout = WidthProvider(Responsive);
 
 type WidgetData = {
     title: string
@@ -46,36 +24,22 @@ type WidgetData = {
     minH?: number
 }
 
-let widgets: WidgetData[] = [
+export let widgets: WidgetData[] = [
     {
         title: "Visual Gamepad",
         data: <TestbedControl controllerScale={2/3}/>,
-        width: 3,
-        height: 3,
     },
     {
-        title: "Live Updating",
+        title: "Current Time",
         data: <CurrentTime/>
     },
     {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
+        title: "Topic Feedback",
+        data: <LiveData topicName="/topic" />
     }
 ];
 
-let layout: any[] = [];
-
-for (let i = 0; i < widgets.length; i++) {
-    layout[i] = {
-        i: widgets[i].title,
-        x: (i * 2) % 12,
-        y: Math.floor(i / 4),
-        w: widgets[i].width ? widgets[i].width : 2,
-        h: widgets[i].height ? widgets[i].height : 2,
-        minW: widgets[i].minW ? widgets[i].minW : 2,
-        minH: widgets[i].minH ? widgets[i].minH : 2,
-    }
-}
+const layout: LayoutItem[] = [];
 
 export class WidgetSpace extends React.PureComponent<any, any> {
 
@@ -87,8 +51,55 @@ export class WidgetSpace extends React.PureComponent<any, any> {
         this.onLayoutChange = this.onLayoutChange.bind(this);
     }
 
-    onLayoutChange(layout) {
-        this.setState({ layout: layout });
+    onLayoutChange(layout_) {
+        this.setState({ layout: layout_ });
+    }
+
+    isInLayout(widget) {
+        for (let i = 0; i < this.state.layout.length; i++) {
+            if (this.state.layout[i].i == widget.title) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    generateDOM() {
+        return widgets.map((widget) => {
+            if (this.isInLayout(widget)) {
+                return (
+                    <div key={widget.title} className="widget">
+                        <Widget title={widget.title} data={widget.data}/>
+                    </div>
+                )
+            }
+        })
+    }
+
+    onDrop(layout_, layoutItem, event) {
+        event.preventDefault();
+        const widgetTitle: string = event.dataTransfer.getData("text");
+
+        let widget: WidgetData = {
+            title: widgetTitle,
+            data: <div/>
+        };
+        for (let i = 0; i < widgets.length; i++){
+            if (widgets[i].title == widgetTitle) {
+                widget = widgets[i];
+                break;
+            }
+        }
+        layout.push({    
+            i: widgetTitle,
+            x: layoutItem.x,
+            y: layoutItem.y,
+            w: widget.width ? widget.width : 2,
+            h: widget.height ? widget.height : 2,
+            minW: widget.minW ? widget.minW : 2,
+            minH: widget.minH ? widget.minH : 2
+        }) 
+        this.onLayoutChange(layout);      
     }
 
     render() {
@@ -101,16 +112,12 @@ export class WidgetSpace extends React.PureComponent<any, any> {
                 width={1200}
                 height={2400}
                 onLayoutChange={this.onLayoutChange}
-                verticalCompact={false}
+                verticalCompact={true}
+                isDroppable={true}
+                onDrop={this.onDrop}
                 resizeHandles={['se', 's', 'e']}
             >
-                {widgets.map((widget) => {
-                    return (
-                        <div key={widget.title} className="widget">
-                            <Widget title={widget.title} data={widget.data}/>
-                        </div>
-                    )
-                })}
+                {this.generateDOM()}
             </ReactGridLayout>
         );
     }
