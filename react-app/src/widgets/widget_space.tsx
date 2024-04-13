@@ -1,5 +1,5 @@
 // base react
-import React, { MouseEventHandler } from "react"
+import React, { MouseEventHandler, useState, useEffect} from "react"
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
 
@@ -18,7 +18,7 @@ import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
 
 
-const ReactGridLayout = WidthProvider(RGL);
+const ReactGridLayout = WidthProvider(Responsive);
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -58,10 +58,8 @@ export let widgets: WidgetData[] = [
         data: <TestbedControl controllerScale={2/3}/>,
     },
     {
-        title: "Live Updating",
+        title: "Current Time",
         data: <CurrentTime/>,
-        width: 3,
-        height: 5
     },
     {
         title: "Live Data",
@@ -70,8 +68,6 @@ export let widgets: WidgetData[] = [
     {
         title: "Autonomy Feedback",
         data: <AutoFeedback/>,
-        width: 2,
-        height: 10
     },
     {
         title: "Core Control",
@@ -84,8 +80,6 @@ export let widgets: WidgetData[] = [
     {
         title: "Map",
         data: <Map />,
-        width: 5,
-        height: 10
     }
 ];
 
@@ -93,13 +87,13 @@ const layout: LayoutItem[] = [];
 
 export class WidgetSpace extends React.PureComponent<any, any> {
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //       layout: layout
-    //     };
-    //     this.onLayoutChange = this.onLayoutChange.bind(this);
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+          layout: layout
+        };
+        this.onLayoutChange = this.onLayoutChange.bind(this);
+    }
 
     onLayoutChange(layout_) {
         this.setState({ layout: layout_ });
@@ -162,7 +156,7 @@ export class WidgetSpace extends React.PureComponent<any, any> {
                 width={1200}
                 height={2400}
                 onLayoutChange={this.onLayoutChange}
-                verticalCompact={true}
+                verticalCompact={false}
                 isDroppable={true}
                 onDrop={this.onDrop}
                 resizeHandles={['se', 's', 'e']}
