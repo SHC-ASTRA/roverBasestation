@@ -10,7 +10,7 @@ body {
 
 .header {
     /* background-color: #1524C1; */
-    background-color: #222282;
+    background-color: #0f1078;
     width: 100vw;
     height: 14vh;
     display: flex;
@@ -24,7 +24,7 @@ body {
 }
 
 .taskbar {
-    background-color: #4848b8;
+    background-color: #8b8bb2;
     width: 100vw;
     height: 6vh;
 

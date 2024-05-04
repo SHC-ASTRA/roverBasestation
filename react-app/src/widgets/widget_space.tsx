@@ -16,6 +16,16 @@ import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
 import { CoreControl } from "../components/core/CoreControl.tsx";
 import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
+import { PumpStatus } from "../components/bio/PumpStatus.tsx";
+import { FanControl } from "../components/bio/FanControl.tsx";
+import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
+import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
+import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
+import { ArmPos } from "../components/arm/ArmPos.tsx";
+import { ArmControl } from "../components/arm/ArmControl.tsx";
+import { ArmLaser } from "../components/arm/ArmLaser.tsx";
+import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
+import { BioArm } from "../components/bio/BioArm.tsx";
 
 
 const ReactGridLayout = WidthProvider(Responsive);
@@ -80,7 +90,56 @@ export let widgets: WidgetData[] = [
     {
         title: "Map",
         data: <Map />,
-    }
+        minH: 4,
+        minW: 4
+    },
+    {
+        title: "Bio Arm",
+        data: <BioArm />,
+        minW: 3,
+        width: 3
+    },
+    {
+        title: "Fan/Pump Status",
+        data: <PumpStatus />
+    },
+    {
+        title: "Fan Control",
+        data: <FanControl />,
+        width: 3
+    },
+    {
+        title: "Chemical Dispersion",
+        data: <ChemicalDispersion />,
+        width: 3,
+        height: 3
+    },
+    {
+        title: "FAERIE Motor Speed",
+        data: <FaerieMotor />
+    },
+    {
+        title: "FAERIE Laser",
+        data: <FaerieLaser />
+    },
+    {
+        title: "Humidity/Temp Sensor Data",
+        data: <FaerieSensors />
+    },
+    {
+        title: "Arm Position",
+        data: <ArmPos />
+    },
+    {
+        title: "Arm Control Presets",
+        data: <ArmControl />,
+        minW: 3,
+        width: 3
+    },
+    {
+        title: "Arm Laser",
+        data: <ArmLaser />
+    },
 ];
 
 const layout: LayoutItem[] = [];

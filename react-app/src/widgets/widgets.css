@@ -29,3 +29,73 @@
 
     /* transform: translate(0, 0); */
 }
+
+.control-button {
+    background-color: #222282;
+    color: white;
+    border-radius: 10%;
+}
+
+.control-button:hover {
+    cursor: pointer;
+    background-color: #5D81D9;
+}
+
+.laser-button {
+    background-color: #cf142b;
+    color: white;
+    border-radius: 10%;
+    width: 8vh
+}
+
+.laser-button:hover {
+    cursor: pointer;
+    background-color: #941b29;
+}
+
+.laser-on {
+    background-color: #3f8551;
+    color: white;
+    border-radius: 10%;
+    width: 8vh
+}
+
+.laser-off {
+    background-color: #941b29;
+    color: white;
+    border-radius: 10%;
+    width: 8vh
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em;
+}
+
+.round-button {
+    background-color: #222282;
+    color: white;
+    border-radius: 30px;
+    width: 6vh
+}
+
+.round-button:hover {
+    cursor: pointer;
+    background-color: #5D81D9;
+}
+
+.red-button {
+    background-color: #cf142b;
+    color: white;
+    border-radius: 10%;
+    height: 4vh;
+    width: 6vh
+}
+
+.red-button:hover {
+    cursor: pointer;
+    background-color: #941b29
+}
