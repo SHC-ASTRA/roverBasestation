@@ -33,7 +33,6 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
             }}>
                 <div className="widget-title">
                     {title}
-                    <span onClick={handleDelete}>X</span>
                 </div>
                 <div className="widget-content">
                     {data}

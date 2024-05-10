@@ -11,6 +11,7 @@
 
 .widget-title {
     position: relative;
+    justify-content: space-between;
     height: 3em;
     border-bottom: 1px solid;
     padding: 2px 2px;

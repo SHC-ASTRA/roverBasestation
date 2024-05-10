@@ -21,10 +21,11 @@ function App() {
         return (
             <div className="taskbar">
                 <div>
-                <Toggle defaultChecked={false} onChange={(event) => {
-                    setStaticWidgets(event.target.checked)
-                }}/>
-                <span>{staticWidgets ? "Edit Mode" : "User Mode"}</span>
+                    <Toggle checked={staticWidgets} onChange={(event) => {
+                        console.log(event.target.checked);
+                        setStaticWidgets(event.target.checked)
+                    }}/>
+                    <span>{staticWidgets ? "User Mode" : "Edit Mode"}</span>
                 </div>
                 <SideBar />
             </div>
@@ -32,6 +33,7 @@ function App() {
     }
 
     function Body() {
+        console.log(staticWidgets);
 
         return (
             <div className="body-background">

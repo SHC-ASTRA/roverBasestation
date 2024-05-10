@@ -142,7 +142,7 @@ export let widgets: WidgetData[] = [
     },
 ];
 
-const layout: LayoutItem[] = [];
+let layout: LayoutItem[] = [];
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
@@ -162,11 +162,18 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
           layout: layout,
           staticWidgets: staticWidgets
         };
+        for (let i = 0; i < layout.length; i++) {
+            layout[i].static = this.state.staticWidgets;
+        }
+
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
     }
 
     onLayoutChange(layout_) {
+        for (let i = 0; i < layout.length; i++) {
+            layout[i].static = this.state.staticWidgets;
+        }
         this.setState({ layout: layout_ });
     }
 
@@ -213,7 +220,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
             h: widget.height ? widget.height : 2,
             minW: widget.minW ? widget.minW : 2,
             minH: widget.minH ? widget.minH : 2,
-            static: this.state.staticWidgets,
+            static: this.state.staticWidgets.valueOf(),
         }
         layout.push(item); 
         this.onLayoutChange(layout);      
