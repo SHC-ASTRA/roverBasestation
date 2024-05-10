@@ -19,10 +19,15 @@ class RosNode(Node):
     publishers = {}
     # Dictionary of Subscribers
     subscribers = {}
+    
     # Dictionary of Image Subscribers and other data
-    # Purge this as disconnects are done processed
-    # should also store who is listening to these subscribers
+
+    # This is cleaned as disconnects are processed
+    # Stores who is listening to these subscribers
     image_subscribers = {}
+    # ROS Topic names are used as the key for another dictionary
+    # that stores the callback, sockets who have requested the subscriber,
+    # and the ROS instance of the subscriber 
     """
     {
         topic: {
@@ -122,8 +127,10 @@ class RosNode(Node):
         # if a subscriber already exists
 
     def handle_disconnect(self, socketid):
-
-        for key in self.image_subscribers.keys():
+        # Handle disconnections by removing the connection from subscriptions
+        # with more than one user, and delete subscriptions
+        # where the connection was the only user
+        for key in list(self.image_subscribers.keys()):
             # If this socket uses this subscriber
             if socketid in self.image_subscribers[key]["socket_ids"]:
                 # Kill the subscription if this is the last socket
@@ -137,7 +144,11 @@ class RosNode(Node):
 
     # If all of the request makers are gone, handle deleting
     def kill_image_subscriber(self, image_topic):
+        # Destroy the ROS subscription to conserve resources
         self.destroy_subscription(self.image_subscribers[image_topic]['subscriber'])
+        # Remove the key entry for the subscription
+        # so that it may be recreated in the future
+        del self.image_subscribers[image_topic]
 
 # Thread worker that spins the node
 def ros2_thread(node):

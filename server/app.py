@@ -34,7 +34,7 @@ def sigint_handler(signal, frame):
         prev_sigint_handler(signal, frame)
 
 
-# Static folder is not equivalent to the static react build folder. React stores static build in 
+# Static folder is not equivalent to the static react build folder.
 app = Flask(__name__, static_folder=Path(f"{os.getcwd()}/../react-app/build/"), static_url_path='/')
 
 # Set up SocketIO instance
@@ -54,7 +54,7 @@ def serve_page():
     try:
         return data
     except:
-        return "500: error serving page!"
+        return "500: Error Serving Page! Check that the React page is properly building."
 
 # API
 @app.route('/message_data')
@@ -83,6 +83,7 @@ def handle_connection():
 @socketio.on('disconnect')
 def handle_disconnect():
     print(f'disconnected user {request.sid}')
+    # Handle disconnections for the ROS node (image subscribers)
     ros_node.handle_disconnect(request.sid)
 
 # Handle image subscription request
@@ -94,18 +95,23 @@ def image_subscription_message(topic_name):
 def handle_image_subscription(socket_id, topic_name):
     print(f'Received request to subscribe to {topic_name} for sensor_msgs.msg.CompressedImage')
     def socket_callback(msg):
-        # Do some handling for the image to be send over to the
-        # to the front-end and displayed in an image in base64
-        print("Message received")
+        # Do some handling for the image to be sent over to
+        # the front-end and displayed in an image in base64
+        print(f"Message recieved for image topic \"{topic_name}\"")
 
         # Convert the message to binary encoding
+
+        # Convert the sensor_msgs.msg.CompressedImage to
+        # a CV2 image using the ROS2 CV Bridge
         current_frame = ros_node.opencv_bridge.compressed_imgmsg_to_cv2(msg)
+        # Encode the CV2 frame data into JPG image encoding
         frame_data = cv2.imencode('.jpg', current_frame)[1]
+        # Convert frame data into a Python bytearray with NumPy
         image_bytes = np.array(frame_data).tobytes()
 
-        # Convert bytearray to base64
+        # Convert bytearray to base64, and decode the base64 bytearray into a string
         base64_str = base64.b64encode(image_bytes).decode()
-        # Emit the data to the websockets
+        # Emit (broadcast) the data to the websockets
         socketio.emit(topic_name,{'data': base64_str})
         
     ros_node.create_image_subscriber(socket_callback, topic_name, socket_id)
