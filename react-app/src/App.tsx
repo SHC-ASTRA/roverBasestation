@@ -22,7 +22,6 @@ function App() {
             <div className="taskbar">
                 <div>
                     <Toggle checked={staticWidgets} onChange={(event) => {
-                        console.log(event.target.checked);
                         setStaticWidgets(event.target.checked)
                     }}/>
                     <span>{staticWidgets ? "User Mode" : "Edit Mode"}</span>
@@ -33,7 +32,6 @@ function App() {
     }
 
     function Body() {
-        console.log(staticWidgets);
 
         return (
             <div className="body-background">

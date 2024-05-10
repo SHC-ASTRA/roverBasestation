@@ -147,11 +147,11 @@ let layout: LayoutItem[] = [];
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
     staticWidgets: boolean
+    // isDraggable: boolean
 }
 
 type WidgetSpaceState = {
     layout: LayoutItem,
-    staticWidgets: boolean
 }
 
 export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpaceState> {
@@ -160,20 +160,13 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         super(props);
         this.state = {
           layout: layout,
-          staticWidgets: staticWidgets
         };
-        for (let i = 0; i < layout.length; i++) {
-            layout[i].static = this.state.staticWidgets;
-        }
 
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
     }
 
     onLayoutChange(layout_) {
-        for (let i = 0; i < layout.length; i++) {
-            layout[i].static = this.state.staticWidgets;
-        }
         this.setState({ layout: layout_ });
     }
 
@@ -220,7 +213,6 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
             h: widget.height ? widget.height : 2,
             minW: widget.minW ? widget.minW : 2,
             minH: widget.minH ? widget.minH : 2,
-            static: this.state.staticWidgets.valueOf(),
         }
         layout.push(item); 
         this.onLayoutChange(layout);      
@@ -239,7 +231,9 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
                 verticalCompact={false}
                 isDroppable={true}
                 onDrop={this.onDrop}
-                resizeHandles={['se', 's', 'e']}
+                // Static widgets switch disables resizing and dragging and dropping
+                isDraggable={!this.props.staticWidgets}
+                resizeHandles={!this.props.staticWidgets ? ['se', 's', 'e'] : []}
             >
                 {this.generateDOM()}
             </ReactGridLayout>
