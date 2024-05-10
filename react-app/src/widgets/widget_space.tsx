@@ -27,7 +27,6 @@ import { ArmLaser } from "../components/arm/ArmLaser.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
 
-
 const ReactGridLayout = WidthProvider(Responsive);
 
 function getWindowDimensions() {

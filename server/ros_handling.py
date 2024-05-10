@@ -4,8 +4,12 @@ import rclpy
 from rclpy.node import Node
 # ROS2 standard (topic) messages
 import std_msgs.msg
+# ROS2 sensor (topic) messages
+import sensor_msgs.msg
 # ROS2 standard (service) srvs
 import std_srvs.srv
+# OpenCV
+from cv_bridge import CvBridge
 
 FEEDBACK_TOPIC = "/astra/core/feedback"
 CONTROL_TOPIC = "/astra/core/control"
@@ -18,6 +22,23 @@ class RosNode(Node):
     # Dictionary of Subscribers
     subscribers = {}
     
+    # Dictionary of Image Subscribers and other data
+
+    # This is cleaned as disconnects are processed
+    # Stores who is listening to these subscribers
+    image_subscribers = {}
+    # ROS Topic names are used as the key for another dictionary
+    # that stores the callback, sockets who have requested the subscriber,
+    # and the ROS instance of the subscriber 
+    """
+    {
+        topic: {
+            callback: subscriber_callback
+            socket_ids: [ids of sockets using this callback]
+            subscriber: subscriber_instance
+        }
+    }"""
+
     def __init__(self):
         super().__init__('astra_base')
 
@@ -29,6 +50,9 @@ class RosNode(Node):
         self.create_subscriber(FEEDBACK_TOPIC, self.core_feedback_callback)
 
         self.message_data = {}
+
+        # OpenCV Bridge
+        self.opencv_bridge = CvBridge()
 
     # Subscriber Callbacks
 
@@ -91,6 +115,49 @@ class RosNode(Node):
             '/astra/arm/health',
             service_callback
         )
+
+    # Subscribe to a COMPRESSED IMAGE topic
+    def create_image_subscriber(self, subscriber_callback, image_topic, socketid):
+        if image_topic in self.image_subscribers.keys():
+            # If the socket exists, update this list of socket ids that are connected
+            self.image_subscribers[image_topic]["socket_ids"].append(socketid)
+        else:
+            self.image_subscribers[image_topic] = {
+                'callback': subscriber_callback,
+                'socket_ids': [socketid],
+                'subscriber': self.create_subscription(
+                    sensor_msgs.msg.CompressedImage,
+                    image_topic,
+                    subscriber_callback,
+                    10
+                )
+            }
+        # Introduce some logic that handles recreating the subscriber with BOTH callbacks
+        # if a subscriber already exists
+
+    def handle_disconnect(self, socketid):
+        # Handle disconnections by removing the connection from subscriptions
+        # with more than one user, and delete subscriptions
+        # where the connection was the only user
+        for key in list(self.image_subscribers.keys()):
+            # If this socket uses this subscriber
+            if socketid in self.image_subscribers[key]["socket_ids"]:
+                # Kill the subscription if this is the last socket
+                # that is making use of this subscriber
+                if len(self.image_subscribers[key]["socket_ids"]) == 1:
+                    self.kill_image_subscriber(key)
+                # If there are multiple sockets using this subscriber,
+                # remove the socket's id from the list
+                else:
+                    self.image_subscribers[key]["socket_ids"].remove(socketid)
+
+    # If all of the request makers are gone, handle deleting
+    def kill_image_subscriber(self, image_topic):
+        # Destroy the ROS subscription to conserve resources
+        self.destroy_subscription(self.image_subscribers[image_topic]['subscriber'])
+        # Remove the key entry for the subscription
+        # so that it may be recreated in the future
+        del self.image_subscribers[image_topic]
 
 # Thread worker that spins the node
 def ros2_thread(node):
