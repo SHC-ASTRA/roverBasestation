@@ -1,11 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import SideBar from './components/sidebar.tsx'
-import { WidgetSpace } from './widgets/widget_space.tsx';
+import { WidgetSpace, Presets } from './widgets/widget_space.tsx';
 import Toggle from 'react-toggle'
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css';
 import "./App.css";
 
 function App() {
     const [staticWidgets, setStaticWidgets] = useState(false);
+    const [currentPreset, setPreset] = useState(Presets[0]);
 
     function Header() {
         return (
@@ -20,13 +23,16 @@ function App() {
     function Taskbar() {
         return (
             <div className="taskbar">
-                <div>
+                <div className="toggle">
                     <Toggle checked={staticWidgets} onChange={(event) => {
                         setStaticWidgets(event.target.checked)
                     }}/>
-                    <span>{staticWidgets ? "User Mode" : "Edit Mode"}</span>
+                    <p>{staticWidgets ? "Live Mode" : "Edit Mode"}</p>
                 </div>
                 <SideBar />
+                <Dropdown options={Presets} value={Presets[0]} onChange={(event) => {
+                    setPreset(event.value);
+                }}/>
             </div>
         )
     }
@@ -36,7 +42,7 @@ function App() {
         return (
             <div className="body-background">
                 <div className="widget-space">
-                    <WidgetSpace staticWidgets={staticWidgets}/>
+                    <WidgetSpace staticWidgets={staticWidgets} preset={currentPreset}/>
                 </div>  
             </div>
         )

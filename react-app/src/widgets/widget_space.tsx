@@ -1,5 +1,5 @@
 // base react
-import React, { MouseEventHandler, useState, useEffect} from "react"
+import React, { useState, useEffect } from "react"
 import "../../node_modules/react-grid-layout/css/styles.css";
 import "../../node_modules/react-resizable/css/styles.css";
 
@@ -142,12 +142,30 @@ export let widgets: WidgetData[] = [
     },
 ];
 
-let layout: LayoutItem[] = [];
+const BiosensorPreset: LayoutItem[] = [
+    {i: "Bio Arm",
+    x: 0,
+    y: 0,
+    height: 3,
+    width: 3,
+    minW: 3,
+    minH: 3}
+];
+
+export const Presets = ['None', 'Biosensor'];
+
+interface SelectPreset {
+    [key: string]: LayoutItem[]
+}
+const PresetMap: SelectPreset = {
+    'None': [],
+    'Biosensor': BiosensorPreset
+}
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
-    staticWidgets: boolean
-    // isDraggable: boolean
+    staticWidgets: boolean,
+    preset: string
 }
 
 type WidgetSpaceState = {
@@ -155,19 +173,24 @@ type WidgetSpaceState = {
 }
 
 export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpaceState> {
+    static staticLayout: LayoutItem[] = [];
+    static preset = Presets[0];
 
-    constructor(staticWidgets: boolean, props) {
+    constructor(props) {
         super(props);
         this.state = {
-          layout: layout,
-        };
-
+            layout: this.props.preset != WidgetSpace.preset ? PresetMap[this.props.preset]: WidgetSpace.staticLayout
+        }
+        WidgetSpace.preset = this.props.preset;
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
+
+        this.onLayoutChange(PresetMap[WidgetSpace.preset]);
     }
 
-    onLayoutChange(layout_) {
+    onLayoutChange(layout_: LayoutItem[]) {
         this.setState({ layout: layout_ });
+        WidgetSpace.staticLayout = layout_;
     }
 
     isInLayout(widget) {
@@ -214,8 +237,9 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
             minW: widget.minW ? widget.minW : 2,
             minH: widget.minH ? widget.minH : 2,
         }
-        layout.push(item); 
-        this.onLayoutChange(layout);      
+        layout_.push(item);
+
+        this.onLayoutChange(layout_);      
     }
 
     render() {
@@ -228,7 +252,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
                 width={1200}
                 height={2400}
                 onLayoutChange={this.onLayoutChange}
-                verticalCompact={false}
+                verticalCompact={true}
                 isDroppable={true}
                 onDrop={this.onDrop}
                 // Static widgets switch disables resizing and dragging and dropping

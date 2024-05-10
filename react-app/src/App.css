@@ -23,15 +23,26 @@ body {
     padding-right: 5em;
 }
 
+.toggle {
+   display: flex;
+   flex-direction: row;
+
+   vertical-align: center;
+   align-items: center;
+   justify-content: center;
+   padding: 3px;
+}
+
 .taskbar {
     background-color: #8b8bb2;
     width: 100vw;
-    height: 6vh;
+    height: 8vh;
 
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    vertical-align: center;
 
     padding-left: 5em;
     padding-right: 5em;
@@ -59,7 +70,7 @@ h1 {
     padding-left: 2.5vw;
     padding-right: 2.5vw;
     width: 100vw;
-    height: 80vh;
+    height: 78vh;
 }
 
 .widget-space {
