@@ -1,52 +1,34 @@
 // base react
-import React, {FC, useState, useEffect} from "react"
+import React, { useState, useEffect } from "react"
+import "../../node_modules/react-grid-layout/css/styles.css";
+import "../../node_modules/react-resizable/css/styles.css";
 
-// sensors
-import {PointerSensor, TouchSensor, useSensors, useSensor, DndContext} from "@dnd-kit/core"
+import Responsive, {WidthProvider} from "react-grid-layout"
+import {LayoutItem} from "react-grid-layout"
 
-// dragging
-import {DragStartEvent, DragEndEvent, closestCenter, DragOverlay} from "@dnd-kit/core"
-
-// sorting
-import {SortableContext, arrayMove, rectSortingStrategy} from "@dnd-kit/sortable"
-
-// widgets
-import {Widget, SortableWidget} from "./widgets.tsx"
+import { Widget } from "./widgets.tsx"
 
 // component imports
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
+import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
+import { CoreControl } from "../components/core/CoreControl.tsx";
+import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
+import { Map } from "../components/auto/Map.tsx";
+import { PumpStatus } from "../components/bio/PumpStatus.tsx";
+import { FanControl } from "../components/bio/FanControl.tsx";
+import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
+import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
+import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
+import { ArmPos } from "../components/arm/ArmPos.tsx";
+import { ArmControl } from "../components/arm/ArmControl.tsx";
+import { ArmLaser } from "../components/arm/ArmLaser.tsx";
+import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
+import { BioArm } from "../components/bio/BioArm.tsx";
 
-type WidgetData = {
-    title: string
-    data: JSX.Element
-}
 
-// once the widgets have titles and data put them here
-// the title should be a string that goes on top of the widget
-// the data should be a component that you make, import, and add here
-let widgets = [
-    {
-        title: "Visual Gamepad",
-        data: <TestbedControl controllerScale={2/3}/>
-    },
-    {
-        title: "Live Updating",
-        data: <CurrentTime/>
-    },
-    {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
-    }
-];
-
-for (let i = 1; i <= 25; i++) {
-    widgets.push({
-        title: i.toString(),
-        data: <div>{i}</div>
-    })
-}
+const ReactGridLayout = WidthProvider(Responsive);
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -71,68 +53,215 @@ export default function useWindowDimensions() {
     return windowDimensions;
 }
 
+export type WidgetData = {
+    title: string
+    data: JSX.Element
+    width?: number
+    height?: number
+    minW?: number
+    minH?: number
+}
 
-export const WidgetSpace: FC = () => {
-    const [items, setItems] = useState<WidgetData[]>(widgets);
-    const [activeItem, setActiveItem] = useState<WidgetData>();
-    const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
-    const {height, width} = useWindowDimensions();
+export let widgets: WidgetData[] = [
+    {
+        title: "Visual Gamepad",
+        data: <TestbedControl controllerScale={2/3}/>,
+    },
+    {
+        title: "Current Time",
+        data: <CurrentTime/>,
+    },
+    {
+        title: "Live Data",
+        data: <LiveData topicName="/topic"></LiveData>
+    },
+    {
+        title: "Autonomy Feedback",
+        data: <AutoFeedback/>,
+    },
+    {
+        title: "Core Control",
+        data: <CoreControl />
+    },
+    {
+        title: "Core Feedback",
+        data: <CoreFeedback />
+    },
+    {
+        title: "Map",
+        data: <Map />,
+        minH: 4,
+        minW: 4
+    },
+    {
+        title: "Bio Arm",
+        data: <BioArm />,
+        minW: 3,
+        width: 3
+    },
+    {
+        title: "Fan/Pump Status",
+        data: <PumpStatus />
+    },
+    {
+        title: "Fan Control",
+        data: <FanControl />,
+        width: 3
+    },
+    {
+        title: "Chemical Dispersion",
+        data: <ChemicalDispersion />,
+        width: 3,
+        height: 3
+    },
+    {
+        title: "FAERIE Motor Speed",
+        data: <FaerieMotor />
+    },
+    {
+        title: "FAERIE Laser",
+        data: <FaerieLaser />
+    },
+    {
+        title: "Humidity/Temp Sensor Data",
+        data: <FaerieSensors />
+    },
+    {
+        title: "Arm Position",
+        data: <ArmPos />
+    },
+    {
+        title: "Arm Control Presets",
+        data: <ArmControl />,
+        minW: 3,
+        width: 3
+    },
+    {
+        title: "Arm Laser",
+        data: <ArmLaser />
+    },
+];
 
-    const handleDragStart = (event: DragStartEvent) => {
-        setActiveItem(items.find((item) => item.title === event.active.id));
-    };
+const BiosensorPreset: LayoutItem[] = [
+    {i: "Bio Arm",
+    x: 0,
+    y: 0,
+    height: 3,
+    width: 3,
+    minW: 3,
+    minH: 3}
+];
 
-    const handleDragEnd = (event: DragEndEvent) => {
-        const {active, over} = event;
-        if (!over) return;
+export const Presets = ['None', 'Biosensor'];
 
-        const activeItem = items.find((item) => item.title === active.id);
-        const overItem = items.find((item) => item.title === over.id);
-  
-        const activeIndex = items.findIndex((item) => item.title === active.id);
-        const overIndex = items.findIndex((item) => item.title === over.id);
+interface SelectPreset {
+    [key: string]: LayoutItem[]
+}
+const PresetMap: SelectPreset = {
+    'None': [],
+    'Biosensor': BiosensorPreset
+}
 
-        if (activeIndex !== overIndex) {
-            setItems((prev) => arrayMove<WidgetData>(prev, activeIndex, overIndex));
+type WidgetSpaceProps = {
+    props?: JSX.ElementAttributesProperty,
+    staticWidgets: boolean,
+    preset: string
+}
+
+type WidgetSpaceState = {
+    layout: LayoutItem,
+}
+
+export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpaceState> {
+    static staticLayout: LayoutItem[] = [];
+    static preset = Presets[0];
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            layout: this.props.preset != WidgetSpace.preset ? PresetMap[this.props.preset]: WidgetSpace.staticLayout
         }
-  
-        if (!activeItem || !overItem) return;
+        WidgetSpace.preset = this.props.preset;
+        this.onLayoutChange = this.onLayoutChange.bind(this);
+        this.onDrop = this.onDrop.bind(this);
 
-        setActiveItem(undefined);
-    };
+        this.onLayoutChange(PresetMap[WidgetSpace.preset]);
+    }
 
-    const handleDragCancel = () => {
-        setActiveItem(undefined);
-    };
+    onLayoutChange(layout_: LayoutItem[]) {
+        this.setState({ layout: layout_ });
+        WidgetSpace.staticLayout = layout_;
+    }
 
-    return (
-        <DndContext 
-            sensors={sensors} 
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}
-        >
+    isInLayout(widget) {
+        for (let i = 0; i < this.state.layout.length; i++) {
+            if (this.state.layout[i].i == widget.title) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-            <SortableContext items={items.map((item) => item.title)} strategy={rectSortingStrategy}>
-                <div style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${(Math.floor(width / 267))}, 1fr)`,
-                gridGap: 16,
-                margin: "16px auto 20px"
-                }} 
-                >
-                    {items.map((item) => (
-                        <SortableWidget key={item.title} title={item.title} data={item.data}/>
-                    ))}
-                </div>
+    generateDOM() {
+        return widgets.map((widget) => {
+            if (this.isInLayout(widget)) {
+                return (
+                    <div key={widget.title} className="widget">
+                        <Widget title={widget.title} data={widget.data}/>
+                    </div>
+                )
+            }
+        })
+    }
 
-            </SortableContext>
+    onDrop(layout_, layoutItem, event) {
+        event.preventDefault();
+        const widgetTitle: string = event.dataTransfer.getData("text");
 
-            <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
-            {activeItem ? <Widget title={activeItem.title} data={activeItem.data} isDragging /> : null}
-            </DragOverlay>
+        let widget: WidgetData = {
+            title: widgetTitle,
+            data: <div/>
+        };
+        for (let i = 0; i < widgets.length; i++){
+            if (widgets[i].title == widgetTitle) {
+                widget = widgets[i];
+                break;
+            }
+        }
+        let item: LayoutItem = {
+            i: widgetTitle,
+            x: layoutItem.x,
+            y: layoutItem.y,
+            w: widget.width ? widget.width : 2,
+            h: widget.height ? widget.height : 2,
+            minW: widget.minW ? widget.minW : 2,
+            minH: widget.minH ? widget.minH : 2,
+        }
+        layout_.push(item);
 
-        </DndContext>
-    )
+        this.onLayoutChange(layout_);      
+    }
+
+    render() {
+        return (
+            <ReactGridLayout
+                className="layout"
+                layout={this.state.layout}
+                cols={12}
+                rowHeight={70}
+                width={1200}
+                height={2400}
+                onLayoutChange={this.onLayoutChange}
+                verticalCompact={true}
+                isDroppable={true}
+                onDrop={this.onDrop}
+                // Static widgets switch disables resizing and dragging and dropping
+                isDraggable={!this.props.staticWidgets}
+                resizeHandles={!this.props.staticWidgets ? ['se', 's', 'e'] : []}
+            >
+                {this.generateDOM()}
+            </ReactGridLayout>
+        );
+    }
+    
 }

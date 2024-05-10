@@ -11,5 +11,5 @@ export const CurrentTime = () => {
         return () => clearInterval(interval);
       }, []);
     
-    return <div>The current time is: {time.toLocaleTimeString()}</div>;
+    return <>The current time is: {time.toLocaleTimeString()}</>;
 }

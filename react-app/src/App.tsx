@@ -1,43 +1,57 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import SideBar from './components/sidebar.tsx'
-import { WidgetSpace } from './widgets/widget_space.tsx';
+import { WidgetSpace, Presets } from './widgets/widget_space.tsx';
+import Toggle from 'react-toggle'
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css';
 import "./App.css";
 
-function Header() {
-    return (
-        <div className="header">
-            <img className="logo" src="../ASTRA_Logo_512x512.png" alt="ASTRA Logo"></img>
-            <h1>SHC ASTRA</h1>
-            <SideBar />
-        </div>
-    )
-}
-
-function Body() {
-    return (
-        <div className="body-background">
-            <div className="widget-space">
-                <WidgetSpace />
-            </div>  
-        </div>
-    )
-}
-
 function App() {
-    // useEffect(() => {
-    //   fetch("/api").then(
-    //     response => response.json()
-    //   ).then(
-    //     data => {
-    //       setBackendData(data)
-    //     }
-    //   )
-    // }, []);
-    // [] is the list of dependencies
+    const [staticWidgets, setStaticWidgets] = useState(false);
+    const [currentPreset, setPreset] = useState(Presets[0]);
+
+    function Header() {
+        return (
+            <div className="header">
+                <img className="astra-logo" src="../ASTRA_Logo.png" alt="ASTRA Logo"></img>
+                <h1>SHC ASTRA</h1>
+                <img className="shc-logo" src="../SHC_Logo.png" alt="Space Hardware Club Logo"></img>
+            </div>
+        )
+    }
+
+    function Taskbar() {
+        return (
+            <div className="taskbar">
+                <div className="toggle">
+                    <Toggle checked={staticWidgets} onChange={(event) => {
+                        setStaticWidgets(event.target.checked)
+                    }}/>
+                    <p>{staticWidgets ? "Live Mode" : "Edit Mode"}</p>
+                </div>
+                <SideBar />
+                <Dropdown options={Presets} value={Presets[0]} onChange={(event) => {
+                    setPreset(event.value);
+                }}/>
+            </div>
+        )
+    }
+
+    function Body() {
+
+        return (
+            <div className="body-background">
+                <div className="widget-space">
+                    <WidgetSpace staticWidgets={staticWidgets} preset={currentPreset}/>
+                </div>  
+            </div>
+        )
+    }
 
     return (
         <div className="layout">
             <Header />
+            <Taskbar />
             <Body />
         </div>
     )

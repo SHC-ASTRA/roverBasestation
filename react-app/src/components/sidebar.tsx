@@ -1,7 +1,8 @@
 import {useState} from "react";
 import "./sidebar.css";
 import React from "react";
-import { WidgetSpace } from '../widgets/widget_space.tsx'
+import { widgets } from '../widgets/widget_space.tsx'
+import {Widget} from '../widgets/widgets.tsx'
 
 function SideBar() {
     const [sidebarActive, showSideBar] = useState(false);
@@ -10,9 +11,9 @@ function SideBar() {
 
     return (
         <div className="sidebar-filter">
-            <div className="sidebar-button" onClick={toggleSideBar}>
-                <h2>Widgets</h2>
-            </div>
+            <button className="sidebar-button" onClick={toggleSideBar}>
+                Widgets
+            </button>
             <div 
             className={
                 sidebarActive ? "sidebar active" : "sidebar"
@@ -27,7 +28,18 @@ function SideBar() {
             >
                 <div className="sidebar-data">
                     <span className="hide-icon" onClick={toggleSideBar}>X</span>
-                    <WidgetSpace></WidgetSpace>
+                    {widgets.map((widget) => {
+                        return (
+                            <div id={widget.title} 
+                            draggable={true} 
+                            className="widget" 
+                            onDragStart={(event) => {
+                                event.dataTransfer.setData("text", widget.title);
+                            }}>
+                                <Widget title={widget.title} data={<div />}/>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div>
