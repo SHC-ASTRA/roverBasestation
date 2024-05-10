@@ -144,14 +144,26 @@ export let widgets: WidgetData[] = [
 
 const layout: LayoutItem[] = [];
 
-export class WidgetSpace extends React.PureComponent<any, any> {
+type WidgetSpaceProps = {
+    props?: JSX.ElementAttributesProperty,
+    staticWidgets: boolean
+}
 
-    constructor(props) {
+type WidgetSpaceState = {
+    layout: LayoutItem,
+    staticWidgets: boolean
+}
+
+export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpaceState> {
+
+    constructor(staticWidgets: boolean, props) {
         super(props);
         this.state = {
-          layout: layout
+          layout: layout,
+          staticWidgets: staticWidgets
         };
         this.onLayoutChange = this.onLayoutChange.bind(this);
+        this.onDrop = this.onDrop.bind(this);
     }
 
     onLayoutChange(layout_) {
@@ -193,15 +205,17 @@ export class WidgetSpace extends React.PureComponent<any, any> {
                 break;
             }
         }
-        layout.push({    
+        let item: LayoutItem = {
             i: widgetTitle,
             x: layoutItem.x,
             y: layoutItem.y,
             w: widget.width ? widget.width : 2,
             h: widget.height ? widget.height : 2,
             minW: widget.minW ? widget.minW : 2,
-            minH: widget.minH ? widget.minH : 2
-        }) 
+            minH: widget.minH ? widget.minH : 2,
+            static: this.state.staticWidgets,
+        }
+        layout.push(item); 
         this.onLayoutChange(layout);      
     }
 
