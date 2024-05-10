@@ -17,6 +17,7 @@ import {Widget, SortableWidget} from "./widgets.tsx"
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
+import CameraData from "../components/cameraFeed.tsx"
 
 type WidgetData = {
     title: string
@@ -35,9 +36,13 @@ let widgets = [
         title: "Live Updating",
         data: <CurrentTime/>
     },
+    // {
+    //     title: "Live Data",
+    //     data: <LiveData topicName="/topic"></LiveData>
+    // },
     {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
+        title: "Camera Display",
+        data: <CameraData/>
     }
 ];
 
