@@ -141,30 +141,29 @@ export let widgets: WidgetData[] = [
     },
 ];
 
-const BiosensorPreset: LayoutItem[] = [
-    {i: "Bio Arm",
-    x: 0,
-    y: 0,
-    height: 3,
-    width: 3,
-    minW: 3,
-    minH: 3}
-];
+// const BiosensorPreset: LayoutItem[] = [
+//     {i: "Bio Arm",
+//     x: 0,
+//     y: 0,
+//     height: 3,
+//     width: 3,
+//     minW: 3,
+//     minH: 3}
+// ];
 
-export const Presets = ['None', 'Biosensor'];
+// export const Presets = ['None', 'Biosensor'];
 
-interface SelectPreset {
-    [key: string]: LayoutItem[]
-}
-const PresetMap: SelectPreset = {
-    'None': [],
-    'Biosensor': BiosensorPreset
-}
+// interface SelectPreset {
+//     [key: string]: LayoutItem[]
+// }
+// const PresetMap: SelectPreset = {
+//     'None': [],
+//     'Biosensor': BiosensorPreset
+// }
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
     staticWidgets: boolean,
-    preset: string
 }
 
 type WidgetSpaceState = {
@@ -173,18 +172,15 @@ type WidgetSpaceState = {
 
 export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpaceState> {
     static staticLayout: LayoutItem[] = [];
-    static preset = Presets[0];
 
     constructor(props) {
         super(props);
         this.state = {
-            layout: this.props.preset != WidgetSpace.preset ? PresetMap[this.props.preset]: WidgetSpace.staticLayout
+            layout: WidgetSpace.staticLayout
         }
-        WidgetSpace.preset = this.props.preset;
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
 
-        this.onLayoutChange(PresetMap[WidgetSpace.preset]);
     }
 
     onLayoutChange(layout_: LayoutItem[]) {
