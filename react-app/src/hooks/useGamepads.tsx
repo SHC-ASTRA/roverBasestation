@@ -40,11 +40,7 @@ export default function useGamepads(hookCallback: (data: GamepadRef) => void, mi
    */
   const scanGamepads = () => {
     // Grab gamepads from browser API
-    var detectedGamepads = navigator.getGamepads
-      ? navigator.getGamepads()
-      : navigator.webkitGetGamepads
-      ? navigator.webkitGetGamepads()
-      : [];
+    var detectedGamepads = navigator.getGamepads();
 
     // Loop through all detected controllers and add if not already in state
     for (var i = 0; i < detectedGamepads.length; i++) {

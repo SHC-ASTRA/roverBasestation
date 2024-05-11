@@ -86,6 +86,17 @@ def handle_disconnect():
     # Handle disconnections for the ROS node (image subscribers)
     ros_node.handle_disconnect(request.sid)
 
+# Controller connection handler
+CORE_CONTROL_TOPIC = '/astra/core/control'
+@socketio.on(CORE_CONTROL_TOPIC)
+def core_control_handling(ly, ry):
+    # If the publisher does not already exist, create it
+    if CORE_CONTROL_TOPIC not in ros_node.publishers.keys():
+        ros_node.create_string_publisher(CORE_CONTROL_TOPIC)
+    # Handle actually publishing the data when the publisher exists
+    
+    ros_node.publish_string_data(CORE_CONTROL_TOPIC, f"ctrl,{ly:0.2f},{ry:0.2f}")
+
 # Handle image subscription request
 @socketio.on('image_subscription')
 def image_subscription_message(topic_name):
