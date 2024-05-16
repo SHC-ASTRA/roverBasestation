@@ -3,7 +3,7 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread
+from ros_handling import RosNode, ros2_thread, TOPIC_LIST
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -23,7 +23,7 @@ def sigint_handler(signal, frame):
     """
     SIGINT handler
 
-    We have to know when to tell rclpy to shut down, because
+    We have to know when to tell rclpyFEEDBACK_TOPIC to shut down, because
     it's in a child thread which would stall the main thread
     shutdown sequence. So we use this handler to call
     rclpy.shutdown() and then call the previously-installed
@@ -65,6 +65,13 @@ def get_node_data():
 def get_publish_message():
     ros_node.publish_message()
     return {}
+
+@app.route('/core/feedback')
+def get_core_feedback():
+    try:
+        return {'data': ros_node.message_data[TOPIC_LIST['FEEDBACK_TOPIC']]}
+    except KeyError:
+        return {'data': 'No data was found.'}
 
 # Socket IO initialization
 if __name__ == '__main__':
