@@ -80,7 +80,9 @@ export let widgets: WidgetData[] = [
     },
     {
         title: "Core Control",
-        data: <CoreControl />
+        data: <CoreControl />,
+        height: 3,
+        minH: 3
     },
     {
         title: "Core Feedback",

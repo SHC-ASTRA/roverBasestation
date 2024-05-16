@@ -17,6 +17,11 @@ import base64
 import cv2
 # NumPy
 import numpy as np
+import sys
+
+sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
+
+from ros_msgs.src.interfaces_pkg.msg import ControllerState
 
 
 def sigint_handler(signal, frame):
@@ -103,6 +108,37 @@ def core_control_handling(ly, ry):
     # Handle actually publishing the data when the publisher exists
     
     ros_node.publish_string_data(CORE_CONTROL_TOPIC, f"ctrl,{ly:0.2f},{ry:0.2f}")
+
+ARM_CONTROL_TOPIC = '/astra/arm/control'
+@socketio.on(ARM_CONTROL_TOPIC)
+def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, b, a, x, y, l, r, zl, zr, select, start):
+    if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
+        ros_node.create_publisher(ControllerState, '/astra/arm/control', 0)
+
+    msg = ControllerState()
+    msg.lt = zl
+    msg.rt = zr
+    msg.lb = l
+    msg.rb = r
+    msg.plus = start
+    msg.minus = select
+    msg.ls_x = lh
+    msg.ls_y = lv
+    msg.rs_x = rh
+    msg.rs_y = rv
+    msg.a = a
+    msg.b = b
+    msg.x = x
+    msg.y = y
+    msg.d_up = du
+    msg.d_down = dd
+    msg.d_left = dl
+    msg.d_right = dr
+
+    ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
+    print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \
+          {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} \
+          {msg.d_left} {msg.d_right}")
 
 # Handle image subscription request
 @socketio.on('image_subscription')

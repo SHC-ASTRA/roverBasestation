@@ -20,14 +20,18 @@ export const CoreControl = ({
         console.log(gamepads[gamepadIndex])
         if(!gamepads[gamepadIndex]) return;
 
-        socket.emit(coreControlEvent, gamepads[gamepadIndex].axes[1], gamepads[gamepadIndex].axes[3]);
+        if (gamepads[gamepadIndex].buttons[7].value > 0.5) { // one handed driving
+            socket.emit(coreControlEvent, gamepads[gamepadIndex].axes[3], gamepads[gamepadIndex].axes[3]);
+        } else {
+            socket.emit(coreControlEvent, gamepads[gamepadIndex].axes[1], gamepads[gamepadIndex].axes[3]);
+        }
     }, [gamepads]);
 
     return (
         <>
-            <p>{gamepadIndex}</p>
-            {/* <p>{gamepads[gamepadIndex]}</p> */}
-            {/* <VisualGamepad gamepadIndex={gamepadIndex} scale={controllerScale}/> */}
+            <p>Gamepad Index: {gamepadIndex}<br />
+            Left Stick: {gamepads[gamepadIndex] ? (gamepads[gamepadIndex].axes ? (Math.round(gamepads[gamepadIndex].axes[1] * 100) / 100) : "None") : "None"}<br />
+            Right Stick: {gamepads[gamepadIndex] ? (gamepads[gamepadIndex].axes ? (Math.round(gamepads[gamepadIndex].axes[3] * 100) / 100) : "None") : "None"}</p>
         </>
     )
 }
