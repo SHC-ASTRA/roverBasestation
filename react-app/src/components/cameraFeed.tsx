@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
 export default function CameraData({
+    topicName,
     ...props
 }) {
 
     const [imageData, setData] = useState("");
     const [widgetID, setID] = useState(Math.floor(Math.random()*50000));
 
-    useEffect(() => {
-        
-
-        return(() => {
-
-        })
-    }, [imageData]);
+    socket.on(topicName, (image) => {
+        setData(image);
+    })
 
     return (
         <>

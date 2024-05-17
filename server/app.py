@@ -21,7 +21,7 @@ import sys
 
 sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
 
-from ros_msgs.src.interfaces_pkg.msg import ControllerState
+from interfaces_pkg.msg import ControllerState
 
 
 def sigint_handler(signal, frame):
@@ -111,21 +111,21 @@ def core_control_handling(ly, ry):
 
 ARM_CONTROL_TOPIC = '/astra/arm/control'
 @socketio.on(ARM_CONTROL_TOPIC)
-def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, b, a, x, y, l, r, zl, zr, select, start):
+def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, 
+                         b, a, y, x, l, r, zl, zr, select, start):
     if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.create_publisher(ControllerState, '/astra/arm/control', 0)
+        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, '/astra/arm/control', 0)
 
+    # can't send floats over the socket for whatever reason, have to round them on the front end and divide by 100 
     msg = ControllerState()
-    msg.lt = zl
-    msg.rt = zr
     msg.lb = l
     msg.rb = r
     msg.plus = start
     msg.minus = select
-    msg.ls_x = lh
-    msg.ls_y = lv
-    msg.rs_x = rh
-    msg.rs_y = rv
+    msg.ls_x = lh / 100
+    msg.ls_y = lv / 100
+    msg.rs_x = rh / 100
+    msg.rs_y = rv / 100
     msg.a = a
     msg.b = b
     msg.x = x
@@ -134,6 +134,8 @@ def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, b, a, x, y, l, r, zl, z
     msg.d_down = dd
     msg.d_left = dl
     msg.d_right = dr
+    msg.lt = zl / 100
+    msg.rt = zr / 100
 
     ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
     print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \

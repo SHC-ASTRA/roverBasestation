@@ -9,20 +9,21 @@ export const ArmControl = ({
     const [gamepadIndex, setIndex] = useState(0);
     // The state is regularly updated by the useGamepads hook
     useGamepads(gamepads => setGamepads(gamepads), 10);
+    for (let i in gamepads) {
+        if(!gamepads[i]) continue;
+        setIndex(Number(i));
+    }
 
     useEffect(() => {
-        for (let i in gamepads) {
-            if(!gamepads[i]) continue;
-            setIndex(Number(i));
-        }
         console.log(gamepads[gamepadIndex])
         if(!gamepads[gamepadIndex]) return;
-
+        // rounding all floats and then converting them back to floats on the backend
+        // please don't ask me why this shit is fucked
         socket.emit(armControlEvent, 
-            gamepads[gamepadIndex].axes[0], // left stick left/right
-            gamepads[gamepadIndex].axes[1], // left stick up/down
-            gamepads[gamepadIndex].axes[2], // right stick left/right
-            gamepads[gamepadIndex].axes[3], // right stick up down
+            Math.round(gamepads[gamepadIndex].axes[0]*100), // left stick left/right
+            Math.round(gamepads[gamepadIndex].axes[1]*100), // left stick up/down
+            Math.round(gamepads[gamepadIndex].axes[2]*100), // right stick left/right
+            Math.round(gamepads[gamepadIndex].axes[3]*100), // right stick up down
             gamepads[gamepadIndex].buttons[12].pressed, // d pad up
             gamepads[gamepadIndex].buttons[13].pressed, // d pad down
             gamepads[gamepadIndex].buttons[14].pressed, // d pad left
@@ -33,8 +34,8 @@ export const ArmControl = ({
             gamepads[gamepadIndex].buttons[3].pressed, // x button (button up)
             gamepads[gamepadIndex].buttons[4].pressed, // L (left bumper)
             gamepads[gamepadIndex].buttons[5].pressed, // R (right bumper)
-            gamepads[gamepadIndex].buttons[6].value, // ZL (left trigger)
-            gamepads[gamepadIndex].buttons[7].value, // ZR (right trigger)
+            Math.round(gamepads[gamepadIndex].buttons[6].value*100), // ZL (left trigger)
+            Math.round(gamepads[gamepadIndex].buttons[7].value*100), // ZR (right trigger)
             gamepads[gamepadIndex].buttons[8].pressed, // select / minus
             gamepads[gamepadIndex].buttons[9].pressed // start / plus
         );
@@ -45,22 +46,25 @@ export const ArmControl = ({
     const setPositions = () => setData({});
 
     return (
-        <div className="button-wrapper">
-            <button className="control-button" onClick={setHome}>
-                Homing
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Stow
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Zero
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Extend
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Max
-            </button>
-        </div>
+        <>
+            <p>Controlling over controller {gamepadIndex}</p>
+            <div className="button-wrapper">
+                <button className="control-button" onClick={setHome}>
+                    Homing
+                </button>
+                <button className="control-button" onClick={setPositions}>
+                    Stow
+                </button>
+                <button className="control-button" onClick={setPositions}>
+                    Zero
+                </button>
+                <button className="control-button" onClick={setPositions}>
+                    Extend
+                </button>
+                <button className="control-button" onClick={setPositions}>
+                    Max
+                </button>
+            </div>
+        </>
     )
 }

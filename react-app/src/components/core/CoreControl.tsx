@@ -11,12 +11,14 @@ export const CoreControl = ({
     const [gamepadIndex, setIndex] = useState(0);
     // The state is regularly updated by the useGamepads hook
     useGamepads(gamepads => setGamepads(gamepads), 10);
+    
+    for (let i in gamepads) {
+        if(gamepads[i]) continue;
+        setIndex(Number(i));
+    }
 
     useEffect(() => {
-        for (let i in gamepads) {
-            if(!gamepads[i]) continue;
-            setIndex(Number(i));
-        }
+
         console.log(gamepads[gamepadIndex])
         if(!gamepads[gamepadIndex]) return;
 

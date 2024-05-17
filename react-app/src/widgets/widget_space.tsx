@@ -26,6 +26,7 @@ import { ArmControl } from "../components/arm/ArmControl.tsx";
 import { ArmLaser } from "../components/arm/ArmLaser.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
+import CameraData from "../components/cameraFeed.tsx";
 
 const ReactGridLayout = WidthProvider(Responsive);
 
@@ -113,7 +114,9 @@ export let widgets: WidgetData[] = [
         title: "Chemical Dispersion",
         data: <ChemicalDispersion />,
         width: 3,
-        height: 3
+        minW: 3,
+        height: 3,
+        minH: 3
     },
     {
         title: "FAERIE Motor Speed",
@@ -132,15 +135,21 @@ export let widgets: WidgetData[] = [
         data: <ArmPos />
     },
     {
-        title: "Arm Control Presets",
+        title: "Arm Control",
         data: <ArmControl />,
         minW: 3,
-        width: 3
+        width: 3,
+        minH: 3,
+        height: 3
     },
     {
         title: "Arm Laser",
         data: <ArmLaser />
     },
+    {
+        title: "Camera",
+        data: <CameraData topicName={'/camera0/image_raw/compressed'}/>
+    }
 ];
 
 const BiosensorPreset: LayoutItem[] = [
