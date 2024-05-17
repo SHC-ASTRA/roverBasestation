@@ -38,7 +38,8 @@ function App() {
         return (
             <div className="body-background">
                 <div className="widget-space">
-                    <WidgetSpace staticWidgets={staticWidgets}/>
+
+                    <WidgetSpace staticWidgets={staticWidgets} />
                 </div>  
             </div>
         )

@@ -152,15 +152,15 @@ export let widgets: WidgetData[] = [
     }
 ];
 
-const BiosensorPreset: LayoutItem[] = [
-    {i: "Bio Arm",
-    x: 0,
-    y: 0,
-    height: 3,
-    width: 3,
-    minW: 3,
-    minH: 3}
-];
+// const BiosensorPreset: LayoutItem[] = [
+//     {i: "Bio Arm",
+//     x: 0,
+//     y: 0,
+//     height: 3,
+//     width: 3,
+//     minW: 3,
+//     minH: 3}
+// ];
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
