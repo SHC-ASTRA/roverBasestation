@@ -5,18 +5,18 @@ export default function CameraData({
     ...props
 }) {
 
-    const [imageData, setData] = useState("");
-    const [widgetID, setID] = useState(Math.floor(Math.random()*50000));
+    const [imageData, setData] = useState({data:undefined});
 
-    socket.on(topicName, (image) => {
-        setData(image);
-    })
+    useEffect(() => {
+        socket.on(topicName, (image) => {
+            setData(image);
+        })
+    }, [imageData])
 
     return (
         <>
-            <img src={`data:image/png;base64,${imageData}`}></img>
-            <input id={`${widgetID}`} value=""></input>
-            <button onClick={() => {socket.emit('image_subscription', document.getElementById(`${widgetID}`).value)}}>Submit</button>
+            <img src={`data:image/png;base64,${imageData.data}`}></img>
+            
         </>
     );
 }
