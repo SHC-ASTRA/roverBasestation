@@ -29,9 +29,6 @@ function App() {
                     <p>{staticWidgets ? "Live Mode" : "Edit Mode"}</p>
                 </div>
                 <SideBar />
-                {/* <Dropdown options={Presets} value={Presets[0]} onChange={(event) => {
-                    setPreset(event.value);
-                }}/> */}
             </div>
         )
     }
@@ -41,6 +38,7 @@ function App() {
         return (
             <div className="body-background">
                 <div className="widget-space">
+
                     <WidgetSpace staticWidgets={staticWidgets} />
                 </div>  
             </div>

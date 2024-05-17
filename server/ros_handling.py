@@ -11,10 +11,11 @@ import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
 
-FEEDBACK_TOPIC = "/astra/core/feedback"
-CONTROL_TOPIC = "/astra/core/control"
-
-CHATTER_TOPIC = "/topic"
+TOPIC_LIST = {
+    'FEEDBACK_TOPIC': "/astra/core/feedback",
+    'CONTROL_TOPIC': "/astra/core/control",
+    'CHATTER_TOPIC': "/topic"
+}
 
 class RosNode(Node):
     # Dictionary of Publishers
@@ -44,10 +45,10 @@ class RosNode(Node):
 
         # Basic Subscribers for testing
         self.create_string_publisher("flask_pub_topic")
-        self.create_subscriber(CHATTER_TOPIC, self.chatter_callback)
+        self.create_subscriber(TOPIC_LIST['CHATTER_TOPIC'], self.chatter_callback)
 
         # LiveData subscriber
-        self.create_subscriber(FEEDBACK_TOPIC, self.core_feedback_callback)
+        self.create_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
 
         self.message_data = {}
 
@@ -58,15 +59,15 @@ class RosNode(Node):
 
     def chatter_callback(self, msg):
         print(f'chatter cb received: {msg.data}')
-        self.message_data[CHATTER_TOPIC] = msg.data
+        self.message_data[TOPIC_LIST['CHATTER_TOPIC']] = msg.data
 
     def core_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(FEEDBACK_TOPIC, msg)
+        self.append_key_list(TOPIC_LIST['FEEDBACK_TOPIC'], msg)
 
     def core_control_callback(self, msg):
         print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(CONTROL_TOPIC, msg)
+        self.append_key_list(TOPIC_LIST['CONTROL_TOPIC'], msg)
 
     ## Helper Functions
 
@@ -80,12 +81,14 @@ class RosNode(Node):
         return self.publishers[topic_name]
 
     # Publish data to a String topic
-    def publish_string_data(self, topic_name, message):
-        self.publishers[topic_name].publish(message)
-        print(f"Publishing data: {message}")
+    def publish_string_data(self, topic_name, str_data):
+        ros_msg = std_msgs.msg.String()
+        ros_msg.data = str_data
+        self.publishers[topic_name].publish(ros_msg)
+        print(f"Publishing data to \"{topic_name}\": {str_data}")
 
     # Create a subscriber with a given callback
-    def create_subscriber(self, topic_name, callback):
+    def create_subscriber(self, topic_name: str, callback):
         self.create_subscription(
             std_msgs.msg.String,
             topic_name,
@@ -105,12 +108,12 @@ class RosNode(Node):
     # Health Packet Service
 
     def initalize_health_packets(self, service_callback):
-        this.core_health_service = this.create_service(
+        self.core_health_service = self.create_service(
             std_srvs.srv.Trigger,
             '/astra/core/health',
             service_callback
         )
-        this.arm_health_service = this.create_service(
+        self.arm_health_service = self.create_service(
             std_srvs.srv.Trigger,
             '/astra/arm/health',
             service_callback

@@ -3,7 +3,7 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread
+from ros_handling import RosNode, ros2_thread, TOPIC_LIST
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -17,13 +17,21 @@ import base64
 import cv2
 # NumPy
 import numpy as np
+import sys
+
+# Insert the installation direction into the local path
+# so that message files can be imported
+# Equivalent to sourcing the directory prior
+sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
+
+from interfaces_pkg.msg import ControllerState
 
 
 def sigint_handler(signal, frame):
     """
     SIGINT handler
 
-    We have to know when to tell rclpy to shut down, because
+    We have to know when to tell rclpyFEEDBACK_TOPIC to shut down, because
     it's in a child thread which would stall the main thread
     shutdown sequence. So we use this handler to call
     rclpy.shutdown() and then call the previously-installed
@@ -66,6 +74,13 @@ def get_publish_message():
     ros_node.publish_message()
     return {}
 
+@app.route('/core/feedback')
+def get_core_feedback():
+    try:
+        return {'data': ros_node.message_data[TOPIC_LIST['FEEDBACK_TOPIC']]}
+    except KeyError:
+        return {'data': 'No data was found.'}
+
 # Socket IO initialization
 if __name__ == '__main__':
     socketio.run(app)
@@ -85,6 +100,54 @@ def handle_disconnect():
     print(f'disconnected user {request.sid}')
     # Handle disconnections for the ROS node (image subscribers)
     ros_node.handle_disconnect(request.sid)
+
+# Controller connection handler
+CORE_CONTROL_TOPIC = '/astra/core/control'
+@socketio.on(CORE_CONTROL_TOPIC)
+def core_control_handling(ly, ry):
+    # If the publisher does not already exist, create it
+    if CORE_CONTROL_TOPIC not in ros_node.publishers.keys():
+        ros_node.create_string_publisher(CORE_CONTROL_TOPIC)
+    # Handle actually publishing the data when the publisher exists
+    
+    ros_node.publish_string_data(CORE_CONTROL_TOPIC, f"ctrl,{ly:0.2f},{ry:0.2f}")
+
+ARM_CONTROL_TOPIC = '/astra/arm/control'
+@socketio.on(ARM_CONTROL_TOPIC)
+def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, 
+                         b, a, y, x, l, r, zl, zr, select, start):
+    #  If the publisher does not already exist, create it
+    if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
+        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, ARM_CONTROL_TOPIC, 0)
+
+    # can't send floats over the socket for whatever reason, have to round them on the front end and divide by 100 
+    
+    # Make use of ControllerState custom interface
+    msg = ControllerState()
+    msg.lb = l
+    msg.rb = r
+    msg.plus = start
+    msg.minus = select
+    msg.ls_x = lh / 100
+    msg.ls_y = lv / 100
+    msg.rs_x = rh / 100
+    msg.rs_y = rv / 100
+    msg.a = a
+    msg.b = b
+    msg.x = x
+    msg.y = y
+    msg.d_up = du
+    msg.d_down = dd
+    msg.d_left = dl
+    msg.d_right = dr
+    msg.lt = zl / 100
+    msg.rt = zr / 100
+
+    # Handle data publishing
+    ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
+    print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \
+          {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} \
+          {msg.d_left} {msg.d_right}")
 
 # Handle image subscription request
 @socketio.on('image_subscription')
