@@ -19,6 +19,9 @@ import cv2
 import numpy as np
 import sys
 
+# Insert the installation direction into the local path
+# so that message files can be imported
+# Equivalent to sourcing the directory prior
 sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
 
 from interfaces_pkg.msg import ControllerState
@@ -113,10 +116,13 @@ ARM_CONTROL_TOPIC = '/astra/arm/control'
 @socketio.on(ARM_CONTROL_TOPIC)
 def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, 
                          b, a, y, x, l, r, zl, zr, select, start):
+    #  If the publisher does not already exist, create it
     if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, '/astra/arm/control', 0)
+        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, ARM_CONTROL_TOPIC, 0)
 
     # can't send floats over the socket for whatever reason, have to round them on the front end and divide by 100 
+    
+    # Make use of ControllerState custom interface
     msg = ControllerState()
     msg.lb = l
     msg.rb = r
@@ -137,6 +143,7 @@ def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr,
     msg.lt = zl / 100
     msg.rt = zr / 100
 
+    # Handle data publishing
     ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
     print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \
           {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} \
