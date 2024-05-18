@@ -11,13 +11,25 @@ import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
 
+import sys
+
+# Insert the installation direction into the local path
+# so that message files can be imported
+# Equivalent to sourcing the directory prior
+sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
+
+from interfaces_pkg.msg import FaerieTelemetry
+
+
 CHATTER_TOPIC = "/topic"
 CORE_FEEDBACK = "/astra/core/feedback"
 CORE_CONTROL = "/astra/core/control"
 ARM_FEEDBACK = "/astra/arm/feedback"
 ARM_CONTROL = '/astra/arm/control'
-BIO_CONTROL = '/astra/bio/control'
 BIO_FEEDBACK = '/astra/bio/feedback'
+BIO_CONTROL = '/astra/bio/control'
+FAERIE_CONTROL = '/astra/arm/bio/control'
+FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
 
 
 class RosNode(Node):
@@ -55,6 +67,8 @@ class RosNode(Node):
 
         self.create_subscriber(BIO_FEEDBACK, self.bio_feedback_callback)
 
+        self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
+
         self.message_data = {}
 
         # OpenCV Bridge
@@ -75,8 +89,18 @@ class RosNode(Node):
         self.append_key_list(CORE_CONTROL, msg)
 
     def bio_feedback_callback(self, msg):
-        print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(BIO_FEEDBACK, msg)   
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(BIO_FEEDBACK, msg)
+
+    def faerie_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.humidity}, {msg.temperature}")
+        # Check if key is in dictionary
+        try:
+            self.message_data[FAERIE_FEEDBACK]
+        except KeyError:
+            self.message_data[FAERIE_FEEDBACK] = []
+        # Append to the key's list
+        self.message_data[FAERIE_FEEDBACK].append(msg)
 
     ## Helper Functions
 

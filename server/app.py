@@ -3,7 +3,7 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread, CORE_CONTROL, ARM_CONTROL, CORE_FEEDBACK, BIO_CONTROL, BIO_FEEDBACK
+from ros_handling import RosNode, ros2_thread, CORE_CONTROL, ARM_CONTROL, CORE_FEEDBACK, BIO_CONTROL, BIO_FEEDBACK, FAERIE_FEEDBACK, FAERIE_CONTROL
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -88,16 +88,39 @@ def get_bio_feedback():
     except KeyError:
         return {'data': 'No data was found.'}
     
+
+@app.route('/arm/bio/feedback')
+def get_faerie_feedback():
+    try:
+        return {'humidity': ros_node.message_data[FAERIE_FEEDBACK][-1].humidity, 'temperature': ros_node.message_data[FAERIE_FEEDBACK][-1].temperature}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
 @app.route('/bio/control', methods = ['POST'])
 def bio_control():
     if request.method == 'POST':
         command = request.get_json()['command']
-        print(f"Sending command {command} to Biosensor")
+        print(f"Sending command {command} to CITADEL")
 
         if BIO_CONTROL not in ros_node.publishers.keys():
             ros_node.create_string_publisher(BIO_CONTROL)
 
         ros_node.publish_string_data(BIO_CONTROL, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /bio/control")
+
+@app.route('/arm/bio/control', methods = ['POST'])
+def faerie_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to FAERIE")
+
+        if FAERIE_CONTROL not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(FAERIE_CONTROL)
+
+        ros_node.publish_string_data(FAERIE_CONTROL, command)
 
         return {'data': command}
     else:

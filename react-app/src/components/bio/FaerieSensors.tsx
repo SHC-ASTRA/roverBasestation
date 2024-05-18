@@ -6,7 +6,7 @@ type BioResponse = {
 }
 
 export const FaerieSensors = ({
-    topicName = '/bio/feedback'
+    topicName = '/arm/bio/feedback'
     }) => {
     const [data, setData] = useState<BioResponse>({humidity: 0, temperature: 0});
 
@@ -14,7 +14,7 @@ export const FaerieSensors = ({
         let intervalValue = setInterval(() => {
             fetch(topicName)
                 .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
+                .then((data) => setData({humidity: data.humidity, temperature: data.temperature}))
         }, 1000);
 
         return(() => {
@@ -24,8 +24,8 @@ export const FaerieSensors = ({
 
     return (
         <>
-            <p>Humidity: {data.humidity}<br />
-            Temperature: {data.temperature}</p>
+            <p>Humidity: {data.humidity ? data.humidity : "No data received."}<br />
+            Temperature: {data.temperature ? data.temperature : "No data received."}</p>
         </>
     )
 }

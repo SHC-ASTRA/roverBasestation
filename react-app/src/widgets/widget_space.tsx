@@ -17,8 +17,7 @@ import { CoreControl } from "../components/core/CoreControl.tsx";
 import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
-import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
-import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
+import { FaerieControl } from "../components/bio/FaerieControl.tsx";
 import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
 import { ArmPos } from "../components/arm/ArmPos.tsx";
 import { ArmControl } from "../components/arm/ArmControl.tsx";
@@ -121,12 +120,12 @@ export let widgets: WidgetData[] = [
         minH: 5
     },
     {
-        title: "FAERIE Motor Speed",
-        data: <FaerieMotor />
-    },
-    {
-        title: "FAERIE Laser",
-        data: <FaerieLaser />
+        title: "FAERIE Control",
+        data: <FaerieControl />,
+        width: 4,
+        minW: 4,
+        height: 5,
+        minH: 5
     },
     {
         title: "FAERIE Sensor Data",
@@ -154,15 +153,7 @@ export let widgets: WidgetData[] = [
     }
 ];
 
-// const BiosensorPreset: LayoutItem[] = [
-//     {i: "Bio Arm",
-//     x: 0,
-//     y: 0,
-//     height: 3,
-//     width: 3,
-//     minW: 3,
-//     minH: 3}
-// ];
+widgets.sort((a, b) => a.title > b.title ? 1 : -1);
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
