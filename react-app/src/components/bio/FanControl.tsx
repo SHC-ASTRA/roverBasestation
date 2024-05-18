@@ -1,42 +1,94 @@
 import React, {useState, useEffect} from 'react'
 
 export const FanControl = ({
-    topicName = '/astra/bio/control'
+    topicName = '/bio/control'
     }) => {
-    const [data, setData] = useState({});
-
-    useEffect(() => {
-        let intervalValue = setInterval(() => {
-            fetch('/bio/control')
-                .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
-        }, 1000);
-
-        return(() => {
-            clearInterval(intervalValue);
-        })
-    }, [data]);
-
-    const setFans = () => {
-        setData({})
-        console.log("click!")
-    };
 
     return (
         <div>
             <div className="button-wrapper">
-            <button className="round-button" onClick={setFans}>
-                Fan 1
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 2
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 3
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 4
-            </button>
+                <p>Nominal Fan</p>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 1");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'NFan1',
+                    })
+                })
+            }}>1</button>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 2");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'NFan2',
+                    })
+                })
+            }}>2</button>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 3");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'NFan3',
+                    })
+                })
+            }}>3</button>
+            </div>
+            <div className="button-wrapper">
+                <p>Short Fan</p>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 1");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'SFan1',
+                    })
+                })
+            }}>1</button>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 2");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'SFan2',
+                    })
+                })
+            }}>2</button>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 3");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'SFan3',
+                    })
+                })
+            }}>3</button>
             </div>
         </div>
     )

@@ -14,9 +14,8 @@ import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
 import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
 import { CoreControl } from "../components/core/CoreControl.tsx";
-import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
+import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
-import { PumpStatus } from "../components/bio/PumpStatus.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
 import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
 import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
@@ -87,7 +86,7 @@ export let widgets: WidgetData[] = [
     },
     {
         title: "Core Feedback",
-        data: <CoreFeedback />
+        data: <Feedback />
     },
     {
         title: "Map",
@@ -96,27 +95,30 @@ export let widgets: WidgetData[] = [
         minW: 4
     },
     {
-        title: "Bio Arm",
+        title: "CITADEL Bio Arm",
         data: <BioArm />,
         minW: 3,
         width: 3
     },
     {
-        title: "Fan/Pump Status",
-        data: <PumpStatus />
+        title: "CITADEL Status",
+        data: <Feedback topicName="/bio/feedback"/>
     },
     {
-        title: "Fan Control",
+        title: "CITADEL Fan Control",
         data: <FanControl />,
-        width: 3
+        width: 3,
+        minW: 3,
+        height: 4,
+        minH: 4
     },
     {
-        title: "Chemical Dispersion",
+        title: "CITADEL Chemical Dispersion",
         data: <ChemicalDispersion />,
         width: 3,
         minW: 3,
-        height: 3,
-        minH: 3
+        height: 5,
+        minH: 5
     },
     {
         title: "FAERIE Motor Speed",
@@ -127,7 +129,7 @@ export let widgets: WidgetData[] = [
         data: <FaerieLaser />
     },
     {
-        title: "Humidity/Temp Sensor Data",
+        title: "FAERIE Sensor Data",
         data: <FaerieSensors />
     },
     {

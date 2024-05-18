@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react'
 
-export const PumpStatus = ({
-    topicName = '/astra/bio/feedback'
+export const CITADELFeedback = ({
+    topicName = '/bio/feedback'
     }) => {
-    const [data, setData] = useState({});
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         let intervalValue = setInterval(() => {
-            fetch('/bio/feedback')
+            fetch(topicName)
                 .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
+                .then((data) => setData(data['data']))
         }, 1000);
 
         return(() => {
@@ -19,7 +19,7 @@ export const PumpStatus = ({
 
     return (
         <>
-        
+            <div>{data ? data[data.length - 1] : "No data received."}</div>
         </>
     )
 }

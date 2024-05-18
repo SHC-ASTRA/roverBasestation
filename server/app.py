@@ -3,7 +3,7 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread, TOPIC_LIST
+from ros_handling import RosNode, ros2_thread, CORE_CONTROL, ARM_CONTROL, CORE_FEEDBACK, BIO_CONTROL, BIO_FEEDBACK
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -77,9 +77,31 @@ def get_publish_message():
 @app.route('/core/feedback')
 def get_core_feedback():
     try:
-        return {'data': ros_node.message_data[TOPIC_LIST['FEEDBACK_TOPIC']]}
+        return {'data': ros_node.message_data[CORE_FEEDBACK]}
     except KeyError:
         return {'data': 'No data was found.'}
+    
+@app.route('/bio/feedback')
+def get_bio_feedback():
+    try:
+        return {'data': ros_node.message_data[BIO_FEEDBACK]}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
+@app.route('/bio/control', methods = ['POST'])
+def bio_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to Biosensor")
+
+        if BIO_CONTROL not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(BIO_CONTROL)
+
+        ros_node.publish_string_data(BIO_CONTROL, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /bio/control")
 
 # Socket IO initialization
 if __name__ == '__main__':
@@ -102,23 +124,21 @@ def handle_disconnect():
     ros_node.handle_disconnect(request.sid)
 
 # Controller connection handler
-CORE_CONTROL_TOPIC = '/astra/core/control'
-@socketio.on(CORE_CONTROL_TOPIC)
+@socketio.on(CORE_CONTROL)
 def core_control_handling(ly, ry):
     # If the publisher does not already exist, create it
-    if CORE_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.create_string_publisher(CORE_CONTROL_TOPIC)
+    if CORE_CONTROL not in ros_node.publishers.keys():
+        ros_node.create_string_publisher(CORE_CONTROL)
     # Handle actually publishing the data when the publisher exists
     
-    ros_node.publish_string_data(CORE_CONTROL_TOPIC, f"ctrl,{ly:0.2f},{ry:0.2f}")
+    ros_node.publish_string_data(CORE_CONTROL, f"ctrl,{ly:0.2f},{ry:0.2f}")
 
-ARM_CONTROL_TOPIC = '/astra/arm/control'
-@socketio.on(ARM_CONTROL_TOPIC)
+@socketio.on(ARM_CONTROL)
 def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, 
                          b, a, y, x, l, r, zl, zr, select, start):
     #  If the publisher does not already exist, create it
-    if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, ARM_CONTROL_TOPIC, 0)
+    if ARM_CONTROL not in ros_node.publishers.keys():
+        ros_node.publishers[ARM_CONTROL] = ros_node.create_publisher(ControllerState, ARM_CONTROL, 0)
 
     # can't send floats over the socket for whatever reason, have to round them on the front end and divide by 100 
     
@@ -144,10 +164,8 @@ def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr,
     msg.rt = zr / 100
 
     # Handle data publishing
-    ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
-    print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \
-          {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} \
-          {msg.d_left} {msg.d_right}")
+    ros_node.publishers[ARM_CONTROL].publish(msg)
+    print(f"Publishing data to {ARM_CONTROL}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} {msg.d_left} {msg.d_right}")
 
 # Handle image subscription request
 @socketio.on('image_subscription')

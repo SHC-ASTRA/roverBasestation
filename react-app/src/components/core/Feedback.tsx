@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
 
-export const CoreFeedback = ({
-    topicName = '/astra/core/feedback'
+export const Feedback = ({
+    topicName = '/core/feedback'
     }) => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         let intervalValue = setInterval(() => {
-            fetch('/core/feedback')
+            fetch(topicName)
                 .then((response) => response.json())
                 .then((data) => {setData(data['data'])})
         }, 1000);

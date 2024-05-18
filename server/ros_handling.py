@@ -11,11 +11,14 @@ import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
 
-TOPIC_LIST = {
-    'FEEDBACK_TOPIC': "/astra/core/feedback",
-    'CONTROL_TOPIC': "/astra/core/control",
-    'CHATTER_TOPIC': "/topic"
-}
+CHATTER_TOPIC = "/topic"
+CORE_FEEDBACK = "/astra/core/feedback"
+CORE_CONTROL = "/astra/core/control"
+ARM_FEEDBACK = "/astra/arm/feedback"
+ARM_CONTROL = '/astra/arm/control'
+BIO_CONTROL = '/astra/bio/control'
+BIO_FEEDBACK = '/astra/bio/feedback'
+
 
 class RosNode(Node):
     # Dictionary of Publishers
@@ -45,10 +48,12 @@ class RosNode(Node):
 
         # Basic Subscribers for testing
         self.create_string_publisher("flask_pub_topic")
-        self.create_subscriber(TOPIC_LIST['CHATTER_TOPIC'], self.chatter_callback)
+        self.create_subscriber(CHATTER_TOPIC, self.chatter_callback)
 
         # LiveData subscriber
-        self.create_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
+        self.create_subscriber(CORE_FEEDBACK, self.core_feedback_callback)
+
+        self.create_subscriber(BIO_FEEDBACK, self.bio_feedback_callback)
 
         self.message_data = {}
 
@@ -59,15 +64,19 @@ class RosNode(Node):
 
     def chatter_callback(self, msg):
         print(f'chatter cb received: {msg.data}')
-        self.message_data[TOPIC_LIST['CHATTER_TOPIC']] = msg.data
+        self.message_data[CHATTER_TOPIC] = msg.data
 
     def core_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['FEEDBACK_TOPIC'], msg)
+        self.append_key_list(CORE_FEEDBACK, msg)
 
     def core_control_callback(self, msg):
         print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['CONTROL_TOPIC'], msg)
+        self.append_key_list(CORE_CONTROL, msg)
+
+    def bio_feedback_callback(self, msg):
+        print(f"Received data from control topic: {msg.data}")
+        self.append_key_list(BIO_FEEDBACK, msg)   
 
     ## Helper Functions
 

@@ -1,42 +1,92 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, MouseEvent} from 'react'
 
 export const BioArm = ({
-    topicName = '/astra/bio/control'
+    topicName = '/bio/control'
     }) => {
-    const [data, setData] = useState({});
 
-    useEffect(() => {
-        let intervalValue = setInterval(() => {
-            fetch('/bio/control')
-                .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
-        }, 1000);
-
-        return(() => {
-            clearInterval(intervalValue);
-        })
-    }, [data]);
-
-    const setHome = () => setData({});
-
-    const setPositions = () => setData({});
+    // extend half
+    // retract
+    // reset
+    // inc 2 deg
+    // dec 2 deg
+    const sendCommand = () => {}
 
     return (
         <div className="button-wrapper">
-            <button className="control-button" onClick={setHome}>
-                Homing
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Stow
-            </button>
-            <button className="control-button" onClick={setPositions}>
-                Zero
-            </button>
-            <button className="control-button" onClick={setPositions}>
+            <button className="control-button" onClick={() => {
+                console.log("Extending the arm.");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'Extend',
+                    })
+                })
+            }}>
                 Extend
             </button>
-            <button className="control-button" onClick={setPositions}>
-                Max
+            <button className="control-button" onClick={() => {
+                console.log("Retracting the arm.");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'Retract',
+                    })
+                })
+            }}>
+                Retract
+            </button>
+            <button className="control-button" onClick={() => {
+                console.log("Shifting the arm up.");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'ShiftUp',
+                    })
+                })
+            }}>
+                Shift Up
+            </button>
+            <button className="control-button" onClick={() => {
+                console.log("Shifting the arm down.");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'ShiftDown',
+                    })
+                })
+            }}>
+                Shift Down
+            </button>
+            <button className="control-button" onClick={() => {
+                console.log("Resetting the Bio Arm.");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: 'Reset',
+                    })
+                })
+            }}>
+                Reset
             </button>
         </div>
     )
