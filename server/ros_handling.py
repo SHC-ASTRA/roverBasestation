@@ -10,6 +10,8 @@ import sensor_msgs.msg
 import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
+# ROS2CLI API
+import ros2topic.api # get_topic_names_and_types(node=NODE_INSTANCE)
 
 TOPIC_LIST = {
     'FEEDBACK_TOPIC': "/astra/core/feedback",
@@ -43,31 +45,28 @@ class RosNode(Node):
     def __init__(self):
         super().__init__('astra_base')
 
-        # Basic Subscribers for testing
-        self.create_string_publisher("flask_pub_topic")
-        self.create_subscriber(TOPIC_LIST['CHATTER_TOPIC'], self.chatter_callback)
-
         # LiveData subscriber
-        self.create_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
+        self.create_string_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
 
+        # Used to store feedback topic message data
         self.message_data = {}
 
         # OpenCV Bridge
         self.opencv_bridge = CvBridge()
 
-    # Subscriber Callbacks
+    ## Subscriber Callbacks
 
-    def chatter_callback(self, msg):
-        print(f'chatter cb received: {msg.data}')
-        self.message_data[TOPIC_LIST['CHATTER_TOPIC']] = msg.data
+    # Primary ROS topic feedback topics
+    # String-based topics
+    # They use of a dictionary of topic names as keys, storing the message data in arrays 
 
     def core_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['FEEDBACK_TOPIC'], msg)
+        self.append_topic_data(TOPIC_LIST['FEEDBACK_TOPIC'], msg)
 
     def core_control_callback(self, msg):
         print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['CONTROL_TOPIC'], msg)
+        self.append_topic_data(TOPIC_LIST['CONTROL_TOPIC'], msg)
 
     ## Helper Functions
 
@@ -88,7 +87,7 @@ class RosNode(Node):
         print(f"Publishing data to \"{topic_name}\": {str_data}")
 
     # Create a subscriber with a given callback
-    def create_subscriber(self, topic_name: str, callback):
+    def create_string_subscriber(self, topic_name: str, callback):
         self.create_subscription(
             std_msgs.msg.String,
             topic_name,
@@ -96,13 +95,20 @@ class RosNode(Node):
             0
         )
 
-    def append_key_list(self, topic, msg):
-        # Check if key is in dictionary
-        try:
-            self.message_data[topic]
-        except KeyError:
+    ## Make use of the ROS2 CLI API to perform some actions
+    # The command interface is implemented almost solely (97% in Python on the repository), making 
+    # it possible to use the exposed commands to not reimplement functionality provided
+    # GITHUB: https://github.com/ros2/ros2cli/tree/humble
+
+    def get_topics(self):
+        return ros2topic.api.get_topic_names_and_types(node=self)
+
+    # Append ROS message data received on a topic to a message data storage dictionary
+    def append_topic_data(self, topic, msg):
+        # Check if the topic exists in the message data storage dictionary
+        if topic not in self.message_data.keys():
             self.message_data[topic] = []
-        # Append to the key's list
+        # Append the message data to the topic of the message_data storage dictionary
         self.message_data[topic].append(msg.data)
 
     # Health Packet Service
@@ -120,14 +126,19 @@ class RosNode(Node):
         )
 
     # Subscribe to a COMPRESSED IMAGE topic
-    def create_image_subscriber(self, subscriber_callback, image_topic, socketid):
+    # Called when a camera (widget) is initalized as well as when
+    # a camera widget changes the focused camera
+    def create_image_subscriber(self, subscriber_callback, image_topic, socket_id):
         if image_topic in self.image_subscribers.keys():
             # If the socket exists, update this list of socket ids that are connected
-            self.image_subscribers[image_topic]["socket_ids"].append(socketid)
+            self.image_subscribers[image_topic]["socket_ids"].append(socket_id)
         else:
+            # Create an image subscriber for the image topic if the subscriber does not already exist
             self.image_subscribers[image_topic] = {
+                # Callback should be passed by the caller
                 'callback': subscriber_callback,
-                'socket_ids': [socketid],
+                'socket_ids': [socket_id],
+                # The subscriber is created if it doesn't already exist
                 'subscriber': self.create_subscription(
                     sensor_msgs.msg.CompressedImage,
                     image_topic,
@@ -135,24 +146,38 @@ class RosNode(Node):
                     10
                 )
             }
-        # Introduce some logic that handles recreating the subscriber with BOTH callbacks
-        # if a subscriber already exists
 
-    def handle_disconnect(self, socketid):
+    # Handle when a widget topic is modified on the front end
+    # Called each time to ensure that subscribers are not left hanging until the socket disconnects
+    def handle_connection_change(self, socket_id, old_topic, new_topic):
+        # Handle when the widget changes the focused camera
+        print(f"Handling socket {socket_id} swapping from \"{old_topic}\" to \"{new_topic}\"")
+        # If this socket is the only one subscribed to this video topic
+        if len(self.image_subscribers[old_topic]["socket_ids"]) == 1:
+            # Kill the subscriber
+            self.kill_image_subscriber(old_topic)
+        # If there are multiple sockets subscribed to this video topic
+        else:
+            # Remove this socket specifically from the list
+            self.image_subscribers[old_topic]["socket_ids"].remove(socket_id)
+
+    # Handle complete socket disconnections
+    def handle_disconnect(self, socket_id):
         # Handle disconnections by removing the connection from subscriptions
         # with more than one user, and delete subscriptions
         # where the connection was the only user
-        for key in list(self.image_subscribers.keys()):
+        print(f"Handling disconnect for socket: {socket_id}")
+        for topic_name in list(self.image_subscribers.keys()):
             # If this socket uses this subscriber
-            if socketid in self.image_subscribers[key]["socket_ids"]:
+            if socket_id in self.image_subscribers[topic_name]["socket_ids"]:
                 # Kill the subscription if this is the last socket
                 # that is making use of this subscriber
-                if len(self.image_subscribers[key]["socket_ids"]) == 1:
-                    self.kill_image_subscriber(key)
+                if len(self.image_subscribers[topic_name]["socket_ids"]) == 1:
+                    self.kill_image_subscriber(topic_name)
                 # If there are multiple sockets using this subscriber,
                 # remove the socket's id from the list
                 else:
-                    self.image_subscribers[key]["socket_ids"].remove(socketid)
+                    self.image_subscribers[topic_name]["socket_ids"].remove(socket_id)
 
     # If all of the request makers are gone, handle deleting
     def kill_image_subscriber(self, image_topic):
