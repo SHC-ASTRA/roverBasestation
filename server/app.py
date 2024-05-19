@@ -160,7 +160,7 @@ def handle_image_subscription(socket_id, topic_name):
     def socket_callback(msg):
         # Do some handling for the image to be sent over to
         # the front-end and displayed in an image in base64
-        print(f"Message recieved for image topic \"{topic_name}\"")
+        # print(f"Message recieved for image topic \"{topic_name}\"")
 
         # Convert the message to binary encoding
 
