@@ -81,6 +81,39 @@ def get_core_feedback():
     except KeyError:
         return {'data': 'No data was found.'}
 
+@app.route('/api/topics')
+def get_topics():
+    # dict (JSON) response data 
+    ret_data = {}
+    # Convert the 1d array of tuples to a dict (JSON)
+    # Make use of the ros2cli / ros2topic API
+    for topic_data in ros_node.get_topics():
+        # Set variables for readability
+        topic_name = topic_data[0]
+        topic_type = topic_data[1][0]
+        # The topic name becomes the key with a value of the topic's type
+        ret_data[topic_name] = topic_type
+    return ret_data
+
+@app.route('/api/camera_topics')
+def get_camera_topics():
+    # dict (JSON) response data
+    ret_data = {}
+    # Convert the 1d array of tuples to a dict
+    # Make use of the ros2cli / ros2topic API
+    # DIFFERS from get_topics and the /api/topics endpoint by removing
+    # non CompressedImage topics
+    for topic_data in ros_node.get_topics():
+        # Set variables for readability
+        topic_name = topic_data[0]
+        topic_type = topic_data[1][0]
+        # Check the topic's type
+        if topic_type != 'sensor_msgs/msg/CompressedImage':
+            # If it does not exist, skip this data
+            continue
+        ret_data[topic_name] = topic_type
+    return ret_data
+
 # Socket IO initialization
 if __name__ == '__main__':
     socketio.run(app)
