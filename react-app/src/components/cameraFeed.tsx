@@ -6,16 +6,81 @@ export default function CameraData({
     defaultRotation,
     ...props
 }) {
-
-    const [topic, setTopic] = useState(defaultTopic || "");
+    // Camera Feed Topic Name
+    const [topicName, setTopic] = useState(defaultTopic || "");
+    // Camera Image Data
+    const [hasRequested, setRequested] = useState(false);
     const [imageData, setData] = useState({data:undefined});
+    // Camera Feed Settings
     const [scale, setScale] = useState(defaultScale || 90);
-    const [rotation, setRotation] = useState(defaultRotation || 0)
+    const [rotation, setRotation] = useState(defaultRotation || 0);
+    // Available Camera Feed Topics
+    const [availableTopics, setAvailableTopics] = useState([<></>]);
 
     useEffect(() => {
-        socket.on(topicName, (image) => {
+        // Initalize the socket's image subscriber, if it has not already
+        if(!hasRequested)
+        {
+            socket.emit('image_subscription', topicName);
+            setRequested(true);
+        }
+
+        console.log("Attempting to fetch /api/camera_topics")
+        fetch('/api/camera_topics')
+            .then((response) => response.json())
+            .then((topicObject) => {
+                let temp_arr: JSX.Element[] = []
+                // Clear available topics
+                // This is intended Javascript usage of the "in" keyword
+                // as the keys are enumerated in this use case
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
+                for(let topicKey in topicObject) {
+                    // topicKey is currently the topic name, but is named differently to prevent
+                    // confusion in regards to the scope of the state variable
+
+                    // Update a temporary array, you cannot set a state variable rapidly
+                    // within a for-loop because state setting being asynchronous
+                    temp_arr.push(
+                        <a className='dropdown-item' href='#' onClick={
+                            () => {
+                                // Update the back-end subscribers
+                                socket.emit('connection_change', {topicName}, {topicKey});
+                                // Reset the variable to make the camera re-request a camera subscriber
+                                setRequested(false);
+                                // Set the new topic inside the pertaining state variable
+                                setTopic({topicKey});
+                            }
+                        }>{topicKey}</a>
+                    );
+                    console.log(temp_arr);
+                }
+                // Assign the array of elements to the available topics
+                setAvailableTopics(temp_arr);
+            });
+
+        // Request data for dropdown
+        let intervalValue = setInterval(() => {
+            
+        }, 1000);
+
+        // Create event listener that can be deleted later
+        let socketEventListener = socket.on(topicName, (image) => {
             setData(image);
-        })
+        });
+
+        // Deconstructor
+        // Expected to be called when the state variables change
+            return () => {
+            // Remove the socket listener so there are not multiple listeners
+            // trying to modify the image at the same time
+            
+            // This will be called and update the listener each time
+            // the image data is updated by the listener 
+            socket.off(topicName, socketEventListener);
+
+            // Clear timeout
+            clearInterval(intervalValue);
+        }
     }, [imageData])
 
     return (
@@ -25,9 +90,11 @@ export default function CameraData({
                     Dropdown button
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {availableTopics}
+                    {/* <a class="dropdown-item" href='#'>{availableTopics}</a>
                     <a class="dropdown-item" href="#">Action</a>
                     <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="#">Something else here</a> */}
                 </div>
             </div>
             <img width={`${scale}%`} height={`${scale}%`} style={{transform: `rotate(${rotation}deg)`}} src={`data:image/png;base64,${imageData.data}`}></img>
