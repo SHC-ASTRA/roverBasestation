@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import useGamepads from '../../hooks/useGamepads.tsx';
+import Toggle from 'react-toggle'
 
 export const ArmControl = ({
-    topicName = '/astra/arm/control',
+    topicName = '/arm/control',
     armControlEvent = '/astra/arm/control'
     }) => {
     const [gamepads, setGamepads] = useState({});
     const [gamepadIndex, setIndex] = useState(0);
     // The state is regularly updated by the useGamepads hook
-    useGamepads(gamepads => setGamepads(gamepads), 10);
+    useGamepads(gamepads => setGamepads(gamepads), 750);
 
     useEffect(() => {
         for (let i in gamepads) {
@@ -42,29 +43,102 @@ export const ArmControl = ({
         );
     }, [gamepads]);
 
-    const setHome = () => setData({});
-
-    const setPositions = () => setData({});
-
     return (
         <>
             <p>Controlling over controller {gamepadIndex}</p>
             <div className="button-wrapper">
-                <button className="control-button" onClick={setHome}>
+                <button className="control-button" onClick={() => {
+                    console.log("Homing the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'Homing',
+                        })
+                    })
+                }}>
                     Homing
                 </button>
-                <button className="control-button" onClick={setPositions}>
+                <button className="control-button" onClick={() => {
+                    console.log("Stowing the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'Stow',
+                        })
+                    })
+                }}>
                     Stow
                 </button>
-                <button className="control-button" onClick={setPositions}>
+                <button className="control-button" onClick={() => {
+                    console.log("Zeroing the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'Zero',
+                        })
+                    })
+                }}>
                     Zero
                 </button>
-                <button className="control-button" onClick={setPositions}>
+                <button className="control-button" onClick={() => {
+                    console.log("Extending the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'Extend',
+                        })
+                    })
+                }}>
                     Extend
                 </button>
-                <button className="control-button" onClick={setPositions}>
+                <button className="control-button" onClick={() => {
+                    console.log("Maxing out the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'Max',
+                        })
+                    })
+                }}>
                     Max
                 </button>
+            </div>
+            <div style={{paddingTop: '2em'}}>
+                <h6>Laser Toggle</h6>
+                <Toggle defaultChecked={false} onChange={(e) => {
+                    const toggle: string = e.target.checked ? "on" : "off";
+                    console.log("Setting the laser to be " + toggle);
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'laser,' + toggle,
+                        })
+                    })
+                }}/>
             </div>
         </>
     )

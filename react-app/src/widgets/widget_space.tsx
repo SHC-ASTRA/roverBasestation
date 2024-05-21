@@ -12,7 +12,6 @@ import { Widget } from "./widgets.tsx"
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import LiveData from "../components/liveData.tsx"
-import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
 import { CoreControl } from "../components/core/CoreControl.tsx";
 import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
@@ -21,7 +20,6 @@ import { FaerieControl } from "../components/bio/FaerieControl.tsx";
 import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
 import { ArmPos } from "../components/arm/ArmPos.tsx";
 import { ArmControl } from "../components/arm/ArmControl.tsx";
-import { ArmLaser } from "../components/arm/ArmLaser.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
 import CameraData from "../components/cameraFeed.tsx";
@@ -70,12 +68,8 @@ export let widgets: WidgetData[] = [
         data: <CurrentTime/>,
     },
     {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
-    },
-    {
         title: "Autonomy Feedback",
-        data: <AutoFeedback/>,
+        data: <Feedback topicName="/auto/feedback"/>,
     },
     {
         title: "Core Control",
@@ -140,17 +134,33 @@ export let widgets: WidgetData[] = [
         data: <ArmControl />,
         minW: 3,
         width: 3,
-        minH: 3,
-        height: 3
+        minH: 5,
+        height: 5
     },
     {
-        title: "Arm Laser",
-        data: <ArmLaser />
+        title: "Arm Feedback",
+        data: <Feedback topicName="/arm/feedback"/>
     },
     {
-        title: "Camera",
+        title: "Camera 1",
         data: <CameraData topicName={'/camera0/image_raw/compressed'}/>
-    }
+    },
+    {
+        title: "Camera 2",
+        data: <CameraData topicName={'/camera1/image_raw/compressed'}/>
+    },
+    {
+        title: "Camera 3",
+        data: <CameraData topicName={'/camera2/image_raw/compressed'}/>
+    },
+    {
+        title: "Camera 4",
+        data: <CameraData topicName={'/camera3/image_raw/compressed'}/>
+    },
+    {
+        title: "Camera 5",
+        data: <CameraData topicName={'/camera4/image_raw/compressed'}/>
+    },
 ];
 
 widgets.sort((a, b) => a.title > b.title ? 1 : -1);

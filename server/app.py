@@ -3,7 +3,8 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread, CORE_CONTROL, ARM_CONTROL, CORE_FEEDBACK, BIO_CONTROL, BIO_FEEDBACK, FAERIE_FEEDBACK, FAERIE_CONTROL
+from ros_handling import RosNode, ros2_thread
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, CORE_PING, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -18,6 +19,7 @@ import cv2
 # NumPy
 import numpy as np
 import sys
+import time
 
 # Insert the installation direction into the local path
 # so that message files can be imported
@@ -74,6 +76,7 @@ def get_publish_message():
     ros_node.publish_message()
     return {}
 
+# Feedback
 @app.route('/core/feedback')
 def get_core_feedback():
     try:
@@ -88,6 +91,13 @@ def get_bio_feedback():
     except KeyError:
         return {'data': 'No data was found.'}
     
+@app.route('/arm/feedback')
+def get_arm_feedback():
+    try:
+        return {'data': ros_node.message_data[ARM_FEEDBACK]}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
 
 @app.route('/arm/bio/feedback')
 def get_faerie_feedback():
@@ -95,7 +105,8 @@ def get_faerie_feedback():
         return {'humidity': ros_node.message_data[FAERIE_FEEDBACK][-1].humidity, 'temperature': ros_node.message_data[FAERIE_FEEDBACK][-1].temperature}
     except KeyError:
         return {'data': 'No data was found.'}
-    
+
+# Control  
 @app.route('/bio/control', methods = ['POST'])
 def bio_control():
     if request.method == 'POST':
@@ -124,7 +135,36 @@ def faerie_control():
 
         return {'data': command}
     else:
-        print("Invalid method on /bio/control")
+        print("Invalid method on /arm/bio/control")
+
+@app.route('/arm/control', methods = ['POST'])
+def arm_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to the Arm")
+
+        if ARM_COMMAND not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(ARM_COMMAND)
+
+        ros_node.publish_string_data(ARM_COMMAND, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /arm/control")
+
+# Miscellaneous Endpoints
+@app.route('/core/ping')
+def ping():
+    if not ros_node.services_started:
+        return {'data': ""}
+    start = time.time()
+    response = ros_node.send_ping()
+    if response:
+        end = time.time()
+        return {'data': end - start}
+    else:
+        return {'data': ""}
+
 
 # Socket IO initialization
 if __name__ == '__main__':

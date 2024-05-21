@@ -11,6 +11,9 @@ import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
 
+from rclpy._rclpy_pybind11 import RCLError
+import threading
+
 import sys
 
 # Insert the installation direction into the local path
@@ -24,12 +27,16 @@ from interfaces_pkg.msg import FaerieTelemetry
 CHATTER_TOPIC = "/topic"
 CORE_FEEDBACK = "/astra/core/feedback"
 CORE_CONTROL = "/astra/core/control"
+CORE_PING = "/astra/core/ping"
+
 ARM_FEEDBACK = "/astra/arm/feedback"
 ARM_CONTROL = '/astra/arm/control'
+ARM_COMMAND = '/astra/arm/command'
+
 BIO_FEEDBACK = '/astra/bio/feedback'
 BIO_CONTROL = '/astra/bio/control'
-FAERIE_CONTROL = '/astra/arm/bio/control'
 FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
+FAERIE_CONTROL = '/astra/arm/bio/control'
 
 
 class RosNode(Node):
@@ -62,12 +69,18 @@ class RosNode(Node):
         self.create_string_publisher("flask_pub_topic")
         self.create_subscriber(CHATTER_TOPIC, self.chatter_callback)
 
-        # LiveData subscriber
+        # Feedback subscriber
         self.create_subscriber(CORE_FEEDBACK, self.core_feedback_callback)
 
         self.create_subscriber(BIO_FEEDBACK, self.bio_feedback_callback)
 
+        self.create_subscriber(ARM_FEEDBACK, self.arm_feedback_callback)
+
         self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
+
+        self.ping_client = self.create_client(std_srvs.srv.Empty, "/astra/core/ping")
+        self.services_started = False
+        threading.Thread(target=self.connect_to_service).start()
 
         self.message_data = {}
 
@@ -84,13 +97,13 @@ class RosNode(Node):
         print(f"Received data from feedback topic: {msg.data}")
         self.append_key_list(CORE_FEEDBACK, msg)
 
-    def core_control_callback(self, msg):
-        print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(CORE_CONTROL, msg)
-
     def bio_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
         self.append_key_list(BIO_FEEDBACK, msg)
+
+    def arm_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(ARM_FEEDBACK, msg)
 
     def faerie_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.humidity}, {msg.temperature}")
@@ -102,7 +115,27 @@ class RosNode(Node):
         # Append to the key's list
         self.message_data[FAERIE_FEEDBACK].append(msg)
 
+    # Client Functions
+    def send_ping(self):
+        self.future = self.ping_client.call_async(std_srvs.srv.Empty.Request())
+        rclpy.spin_until_future_complete(self, self.future, timeout_sec=5.0)
+        return self.future.result()
+        
+
     ## Helper Functions
+    # Connect to all services
+    def connect_to_service(self):
+        print("Waiting for services to connect...")
+        try:
+            while not self.ping_client.wait_for_service(timeout_sec=10.0):
+                continue
+            else:
+                print("Ping service has connected.")
+            print("All services have connected.")
+            self.services_started = True
+        except RCLError:
+            print("Thread has been told to exit")
+
 
     # Create a ROS publisher of String type
     def create_string_publisher(self, topic_name):
@@ -137,6 +170,8 @@ class RosNode(Node):
             self.message_data[topic] = []
         # Append to the key's list
         self.message_data[topic].append(msg.data)
+
+    
 
     # Health Packet Service
 
@@ -196,7 +231,7 @@ class RosNode(Node):
         del self.image_subscribers[image_topic]
 
 # Thread worker that spins the node
-def ros2_thread(node):
+def ros2_thread(node): 
     print('Entering Ros2 thread')
     rclpy.spin(node)
     print('Leaving Ros2 thread')

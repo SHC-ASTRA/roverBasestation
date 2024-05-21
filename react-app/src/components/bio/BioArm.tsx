@@ -9,7 +9,6 @@ export const BioArm = ({
     // reset
     // inc 2 deg
     // dec 2 deg
-    const sendCommand = () => {}
 
     return (
         <div className="button-wrapper">
@@ -22,7 +21,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'Extend',
+                        command: 'servoExtend',
                     })
                 })
             }}>
@@ -37,7 +36,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'Retract',
+                        command: 'servoFullRetract',
                     })
                 })
             }}>
@@ -52,7 +51,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'ShiftUp',
+                        command: 'servoRetract',
                     })
                 })
             }}>
@@ -67,7 +66,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'ShiftDown',
+                        command: 'servoExtend',
                     })
                 })
             }}>
@@ -82,7 +81,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'Reset',
+                        command: 'servoReset',
                     })
                 })
             }}>
