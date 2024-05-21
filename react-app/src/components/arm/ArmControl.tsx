@@ -9,7 +9,7 @@ export const ArmControl = ({
     const [gamepads, setGamepads] = useState({});
     const [gamepadIndex, setIndex] = useState(0);
     // The state is regularly updated by the useGamepads hook
-    useGamepads(gamepads => setGamepads(gamepads), 750);
+    useGamepads(gamepads => setGamepads(gamepads), 100);
 
     useEffect(() => {
         for (let i in gamepads) {

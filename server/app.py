@@ -4,7 +4,7 @@ import signal
 import threading
 # Custom ROS class
 from ros_handling import RosNode, ros2_thread
-from ros_handling import CORE_CONTROL, CORE_FEEDBACK, CORE_PING, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, AUTO_CONTROL, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -151,6 +151,28 @@ def arm_control():
         return {'data': command}
     else:
         print("Invalid method on /arm/control")
+
+@app.route('/auto/control', methods = ['POST'])
+def auto_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to the autonomy node")
+
+        if not ros_node.actions_started:
+            return {'data': ""}
+
+        if command == "Stop":
+            ros_node.send_autonomy_goal(0, 0, 0, 1)
+        elif command == "GoTo":
+            ros_node.send_autonomy_goal(1, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+        elif command == "ARUCO":
+            ros_node.send_autonomy_goal(2, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+        elif command == "Object":
+            ros_node.send_autonomy_goal(3, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+
+        return {'data': command}
+    else:
+        print("Invalid method on /auto/control")
 
 # Miscellaneous Endpoints
 @app.route('/core/ping')

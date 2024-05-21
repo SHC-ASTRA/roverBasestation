@@ -12,6 +12,8 @@ import std_srvs.srv
 from cv_bridge import CvBridge
 
 from rclpy._rclpy_pybind11 import RCLError
+from rclpy.action import ActionClient
+
 import threading
 
 import sys
@@ -20,8 +22,10 @@ import sys
 # so that message files can be imported
 # Equivalent to sourcing the directory prior
 sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
-
 from interfaces_pkg.msg import FaerieTelemetry
+
+sys.path.insert(1, 'ros_msgs/install/astra_auto_interfaces/')
+from astra_auto_interfaces.action import NavigateRover
 
 
 CHATTER_TOPIC = "/topic"
@@ -37,6 +41,8 @@ BIO_FEEDBACK = '/astra/bio/feedback'
 BIO_CONTROL = '/astra/bio/control'
 FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
 FAERIE_CONTROL = '/astra/arm/bio/control'
+
+AUTO_CONTROL = '/astra/auto/control'
 
 
 class RosNode(Node):
@@ -78,8 +84,14 @@ class RosNode(Node):
 
         self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
 
-        self.ping_client = self.create_client(std_srvs.srv.Empty, "/astra/core/ping")
+        # Services
+        self.ping_client = self.create_client(std_srvs.srv.Empty, CORE_PING)
         self.services_started = False
+
+        # Actions
+        self.autonomy_action_client = ActionClient(self, NavigateRover, AUTO_CONTROL)
+        self.actions_started = False
+
         threading.Thread(target=self.connect_to_service).start()
 
         self.message_data = {}
@@ -120,7 +132,18 @@ class RosNode(Node):
         self.future = self.ping_client.call_async(std_srvs.srv.Empty.Request())
         rclpy.spin_until_future_complete(self, self.future, timeout_sec=5.0)
         return self.future.result()
+    
+    def send_autonomy_goal(self, navigation_type, lat, long, period):
+        goal_msg = NavigateRover.Goal()
+        goal_msg.navigate_type = navigation_type
+        goal_msg.gps_lat_target = lat
+        goal_msg.gps_long_target = long
+        goal_msg.period = period
+
+        if not self.actions_started:
+            return
         
+        return self.autonomy_action_client.send_goal_async(goal_msg)
 
     ## Helper Functions
     # Connect to all services
@@ -129,12 +152,15 @@ class RosNode(Node):
         try:
             while not self.ping_client.wait_for_service(timeout_sec=10.0):
                 continue
-            else:
-                print("Ping service has connected.")
             print("All services have connected.")
             self.services_started = True
+
+            while not self.autonomy_action_client.wait_for_server(timeout_sec=10.0):
+                continue
+            print("All action servers have connected.")
+            self.actions_started = True
         except RCLError:
-            print("Thread has been told to exit")
+            print("Service thread did not completely connect.")
 
 
     # Create a ROS publisher of String type

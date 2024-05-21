@@ -11,7 +11,6 @@ import { Widget } from "./widgets.tsx"
 // component imports
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
-import LiveData from "../components/liveData.tsx"
 import { CoreControl } from "../components/core/CoreControl.tsx";
 import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
@@ -23,6 +22,7 @@ import { ArmControl } from "../components/arm/ArmControl.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
 import CameraData from "../components/cameraFeed.tsx";
+import { AutonomyControl } from "../components/auto/AutonomyControl.tsx";
 
 const ReactGridLayout = WidthProvider(Responsive);
 
@@ -161,6 +161,14 @@ export let widgets: WidgetData[] = [
         title: "Camera 5",
         data: <CameraData topicName={'/camera4/image_raw/compressed'}/>
     },
+    {
+        title: "Autonomy Control",
+        data: <AutonomyControl />,
+        minW: 6,
+        width: 6,
+        minH: 4,
+        height: 4,
+    }
 ];
 
 widgets.sort((a, b) => a.title > b.title ? 1 : -1);

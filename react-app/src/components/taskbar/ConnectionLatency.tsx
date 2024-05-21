@@ -25,7 +25,7 @@ export const ConnectionStatus = ({
     return (
         <div style={{display:'flex', flexDirection:'row'}}>
             <div className="dot" id={connectionStatus === 0 ? "gray" : connectionStatus < 250 ? "green" : connectionStatus < 350 ? "yellow" : "red"}> </div>
-            <div>{connectionStatus ? "Connected: " + connectionStatus + " ms": "Failed to connect"}</div>
+            <div className="connection-status">{connectionStatus ? "Connected: " + connectionStatus + " ms": "Failed to connect."}</div>
         </div>
     )
 }
