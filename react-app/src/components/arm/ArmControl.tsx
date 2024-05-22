@@ -123,23 +123,6 @@ export const ArmControl = ({
                     Max
                 </button>
             </div>
-            <div style={{paddingTop: '2em'}}>
-                <h6>Laser Toggle</h6>
-                <Toggle defaultChecked={false} onChange={(e) => {
-                    const toggle: string = e.target.checked ? "on" : "off";
-                    console.log("Setting the laser to be " + toggle);
-                    fetch(topicName, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            command: 'laser,' + toggle,
-                        })
-                    })
-                }}/>
-            </div>
         </>
     )
 }

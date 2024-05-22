@@ -43,6 +43,7 @@ FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
 FAERIE_CONTROL = '/astra/arm/bio/control'
 
 AUTO_CONTROL = '/astra/auto/control'
+AUTO_FEEDBACK = '/astra/auto/feedback'
 
 
 class RosNode(Node):
@@ -82,6 +83,8 @@ class RosNode(Node):
 
         self.create_subscriber(ARM_FEEDBACK, self.arm_feedback_callback)
 
+        self.create_subscriber(AUTO_FEEDBACK, self.auto_feedback_callback)
+
         self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
 
         # Services
@@ -92,7 +95,8 @@ class RosNode(Node):
         self.autonomy_action_client = ActionClient(self, NavigateRover, AUTO_CONTROL)
         self.actions_started = False
 
-        threading.Thread(target=self.connect_to_service).start()
+        threading.Thread(target=self.connect_to_ping_service).start()
+        threading.Thread(target=self.connect_to_autonomy_action).start()
 
         self.message_data = {}
 
@@ -116,6 +120,10 @@ class RosNode(Node):
     def arm_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
         self.append_key_list(ARM_FEEDBACK, msg)
+
+    def auto_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(AUTO_FEEDBACK, msg)
 
     def faerie_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.humidity}, {msg.temperature}")
@@ -143,24 +151,47 @@ class RosNode(Node):
         if not self.actions_started:
             return
         
-        return self.autonomy_action_client.send_goal_async(goal_msg)
+        self.send_goal_future = self.autonomy_action_client.send_goal_async(goal_msg)
+
+        self.send_goal_future.add_done_callback(self.autonomy_response_callback)
+
+    def autonomy_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            print('The autonomy goal was rejected.')
+            return
+        
+        print('The autonomy goal has been accepted by the server.')
+
+        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future.add_done_callback(self.autonomy_result_callback)
+
+    def autonomy_result_callback(self, future):
+        result = future.result().result
+        print(f"Autonomy result: {result.final_result}")
+        self.message_data[AUTO_FEEDBACK].append(f"Final autonomy result: {result.final_result}")
 
     ## Helper Functions
     # Connect to all services
-    def connect_to_service(self):
-        print("Waiting for services to connect...")
+    def connect_to_ping_service(self):
+        print("Waiting for ping service to connect...")
         try:
             while not self.ping_client.wait_for_service(timeout_sec=10.0):
                 continue
-            print("All services have connected.")
+            print("The ping service has connected.")
             self.services_started = True
+        except RCLError:
+            print("Service thread did not completely connect.")
 
+    def connect_to_autonomy_action(self):
+        print("Waiting for autonomy action to connect...")
+        try:
             while not self.autonomy_action_client.wait_for_server(timeout_sec=10.0):
                 continue
             print("All action servers have connected.")
             self.actions_started = True
         except RCLError:
-            print("Service thread did not completely connect.")
+            print("Action thread did not completely connect.")
 
 
     # Create a ROS publisher of String type

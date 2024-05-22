@@ -17,24 +17,24 @@ export const AutonomyControl = ({
         <>
             <div>Current Mode: {mode}</div>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly"}}>
-                <input type="text" onChange={(e) => {
+                <input type="text" placeholder="GPS Latitude" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 180 || value < -180) return;
                     setLat(value);
                 }}></input>
-                <input type="text" onChange={(e) => {
+                <input type="text" placeholder="GPS Longitude" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 180 || value < -180) return;
                     setLong(value);
                 }}></input>
-                <input type="text" onChange={(e) => {
+                <input type="text" placeholder="Period" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 180 || value < -180) return;
                     setPeriod(value);
                 }}></input>
             </div>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly"}}>
-                <button className="control-button" onClick={() => {
+                <button className="control-button" id="control-button" onClick={() => {
                     console.log("Stopping the autonomy.");
                     setMode("Stop")
                     fetch(topicName, {
@@ -48,7 +48,7 @@ export const AutonomyControl = ({
                         })
                     })
                 }}>Stop</button>
-                <button className="control-button" onClick={() => {
+                <button className="control-button" id="control-button" onClick={() => {
                     if (gpsLat === 0 || gpsLong === 0 || period === 0) return;
                     console.log("Going to the specified location.");
                     setMode('Go To')
@@ -66,7 +66,7 @@ export const AutonomyControl = ({
                         })
                     })
                 }}>Go To</button>
-                <button className="control-button" onClick={() => {
+                <button className="control-button" id="control-button" onClick={() => {
                     if (gpsLat === 0 || gpsLong === 0 || period === 0) return;
                     setMode("ARUCO")
                     console.log("Starting the ARUCO mission.");
@@ -84,7 +84,7 @@ export const AutonomyControl = ({
                         })
                     })
                 }}>ARUCO</button>
-                <button className="control-button" onClick={() => {
+                <button className="control-button" id="control-button" onClick={() => {
                     if (gpsLat === 0 || gpsLong === 0 || period === 0) return;
                     console.log("Starting to detect objects.");
                     setMode("Object Detection")

@@ -4,6 +4,7 @@ import { WidgetSpace } from './widgets/widget_space.tsx';
 import Toggle from 'react-toggle'
 import { ConnectionStatus } from './components/taskbar/ConnectionLatency.tsx'
 import "./App.css";
+import { useElapsedTime } from 'use-elapsed-time';
 
 function App() {
     const [staticWidgets, setStaticWidgets] = useState(false);
@@ -19,8 +20,14 @@ function App() {
     }
 
     function Taskbar() {
+        const { elapsedTime, reset } = useElapsedTime({isPlaying: true});
+
         return (
             <div className="taskbar">
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <div style={{padding: '5px', margin: '5px'}}>{`Elapsed: ${new Date(elapsedTime * 1000).toISOString().substring(11, 19)}`}</div>
+                    <button className='taskbar-button' onClick={() => {reset(0)}}>Reset Timer</button>
+                </div>
                 <ConnectionStatus />
                 <div className="toggle" style={{display:'flex', flexDirection:'row'}}>
                     <Toggle checked={staticWidgets} style={{marginRight: '1em'}} onChange={(event) => {

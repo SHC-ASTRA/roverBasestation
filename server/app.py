@@ -4,7 +4,7 @@ import signal
 import threading
 # Custom ROS class
 from ros_handling import RosNode, ros2_thread
-from ros_handling import CORE_CONTROL, CORE_FEEDBACK, AUTO_CONTROL, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, AUTO_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -105,6 +105,13 @@ def get_faerie_feedback():
         return {'humidity': ros_node.message_data[FAERIE_FEEDBACK][-1].humidity, 'temperature': ros_node.message_data[FAERIE_FEEDBACK][-1].temperature}
     except KeyError:
         return {'data': 'No data was found.'}
+    
+@app.route('/auto/feedback')
+def get_auto_feedback():
+    try:
+        return {'data': ros_node.message_data[AUTO_FEEDBACK]}
+    except KeyError:
+        return {'data': 'No data was found'}
 
 # Control  
 @app.route('/bio/control', methods = ['POST'])
@@ -162,7 +169,7 @@ def auto_control():
             return {'data': ""}
 
         if command == "Stop":
-            ros_node.send_autonomy_goal(0, 0, 0, 1)
+            ros_node.send_autonomy_goal(0, 0.0, 0.0, 1.0)
         elif command == "GoTo":
             ros_node.send_autonomy_goal(1, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
         elif command == "ARUCO":

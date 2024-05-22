@@ -3,7 +3,10 @@ import React, {useState, useEffect} from 'react'
 export const ChemicalDispersion = ({
     topicName = '/bio/control'
     }) => {
-        
+
+    const longPump = 3000;
+    const shortPump = 250;
+
     return (
         <div> 
             <div className="button-wrapper">
@@ -17,7 +20,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NPump1',
+                        command: `pump1,${longPump}`,
                     })
                 })
             }}>1</button>
@@ -30,7 +33,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NPump2',
+                        command: `pump2,${longPump}`,
                     })
                 })
             }}>2</button>
@@ -43,7 +46,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NPump3',
+                        command: `pump3,${longPump}`,
                     })
                 })
             }}>3</button>
@@ -59,7 +62,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SPump1',
+                        command: `pump1,${shortPump}`,
                     })
                 })
             }}>1</button>
@@ -72,7 +75,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SPump2',
+                        command: `pump2,${shortPump}`,
                     })
                 })
             }}>2</button>
@@ -85,7 +88,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SPump3',
+                        command: `pump2,${shortPump}`,
                     })
                 })
             }}>3</button>
@@ -100,7 +103,7 @@ export const ChemicalDispersion = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'FPump',
+                        command: `pump,1,1,1,${longPump}`,
                     })
                 })
             }} style={{width: '6em', height: '4em'}}>Full Pump</button>

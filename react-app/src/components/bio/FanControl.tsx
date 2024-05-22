@@ -4,6 +4,9 @@ export const FanControl = ({
     topicName = '/bio/control'
     }) => {
 
+    const longFan = 3000;
+    const shortFan = 250;
+
     return (
         <div>
             <div className="button-wrapper">
@@ -17,7 +20,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NFan1',
+                        command: `fan1,${longFan}`,
                     })
                 })
             }}>1</button>
@@ -30,7 +33,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NFan2',
+                        command: `fan2,${longFan}`,
                     })
                 })
             }}>2</button>
@@ -43,7 +46,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'NFan3',
+                        command: `fan3,${longFan}`,
                     })
                 })
             }}>3</button>
@@ -59,7 +62,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SFan1',
+                        command: `fan1,${shortFan}`,
                     })
                 })
             }}>1</button>
@@ -72,7 +75,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SFan2',
+                        command: `fan2,${shortFan}`,
                     })
                 })
             }}>2</button>
@@ -85,7 +88,7 @@ export const FanControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'SFan3',
+                        command: `fan3,${shortFan}`,
                     })
                 })
             }}>3</button>

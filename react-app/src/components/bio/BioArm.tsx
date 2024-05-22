@@ -21,7 +21,7 @@ export const BioArm = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'servoExtend',
+                        command: 'servoHalf',
                     })
                 })
             }}>
