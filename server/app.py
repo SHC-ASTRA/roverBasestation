@@ -4,7 +4,8 @@ import signal
 import threading
 # Custom ROS class
 from ros_handling import RosNode, ros2_thread
-from ros_handling import CORE_CONTROL, CORE_FEEDBACK, AUTO_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
+from autonomy_handling import AUTO_NAME
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -109,7 +110,7 @@ def get_faerie_feedback():
 @app.route('/auto/feedback')
 def get_auto_feedback():
     try:
-        return {'data': ros_node.message_data[AUTO_FEEDBACK]}
+        return {'data': ros_node.message_data[AUTO_NAME]}
     except KeyError:
         return {'data': 'No data was found'}
 
@@ -165,17 +166,17 @@ def auto_control():
         command = request.get_json()['command']
         print(f"Sending command {command} to the autonomy node")
 
-        if not ros_node.actions_started:
+        if not ros_node.autonomy_client.actions_started:
             return {'data': ""}
 
         if command == "Stop":
-            ros_node.send_autonomy_goal(0, 0.0, 0.0, 1.0)
+            ros_node.autonomy_client.send_autonomy_goal(0, 0.0, 0.0, 1.0)
         elif command == "GoTo":
-            ros_node.send_autonomy_goal(1, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+            ros_node.autonomy_client.send_autonomy_goal(1, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
         elif command == "ARUCO":
-            ros_node.send_autonomy_goal(2, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+            ros_node.autonomy_client.send_autonomy_goal(2, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
         elif command == "Object":
-            ros_node.send_autonomy_goal(3, request.get_json()['lat'], request.get_json()['long'], request.get_json()['period'])
+            ros_node.autonomy_client.send_autonomy_goal(3, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
 
         return {'data': command}
     else:
