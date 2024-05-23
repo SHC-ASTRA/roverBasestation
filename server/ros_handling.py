@@ -20,6 +20,9 @@ import sys
 # Autonomy
 from autonomy_handling import AutonomyClient
 
+# Telemetry from Core
+from core_telemetry_handler import TelemetryHandler
+
 # Insert the installation direction into the local path
 # so that message files can be imported
 # Equivalent to sourcing the directory prior
@@ -89,6 +92,8 @@ class RosNode(Node):
         self.autonomy_client = AutonomyClient(self, autonomy_result_callback)
 
         self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
+
+        self.telemetry_handler = TelemetryHandler(self)
 
         # Services
         self.ping_client = self.create_client(std_srvs.srv.Empty, CORE_PING)

@@ -22,6 +22,8 @@ import numpy as np
 import sys
 import time
 
+import concurrent.futures
+
 # Insert the installation direction into the local path
 # so that message files can be imported
 # Equivalent to sourcing the directory prior
@@ -113,6 +115,24 @@ def get_auto_feedback():
         return {'data': ros_node.message_data[AUTO_NAME]}
     except KeyError:
         return {'data': 'No data was found'}
+    
+@app.route('/core/telemetry')
+def get_telemetry():
+    return {
+        'gps_lat': ros_node.telemetry_handler.gps_lat,
+        'gps_long': ros_node.telemetry_handler.gps_long,
+        'gps_sat': ros_node.telemetry_handler.gps_sat,
+        'gyro_x': ros_node.telemetry_handler.gyro_x,
+        'gyro_y': ros_node.telemetry_handler.gyro_y,
+        'gyro_z': ros_node.telemetry_handler.gyro_z,
+        'acc_x': ros_node.telemetry_handler.acc_x,
+        'acc_y': ros_node.telemetry_handler.acc_y,
+        'acc_z': ros_node.telemetry_handler.acc_z,
+        'orient': ros_node.telemetry_handler.orient,
+        'temp': ros_node.telemetry_handler.temp,
+        'alt': ros_node.telemetry_handler.alt,
+        'pres': ros_node.telemetry_handler.pres
+    }
 
 # Control  
 @app.route('/bio/control', methods = ['POST'])
@@ -188,12 +208,14 @@ def ping():
     if not ros_node.services_started:
         return {'data': ""}
     start = time.time()
-    response = ros_node.send_ping()
-    if response:
-        end = time.time()
-        return {'data': end - start}
-    else:
-        return {'data': ""}
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(ros_node.send_ping)
+        response = future.result()
+        if response:
+            end = time.time()
+            return {'data': end - start}
+        else:
+            return {'data': ""}
 
 
 # Socket IO initialization

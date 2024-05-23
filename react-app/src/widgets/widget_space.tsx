@@ -23,6 +23,7 @@ import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
 import CameraData from "../components/cameraFeed.tsx";
 import { AutonomyControl } from "../components/auto/AutonomyControl.tsx";
+import { Telemetry } from "../components/core/CoreRawTelemetry.tsx";
 
 const ReactGridLayout = WidthProvider(Responsive);
 
@@ -142,22 +143,6 @@ export let widgets: WidgetData[] = [
         data: <Feedback topicName="/arm/feedback"/>
     },
     {
-        title: "Camera 1",
-        data: <CameraData topicName={'/camera0/image_raw/compressed'}/>
-    },
-    {
-        title: "Camera 2",
-        data: <CameraData topicName={'/camera1/image_raw/compressed'}/>
-    },
-    {
-        title: "Camera 3",
-        data: <CameraData topicName={'/camera2/image_raw/compressed'}/>
-    },
-    {
-        title: "Camera 4",
-        data: <CameraData topicName={'/camera3/image_raw/compressed'}/>
-    },
-    {
         title: "Camera 5",
         data: <CameraData topicName={'/camera4/image_raw/compressed'}/>
     },
@@ -168,6 +153,12 @@ export let widgets: WidgetData[] = [
         width: 6,
         minH: 4,
         height: 4,
+    },
+    {
+        title: "Raw Telemetry",
+        data: <Telemetry />,
+        height: 7,
+        minH: 7
     }
 ];
 
