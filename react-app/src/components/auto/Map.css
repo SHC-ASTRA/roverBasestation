@@ -1,0 +1,10 @@
+.leaflet-container {
+    height: 40vh;
+    width: 38vw;
+    display: flex;
+}
+
+.widget-content {
+    display: flex;
+    padding-bottom: 10vh
+}
