@@ -53,7 +53,7 @@ export const Map = ({
     []);
 
     let points: LatLngExpression[] = [
-        [34.727, -86.639]
+        [38.40643400834641, -110.79181336126874]
     ]
 
    let lastPoint = points[points.length - 1]
