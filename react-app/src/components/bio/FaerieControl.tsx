@@ -5,7 +5,7 @@ import Toggle from 'react-toggle';
 import "react-toggle/style.css"
 
 export const FaerieControl = ({
-    topicName = '/arm/bio/control'
+    topicName = '/astra/arm/control'
     }) => {
     const [motorSpeed, setMotorSpeed] = useState<number>(0);
     const [textInput, setText] = useState<number>(0);
