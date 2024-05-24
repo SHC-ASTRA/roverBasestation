@@ -9,6 +9,7 @@ export const FaerieControl = ({
     }) => {
     const [motorSpeed, setMotorSpeed] = useState<number>(0);
     const [textInput, setText] = useState<number>(0);
+    const [lastCommand, setLastCommand] = useState<string>("");
 
     const duty_cycle_command = 'faerie,ctrl,duty,'
     const laser_command = 'faerie,ctrl,laser,'
@@ -40,7 +41,8 @@ export const FaerieControl = ({
             })
         })
 
-        console.log(`Sent command ${command_to_send}`);
+        setLastCommand(command_to_send);
+        // console.log(`Sent command ${command_to_send}`);
     }
 
     return (
@@ -89,6 +91,10 @@ export const FaerieControl = ({
                     
                     send_command_post(laser_command, {toggleParam: toggle});
                 }}/>
+            </div>
+
+            <div>
+                <span>Last Command: {lastCommand}</span>
             </div>
         </div>
         
