@@ -36,7 +36,7 @@ export const FaerieControl = ({
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                command: command_to_send;
+                command: command_to_send
             })
         })
 
