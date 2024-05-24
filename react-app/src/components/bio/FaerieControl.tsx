@@ -5,7 +5,7 @@ import Toggle from 'react-toggle';
 import "react-toggle/style.css"
 
 export const FaerieControl = ({
-    topicName = '/astra/arm/control'
+    topicName = '/astra/arm/bio/control'
     }) => {
     const [motorSpeed, setMotorSpeed] = useState<number>(0);
     const [textInput, setText] = useState<number>(0);
@@ -28,7 +28,7 @@ export const FaerieControl = ({
                                 'Content-Type': 'application/json',
                             },
                             body: JSON.stringify({
-                                command: "faerie/ctrl/duty/" + value,
+                                command: "faerie,ctrl,duty," + value,
                             })
                         })
                     } 
