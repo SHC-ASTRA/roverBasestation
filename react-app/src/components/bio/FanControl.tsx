@@ -1,42 +1,97 @@
 import React, {useState, useEffect} from 'react'
 
 export const FanControl = ({
-    topicName = '/astra/bio/control'
+    topicName = '/bio/control'
     }) => {
-    const [data, setData] = useState({});
 
-    useEffect(() => {
-        let intervalValue = setInterval(() => {
-            fetch('/bio/control')
-                .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
-        }, 1000);
-
-        return(() => {
-            clearInterval(intervalValue);
-        })
-    }, [data]);
-
-    const setFans = () => {
-        setData({})
-        console.log("click!")
-    };
+    const longFan = 3000;
+    const shortFan = 250;
 
     return (
         <div>
             <div className="button-wrapper">
-            <button className="round-button" onClick={setFans}>
-                Fan 1
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 2
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 3
-            </button>
-            <button className="round-button" onClick={setFans}>
-                Fan 4
-            </button>
+                <p>Nominal Fan</p>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 1");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan1,${longFan}`,
+                    })
+                })
+            }}>1</button>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 2");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan2,${longFan}`,
+                    })
+                })
+            }}>2</button>
+                <button className="round-button" onClick={() => {
+                console.log("Nominal fan 3");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan3,${longFan}`,
+                    })
+                })
+            }}>3</button>
+            </div>
+            <div className="button-wrapper">
+                <p>Short Fan</p>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 1");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan1,${shortFan}`,
+                    })
+                })
+            }}>1</button>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 2");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan2,${shortFan}`,
+                    })
+                })
+            }}>2</button>
+                <button className="round-button" onClick={() => {
+                console.log("Short fan 3");
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `fan3,${shortFan}`,
+                    })
+                })
+            }}>3</button>
             </div>
         </div>
     )

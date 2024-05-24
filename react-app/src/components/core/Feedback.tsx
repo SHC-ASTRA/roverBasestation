@@ -1,25 +1,26 @@
 import React, {useState, useEffect} from 'react'
 
-export const AutoFeedback = ({
-    topicName = '/astra/auto/feedback'
-}) => {
-    const [data, setData] = useState({});
+export const Feedback = ({
+    topicName = '/core/feedback'
+    }) => {
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         let intervalValue = setInterval(() => {
-            fetch('/auto/feedback')
+            fetch(topicName)
                 .then((response) => response.json())
-                .then((data) => setData(data[topicName]))
+                .then((data) => {setData(data['data'])})
         }, 1000);
+
 
         return(() => {
             clearInterval(intervalValue);
         })
-    }, [data]);
+    }, []);
 
     return (
         <>
-        
+            <div>{data ? data[data.length - 1] : "No data received."}</div>
         </>
     )
 }

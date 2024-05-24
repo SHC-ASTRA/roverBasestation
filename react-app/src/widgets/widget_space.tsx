@@ -11,22 +11,19 @@ import { Widget } from "./widgets.tsx"
 // component imports
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
-import LiveData from "../components/liveData.tsx"
-import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
 import { CoreControl } from "../components/core/CoreControl.tsx";
-import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
+import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
-import { PumpStatus } from "../components/bio/PumpStatus.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
-import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
-import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
+import { FaerieControl } from "../components/bio/FaerieControl.tsx";
 import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
 import { ArmPos } from "../components/arm/ArmPos.tsx";
 import { ArmControl } from "../components/arm/ArmControl.tsx";
-import { ArmLaser } from "../components/arm/ArmLaser.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
 import CameraData from "../components/cameraFeed.tsx";
+import { AutonomyControl } from "../components/auto/AutonomyControl.tsx";
+import { Telemetry } from "../components/core/CoreRawTelemetry.tsx";
 
 const ReactGridLayout = WidthProvider(Responsive);
 
@@ -72,12 +69,8 @@ export let widgets: WidgetData[] = [
         data: <CurrentTime/>,
     },
     {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
-    },
-    {
         title: "Autonomy Feedback",
-        data: <AutoFeedback/>,
+        data: <Feedback topicName="/auto/feedback"/>,
     },
     {
         title: "Core Control",
@@ -87,7 +80,7 @@ export let widgets: WidgetData[] = [
     },
     {
         title: "Core Feedback",
-        data: <CoreFeedback />
+        data: <Feedback />
     },
     {
         title: "Map",
@@ -96,38 +89,41 @@ export let widgets: WidgetData[] = [
         minW: 4
     },
     {
-        title: "Bio Arm",
+        title: "CITADEL Bio Arm",
         data: <BioArm />,
         minW: 3,
         width: 3
     },
     {
-        title: "Fan/Pump Status",
-        data: <PumpStatus />
+        title: "CITADEL Status",
+        data: <Feedback topicName="/bio/feedback"/>
     },
     {
-        title: "Fan Control",
+        title: "CITADEL Fan Control",
         data: <FanControl />,
-        width: 3
+        width: 3,
+        minW: 3,
+        height: 4,
+        minH: 4
     },
     {
-        title: "Chemical Dispersion",
+        title: "CITADEL Chemical Dispersion",
         data: <ChemicalDispersion />,
         width: 3,
         minW: 3,
-        height: 3,
-        minH: 3
+        height: 5,
+        minH: 5
     },
     {
-        title: "FAERIE Motor Speed",
-        data: <FaerieMotor />
+        title: "FAERIE Control",
+        data: <FaerieControl />,
+        width: 4,
+        minW: 4,
+        height: 5,
+        minH: 5
     },
     {
-        title: "FAERIE Laser",
-        data: <FaerieLaser />
-    },
-    {
-        title: "Humidity/Temp Sensor Data",
+        title: "FAERIE Sensor Data",
         data: <FaerieSensors />
     },
     {
@@ -139,12 +135,24 @@ export let widgets: WidgetData[] = [
         data: <ArmControl />,
         minW: 3,
         width: 3,
-        minH: 3,
-        height: 3
+        minH: 5,
+        height: 5
     },
     {
-        title: "Arm Laser",
-        data: <ArmLaser />
+        title: "Arm Feedback",
+        data: <Feedback topicName="/arm/feedback"/>
+    },
+    {
+        title: "Camera 5",
+        data: <CameraData topicName={'/camera4/image_raw/compressed'}/>
+    },
+    {
+        title: "Autonomy Control",
+        data: <AutonomyControl />,
+        minW: 6,
+        width: 6,
+        minH: 4,
+        height: 4,
     },
     {
         title: "Camera 1",
@@ -161,18 +169,16 @@ export let widgets: WidgetData[] = [
     {
         title: "Camera 3",
         data: <CameraData defaultTopic={'/camera2/image_raw/compressed'}/>
+     },
+     {
+        title: "Raw Telemetry",
+        data: <Telemetry />,
+        height: 7,
+        minH: 7
     }
 ];
 
-// const BiosensorPreset: LayoutItem[] = [
-//     {i: "Bio Arm",
-//     x: 0,
-//     y: 0,
-//     height: 3,
-//     width: 3,
-//     minW: 3,
-//     minH: 3}
-// ];
+widgets.sort((a, b) => a.title > b.title ? 1 : -1);
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
