@@ -28,7 +28,7 @@ export const FaerieControl = ({
                                 'Content-Type': 'application/json',
                             },
                             body: JSON.stringify({
-                                command: "faerie/ctrl/duty/" + value,
+                                command: "faerie,ctrl,duty," + value,
                             })
                         })
                     } 
