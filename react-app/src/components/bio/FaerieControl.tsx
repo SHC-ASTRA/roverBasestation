@@ -54,7 +54,7 @@ export const FaerieControl = ({
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            command: "faerie/ctrl/duty/" + value,
+                            command: "faerie,ctrl,duty," + value,
                         })
                     })
                 }}></input>
@@ -86,7 +86,7 @@ export const FaerieControl = ({
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            command: 'faerie/ctrl/laser/' + toggle,
+                            command: 'faerie,ctrl,laser,' + toggle,
                         })
                     })
                 }}/>
