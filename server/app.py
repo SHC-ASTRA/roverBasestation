@@ -3,7 +3,9 @@ import rclpy
 import signal
 import threading
 # Custom ROS class
-from ros_handling import RosNode, ros2_thread, TOPIC_LIST
+from ros_handling import RosNode, ros2_thread
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
+from autonomy_handling import AUTO_NAME
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -18,6 +20,9 @@ import cv2
 # NumPy
 import numpy as np
 import sys
+import time
+
+import concurrent.futures
 
 # Insert the installation direction into the local path
 # so that message files can be imported
@@ -74,12 +79,144 @@ def get_publish_message():
     ros_node.publish_message()
     return {}
 
+# Feedback
 @app.route('/core/feedback')
 def get_core_feedback():
     try:
-        return {'data': ros_node.message_data[TOPIC_LIST['FEEDBACK_TOPIC']]}
+        return {'data': ros_node.message_data[CORE_FEEDBACK]}
     except KeyError:
         return {'data': 'No data was found.'}
+    
+@app.route('/bio/feedback')
+def get_bio_feedback():
+    try:
+        return {'data': ros_node.message_data[BIO_FEEDBACK]}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
+@app.route('/arm/feedback')
+def get_arm_feedback():
+    try:
+        return {'data': ros_node.message_data[ARM_FEEDBACK]}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
+
+@app.route('/arm/bio/feedback')
+def get_faerie_feedback():
+    try:
+        return {'humidity': ros_node.message_data[FAERIE_FEEDBACK][-1].humidity, 'temperature': ros_node.message_data[FAERIE_FEEDBACK][-1].temperature}
+    except KeyError:
+        return {'data': 'No data was found.'}
+    
+@app.route('/auto/feedback')
+def get_auto_feedback():
+    try:
+        return {'data': ros_node.message_data[AUTO_NAME]}
+    except KeyError:
+        return {'data': 'No data was found'}
+    
+@app.route('/core/telemetry')
+def get_telemetry():
+    return {
+        'gps_lat': ros_node.telemetry_handler.gps_lat,
+        'gps_long': ros_node.telemetry_handler.gps_long,
+        'gps_sat': ros_node.telemetry_handler.gps_sat,
+        'gyro_x': ros_node.telemetry_handler.gyro_x,
+        'gyro_y': ros_node.telemetry_handler.gyro_y,
+        'gyro_z': ros_node.telemetry_handler.gyro_z,
+        'acc_x': ros_node.telemetry_handler.acc_x,
+        'acc_y': ros_node.telemetry_handler.acc_y,
+        'acc_z': ros_node.telemetry_handler.acc_z,
+        'orient': ros_node.telemetry_handler.orient,
+        'temp': ros_node.telemetry_handler.temp,
+        'alt': ros_node.telemetry_handler.alt,
+        'pres': ros_node.telemetry_handler.pres
+    }
+
+# Control  
+@app.route('/bio/control', methods = ['POST'])
+def bio_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to CITADEL")
+
+        if BIO_CONTROL not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(BIO_CONTROL)
+
+        ros_node.publish_string_data(BIO_CONTROL, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /bio/control")
+
+@app.route('/arm/bio/control', methods = ['POST'])
+def faerie_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to FAERIE")
+
+        if FAERIE_CONTROL not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(FAERIE_CONTROL)
+
+        ros_node.publish_string_data(FAERIE_CONTROL, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /arm/bio/control")
+
+@app.route('/arm/control', methods = ['POST'])
+def arm_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to the Arm")
+
+        if ARM_COMMAND not in ros_node.publishers.keys():
+            ros_node.create_string_publisher(ARM_COMMAND)
+
+        ros_node.publish_string_data(ARM_COMMAND, command)
+
+        return {'data': command}
+    else:
+        print("Invalid method on /arm/control")
+
+@app.route('/auto/control', methods = ['POST'])
+def auto_control():
+    if request.method == 'POST':
+        command = request.get_json()['command']
+        print(f"Sending command {command} to the autonomy node")
+
+        if not ros_node.autonomy_client.actions_started:
+            return {'data': ""}
+
+        if command == "Stop":
+            ros_node.autonomy_client.send_autonomy_goal(0, 0.0, 0.0, 1.0)
+        elif command == "GoTo":
+            ros_node.autonomy_client.send_autonomy_goal(1, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+        elif command == "ARUCO":
+            ros_node.autonomy_client.send_autonomy_goal(2, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+        elif command == "Object":
+            ros_node.autonomy_client.send_autonomy_goal(3, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+
+        return {'data': command}
+    else:
+        print("Invalid method on /auto/control")
+
+# Miscellaneous Endpoints
+@app.route('/core/ping')
+def ping():
+    if not ros_node.services_started:
+        return {'data': ""}
+    start = time.time()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(ros_node.send_ping)
+        response = future.result()
+        if response:
+            end = time.time()
+            return {'data': end - start}
+        else:
+            return {'data': ""}
+
 
 # Socket IO initialization
 if __name__ == '__main__':
@@ -102,23 +239,21 @@ def handle_disconnect():
     ros_node.handle_disconnect(request.sid)
 
 # Controller connection handler
-CORE_CONTROL_TOPIC = '/astra/core/control'
-@socketio.on(CORE_CONTROL_TOPIC)
+@socketio.on(CORE_CONTROL)
 def core_control_handling(ly, ry):
     # If the publisher does not already exist, create it
-    if CORE_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.create_string_publisher(CORE_CONTROL_TOPIC)
+    if CORE_CONTROL not in ros_node.publishers.keys():
+        ros_node.create_string_publisher(CORE_CONTROL)
     # Handle actually publishing the data when the publisher exists
     
-    ros_node.publish_string_data(CORE_CONTROL_TOPIC, f"ctrl,{ly:0.2f},{ry:0.2f}")
+    ros_node.publish_string_data(CORE_CONTROL, f"ctrl,{ly:0.2f},{ry:0.2f}")
 
-ARM_CONTROL_TOPIC = '/astra/arm/control'
-@socketio.on(ARM_CONTROL_TOPIC)
+@socketio.on(ARM_CONTROL)
 def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr, 
                          b, a, y, x, l, r, zl, zr, select, start):
     #  If the publisher does not already exist, create it
-    if ARM_CONTROL_TOPIC not in ros_node.publishers.keys():
-        ros_node.publishers[ARM_CONTROL_TOPIC] = ros_node.create_publisher(ControllerState, ARM_CONTROL_TOPIC, 0)
+    if ARM_CONTROL not in ros_node.publishers.keys():
+        ros_node.publishers[ARM_CONTROL] = ros_node.create_publisher(ControllerState, ARM_CONTROL, 0)
 
     # can't send floats over the socket for whatever reason, have to round them on the front end and divide by 100 
     
@@ -144,10 +279,8 @@ def arm_control_handling(lh, lv, rh, rv, du, dd, dl, dr,
     msg.rt = zr / 100
 
     # Handle data publishing
-    ros_node.publishers[ARM_CONTROL_TOPIC].publish(msg)
-    print(f"Publishing data to {ARM_CONTROL_TOPIC}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} \
-          {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} \
-          {msg.d_left} {msg.d_right}")
+    ros_node.publishers[ARM_CONTROL].publish(msg)
+    print(f"Publishing data to {ARM_CONTROL}: {msg.lt} {msg.rt} {msg.lb} {msg.rb} {msg.plus} {msg.minus} {msg.ls_x} {msg.ls_y} {msg.rs_x} {msg.rs_y} {msg.a} {msg.b} {msg.x} {msg.y} {msg.d_up} {msg.d_down} {msg.d_left} {msg.d_right}")
 
 # Handle image subscription request
 @socketio.on('image_subscription')

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
 export const ArmPos = ({
-    topicName = '/astra/arm/feedback'
+    topicName = '/arm/feedback'
     }) => {
     const [data, setData] = useState({});
 

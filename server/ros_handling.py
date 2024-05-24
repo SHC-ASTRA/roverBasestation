@@ -10,12 +10,43 @@ import sensor_msgs.msg
 import std_srvs.srv
 # OpenCV
 from cv_bridge import CvBridge
+# Error handling for pinging
+from rclpy._rclpy_pybind11 import RCLError
+# Multithreading
+import threading
+# For system functionality and interaction to add directories to path
+import sys
 
-TOPIC_LIST = {
-    'FEEDBACK_TOPIC': "/astra/core/feedback",
-    'CONTROL_TOPIC': "/astra/core/control",
-    'CHATTER_TOPIC': "/topic"
-}
+# Autonomy
+from autonomy_handling import AutonomyClient
+
+# Telemetry from Core
+from core_telemetry_handler import TelemetryHandler
+
+# Insert the installation direction into the local path
+# so that message files can be imported
+# Equivalent to sourcing the directory prior
+sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
+from interfaces_pkg.msg import FaerieTelemetry
+
+# sys.path.insert(1, 'ros_msgs/install/astra_auto_interfaces/')
+# from astra_auto_interfaces.action import NavigateRover
+
+
+CHATTER_TOPIC = "/topic"
+CORE_FEEDBACK = "/astra/core/feedback"
+CORE_CONTROL = "/astra/core/control"
+CORE_PING = "/astra/core/ping"
+
+ARM_FEEDBACK = "/astra/arm/feedback"
+ARM_CONTROL = '/astra/arm/control'
+ARM_COMMAND = '/astra/arm/command'
+
+BIO_FEEDBACK = '/astra/bio/feedback'
+BIO_CONTROL = '/astra/bio/control'
+FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
+FAERIE_CONTROL = '/astra/arm/bio/control'
+
 
 class RosNode(Node):
     # Dictionary of Publishers
@@ -45,10 +76,33 @@ class RosNode(Node):
 
         # Basic Subscribers for testing
         self.create_string_publisher("flask_pub_topic")
-        self.create_subscriber(TOPIC_LIST['CHATTER_TOPIC'], self.chatter_callback)
+        self.create_subscriber(CHATTER_TOPIC, self.chatter_callback)
 
-        # LiveData subscriber
-        self.create_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
+        # Feedback subscriber
+        self.create_subscriber(CORE_FEEDBACK, self.core_feedback_callback)
+
+        self.create_subscriber(BIO_FEEDBACK, self.bio_feedback_callback)
+
+        self.create_subscriber(ARM_FEEDBACK, self.arm_feedback_callback)
+
+        def autonomy_result_callback():
+            print("Finished and received callback")
+            pass
+        # Initalize the autonomy client
+        self.autonomy_client = AutonomyClient(self, autonomy_result_callback)
+
+        self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
+
+        self.telemetry_handler = TelemetryHandler(self)
+
+        # Services
+        self.ping_client = self.create_client(std_srvs.srv.Empty, CORE_PING)
+        self.services_started = False
+
+        # Autonomy Handling
+
+        threading.Thread(target=self.connect_to_ping_service).start()
+        threading.Thread(target=self.connect_to_autonomy_action).start()
 
         self.message_data = {}
 
@@ -59,17 +113,60 @@ class RosNode(Node):
 
     def chatter_callback(self, msg):
         print(f'chatter cb received: {msg.data}')
-        self.message_data[TOPIC_LIST['CHATTER_TOPIC']] = msg.data
+        self.message_data[CHATTER_TOPIC] = msg.data
 
     def core_feedback_callback(self, msg):
         print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['FEEDBACK_TOPIC'], msg)
+        self.append_key_list(CORE_FEEDBACK, msg)
 
-    def core_control_callback(self, msg):
-        print(f"Received data from control topic: {msg.data}")
-        self.append_key_list(TOPIC_LIST['CONTROL_TOPIC'], msg)
+    def bio_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(BIO_FEEDBACK, msg)
+
+    def arm_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.data}")
+        self.append_key_list(ARM_FEEDBACK, msg)
+
+    def faerie_feedback_callback(self, msg):
+        print(f"Received data from feedback topic: {msg.humidity}, {msg.temperature}")
+        # Check if key is in dictionary
+        try:
+            self.message_data[FAERIE_FEEDBACK]
+        except KeyError:
+            self.message_data[FAERIE_FEEDBACK] = []
+        # Append to the key's list
+        self.message_data[FAERIE_FEEDBACK].append(msg)
+
+    
+    # Send a ping
+    def send_ping(self):
+        self.future = self.ping_client.call_async(std_srvs.srv.Empty.Request())
+        rclpy.spin_until_future_complete(self, self.future, timeout_sec=5.0)
+        return self.future.result()
 
     ## Helper Functions
+    # Connect to all services
+    def connect_to_ping_service(self):
+        print("Waiting for ping service to connect...")
+        try:
+            while not self.ping_client.wait_for_service(timeout_sec=10.0):
+                continue
+            print("The ping service has connected.")
+            self.services_started = True
+        except RCLError:
+            print("Service thread did not completely connect.")
+
+    def connect_to_autonomy_action(self):
+        print("Waiting for autonomy action to connect...")
+        try:
+            while not self.autonomy_client.wait_for_server(timeout_sec=5.0):
+                print("CANNOT CONNECT TO AUTONOMY SERVICE")
+                continue
+            print("All action servers have connected.")
+            self.autonomy_client.actions_started = True
+        except RCLError:
+            print("Action thread did not completely connect.")
+
 
     # Create a ROS publisher of String type
     def create_string_publisher(self, topic_name):
@@ -104,6 +201,8 @@ class RosNode(Node):
             self.message_data[topic] = []
         # Append to the key's list
         self.message_data[topic].append(msg.data)
+
+    
 
     # Health Packet Service
 
@@ -163,7 +262,7 @@ class RosNode(Node):
         del self.image_subscribers[image_topic]
 
 # Thread worker that spins the node
-def ros2_thread(node):
+def ros2_thread(node): 
     print('Entering Ros2 thread')
     rclpy.spin(node)
     print('Leaving Ros2 thread')

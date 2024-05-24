@@ -11,7 +11,7 @@ function SideBar() {
 
     return (
         <div className="sidebar-filter">
-            <button className="sidebar-button" onClick={toggleSideBar}>
+            <button className="taskbar-button" onClick={toggleSideBar}>
                 Widgets
             </button>
             <div 
