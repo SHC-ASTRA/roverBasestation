@@ -69,7 +69,7 @@ export const FaerieControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: 'faerie/ctrl/stop',
+                        command: 'faerie,stop',
                     })
                 })
             }} style={{width: '8em', height: '4em'}}>Stop Motor</button>
