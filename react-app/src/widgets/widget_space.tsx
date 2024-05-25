@@ -183,6 +183,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         }
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
+        this.onRemove = this.onRemove.bind(this);
 
     }
 
@@ -205,7 +206,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
             if (this.isInLayout(widget)) {
                 return (
                     <div key={widget.title} className="widget">
-                        <Widget title={widget.title} data={widget.data}/>
+                        <Widget title={widget.title} data={widget.data} parent_space={this}/>
                     </div>
                 )
             }
@@ -238,6 +239,13 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         layout_.push(item);
 
         this.onLayoutChange(layout_);      
+    }
+
+    onRemove(remove_title) {
+        // Set the state to the layout with the widget filtered out
+        this.setState({ layout: this.state.layout.filter(widget => widget.i != remove_title.title)} );
+        // Perform some state updates
+        WidgetSpace.staticLayout = this.state.layout;
     }
 
     render() {
