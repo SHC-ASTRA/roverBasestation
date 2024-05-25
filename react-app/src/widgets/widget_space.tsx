@@ -155,6 +155,22 @@ export let widgets: WidgetData[] = [
         height: 4,
     },
     {
+        title: "Camera 1",
+        data: <CameraData defaultTopic={'/camera0/image_raw/compressed'}/>,
+        minW: 3,
+        width: 3,
+        minH: 6,
+        height: 6
+    },
+    {
+        title: "Camera 2",
+        data: <CameraData defaultTopic={'/camera1/image_raw/compressed'}/>
+    },
+    {
+        title: "Camera 3",
+        data: <CameraData defaultTopic={'/camera2/image_raw/compressed'}/>
+     },
+     {
         title: "Raw Telemetry",
         data: <Telemetry />,
         height: 7,
