@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 export default function CameraData({
-    defaultTopic,
-    defaultScale,
-    defaultRotation,
+    defaultTopic="",
+    defaultScale=90,
+    defaultRotation=0,
     ...props
 }) {
     // Camera Feed Topic Name
@@ -52,7 +52,6 @@ export default function CameraData({
                             }
                         }>{topicKey}</a>
                     );
-                    console.log(temp_arr);
                 }
                 // Assign the array of elements to the available topics
                 setAvailableTopics(temp_arr);
