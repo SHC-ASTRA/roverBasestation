@@ -245,9 +245,10 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         this.onLayoutChange(layout_);      
     }
 
-    onRemove(remove_title) {
+    onRemove(remove_widget, camera_topic="") {
+        if(camera_topic) socket.emit('camera_close', camera_topic);
         // Set the state to the layout with the widget filtered out
-        this.setState({ layout: this.state.layout.filter(widget => widget.i != remove_title.title)} );
+        this.setState({ layout: this.state.layout.filter(widget => widget.i != remove_widget.title)} );
         // Perform some state updates
         WidgetSpace.staticLayout = this.state.layout;
     }
