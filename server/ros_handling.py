@@ -76,10 +76,7 @@ class RosNode(Node):
 
     def __init__(self):
         super().__init__('astra_base')
-
-        # LiveData subscriber
-        self.create_string_subscriber(TOPIC_LIST['FEEDBACK_TOPIC'], self.core_feedback_callback)
-
+        
         def autonomy_result_callback():
             print("Finished and received callback")
             pass

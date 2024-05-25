@@ -21,7 +21,7 @@ import { ArmPos } from "../components/arm/ArmPos.tsx";
 import { ArmControl } from "../components/arm/ArmControl.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
-import CameraData from "../components/cameraFeed.tsx";
+import CameraData from "../components/cameras/cameraFeed.tsx";
 import { AutonomyControl } from "../components/auto/AutonomyControl.tsx";
 import { Telemetry } from "../components/core/CoreRawTelemetry.tsx";
 
@@ -143,10 +143,6 @@ export let widgets: WidgetData[] = [
         data: <Feedback topicName="/arm/feedback"/>
     },
     {
-        title: "Camera 5",
-        data: <CameraData topicName={'/camera4/image_raw/compressed'}/>
-    },
-    {
         title: "Autonomy Control",
         data: <AutonomyControl />,
         minW: 6,
@@ -162,14 +158,6 @@ export let widgets: WidgetData[] = [
         minH: 6,
         height: 6
     },
-    {
-        title: "Camera 2",
-        data: <CameraData defaultTopic={'/camera1/image_raw/compressed'}/>
-    },
-    {
-        title: "Camera 3",
-        data: <CameraData defaultTopic={'/camera2/image_raw/compressed'}/>
-     },
      {
         title: "Raw Telemetry",
         data: <Telemetry />,
