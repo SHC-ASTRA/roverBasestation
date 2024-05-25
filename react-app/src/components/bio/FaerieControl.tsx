@@ -20,7 +20,11 @@ export const FaerieControl = ({
         
         // STOP COMMAND
         if(command.includes('stop')) {
-            command_to_send = stop_command;
+            // TODO: FIX THIS BY WORKING WITH DAVID S. ON MICROCONTROLLER END
+            // command_to_send = stop_command;
+
+            command_to_send = duty_cycle_command;
+            valueParam = 0;
         }
         // LASER COMMAND
         else if(command.includes('laser')) {
