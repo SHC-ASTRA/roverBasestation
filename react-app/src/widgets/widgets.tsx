@@ -37,6 +37,8 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
         // If the parent_space prop has been provided,
         // and the widget is intended to be able to be removed
         if(props.parent_space) props.parent_space.onRemove(widget_title)
+
+        // WILL NEED REWRITTEN FOR CAMERAS
     }
 
     return (
