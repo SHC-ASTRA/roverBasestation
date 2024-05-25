@@ -258,6 +258,16 @@ class RosNode(Node):
             # Remove this socket specifically from the list
             self.image_subscribers[old_topic]["socket_ids"].remove(socket_id)
 
+    # Handle when a widget topic is killed on the front end
+    def handle_connection_end(self, socket_id, old_topic):
+        if len(self.image_subscribers[old_topic]["socket_ids"]) == 1:
+            # Kill the subscriber
+            self.kill_image_subscriber(old_topic);
+        # If there are multiple sockets subscribed to this video topic
+        else:
+            # Remove this socket specifically from the list
+            self.image_subscribers[old_topic]["socket_ids"].remove(socket_id);
+
     # Handle complete socket disconnections
     def handle_disconnect(self, socket_id):
         # Handle disconnections by removing the connection from subscriptions

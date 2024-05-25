@@ -327,6 +327,12 @@ def connection_change(old_topic, new_topic):
     req_id = request.socket_id
     ros_node.handle_connection_change(req_id, old_topic, new_topic)
 
+# Handle a camera widget closing
+@socketio.on('camera_close')
+def camera_close(old_topic):
+    rqt_id = request.socket_id
+    ros_node.handle_connection_end(req_id, old_topic)
+
 # Handle the processing necessary for image subscription
 def handle_image_subscription(socket_id, topic_name):
     print(f'Received request to subscribe to {topic_name} for sensor_msgs.msg.CompressedImage')
