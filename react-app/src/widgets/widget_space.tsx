@@ -85,8 +85,10 @@ export let widgets: WidgetData[] = [
     {
         title: "Map",
         data: <Map />,
-        minH: 4,
-        minW: 4
+        minH: 7,
+        minW: 5,
+        height: 7,
+        width: 5
     },
     {
         title: "CITADEL Bio Arm",
@@ -151,7 +153,7 @@ export let widgets: WidgetData[] = [
         height: 4,
     },
     {
-        title: "Camera 1",
+        title: "Camera",
         data: <CameraData defaultTopic={'/camera0/image_raw/compressed'}/>,
         minW: 3,
         width: 3,

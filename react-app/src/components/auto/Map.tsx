@@ -15,8 +15,6 @@ export const Map = ({
     let points: LatLngExpression[] = [
         [38.40643400834641, -110.79181336126874]
     ]
-
-    let lastPoint = points[points.length - 1]
    
     const cluckyIcon = new Icon({
         iconUrl : "clucky.png",
@@ -29,13 +27,17 @@ export const Map = ({
             fetch(topicName)
                 .then((response) => response.json())
                 .then((data) => {
-                    setGPSCoords({longitude: data['gps_long'], latitude: data['gps_lat']})
+                    if (data['gps_long'] && data['gps_lat']) {
+                        setGPSCoords({longitude: data['gps_long'], latitude: data['gps_lat']});
+                        if (points[points.length - 1][0] != gpsCoords.latitude || points[points.length - 1][1] != gpsCoords.longitude) {
+                            points.push([gpsCoords.latitude, gpsCoords.longitude]);
+                        }
+                    }    
                 })
         }, 1000);
 
         return(() => {
             clearInterval(intervalValue);
-            // points.push([data.latitude, data.longitude])
         })
     }, []);
 
@@ -72,7 +74,7 @@ export const Map = ({
         <div >
             <div className='leaflet-container'>
                 <MapContainer center={[34.727, -86.639]} zoom={10} scrollWheelZoom={true} id="map" >
-                    <ChangeView center={lastPoint} zoom={15} />
+                    <ChangeView center={points[points.length - 1]} zoom={15} />
                     <TileLayer
                         url="./tiles/{z}/{x}/{y}.png"
                     />
@@ -86,10 +88,7 @@ export const Map = ({
                 </MapContainer>
             </div>
             
-            Current position: [ {lastPoint[0]} , {lastPoint[1]} ]
-            <div>
-                Orientation: 
-            </div>
+            Current position: [ {points[points.length - 1][0]} , {points[points.length - 1][1]} ]
         </div>
     )
 }
