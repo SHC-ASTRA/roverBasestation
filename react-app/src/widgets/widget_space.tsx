@@ -12,7 +12,7 @@ import { Widget } from "./widgets.tsx"
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import { CoreControl } from "../components/core/CoreControl.tsx";
-import { Feedback } from "../components/core/Feedback.tsx";
+import { Feedback } from "../components/feedback/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
 import { FaerieControl } from "../components/bio/FaerieControl.tsx";
