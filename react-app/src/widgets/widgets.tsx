@@ -2,6 +2,7 @@ import React, {MouseEventHandler} from "react";
 import { FC, forwardRef, HTMLAttributes, CSSProperties } from "react";
 
 import "./widgets.css";
+import { WidgetSpace } from "./widget_space.tsx";
 
 // DO NOT ASSIGN ID TO 0
 // THE WIDGET WILL BE FUCKED
@@ -12,6 +13,7 @@ type WidgetProps = {
     isOpacityEnabled?: boolean
     isDragging?: boolean
     handleDelete?: MouseEventHandler<HTMLSpanElement>
+    parent_space?: WidgetSpace
 } & HTMLAttributes<HTMLDivElement>
 
 export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isDragging, isOpacityEnabled, handleDelete, style, ...props}, ref) => {
@@ -23,6 +25,21 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
         transform: isDragging ? "scale(1.05)" : "scale(1)",
         ...style,
     };
+    
+    const removeStyle: CSSProperties = {
+        position: "absolute",
+        right: "2px",
+        top: 0,
+        cursor: "pointer"
+      };
+
+    function onRemoveItem(widget_title) {
+        // If the parent_space prop has been provided,
+        // and the widget is intended to be able to be removed
+        if(props.parent_space) props.parent_space.onRemove(widget_title)
+
+        // WILL NEED REWRITTEN FOR CAMERAS
+    }
 
     return (
         <div ref={ref} style={styles} {...props}>
@@ -33,6 +50,13 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps>(({title, data, isD
             }}>
                 <div className="widget-title">
                     {title}
+                    <span
+                        className="removal-x"
+                        style={removeStyle}
+                        onClick={() => onRemoveItem({title})}
+                    >
+                        x
+                    </span>
                 </div>
                 <div className="widget-content">
                     {data}

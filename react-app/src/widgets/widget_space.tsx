@@ -11,21 +11,19 @@ import { Widget } from "./widgets.tsx"
 // component imports
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
-import LiveData from "../components/liveData.tsx"
-import { AutoFeedback } from "../components/auto/AutoFeedback.tsx";
 import { CoreControl } from "../components/core/CoreControl.tsx";
-import { CoreFeedback } from "../components/core/CoreFeedback.tsx";
+import { Feedback } from "../components/core/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
-import { PumpStatus } from "../components/bio/PumpStatus.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
-import { FaerieMotor } from "../components/bio/FaerieMotor.tsx";
-import { FaerieLaser } from "../components/bio/FaerieLaser.tsx";
+import { FaerieControl } from "../components/bio/FaerieControl.tsx";
 import { FaerieSensors } from "../components/bio/FaerieSensors.tsx";
 import { ArmPos } from "../components/arm/ArmPos.tsx";
 import { ArmControl } from "../components/arm/ArmControl.tsx";
-import { ArmLaser } from "../components/arm/ArmLaser.tsx";
 import { ChemicalDispersion } from "../components/bio/ChemicalDispersion.tsx";
 import { BioArm } from "../components/bio/BioArm.tsx";
+import CameraData from "../components/cameras/cameraFeed.tsx";
+import { AutonomyControl } from "../components/auto/AutonomyControl.tsx";
+import { Telemetry } from "../components/core/CoreRawTelemetry.tsx";
 
 const ReactGridLayout = WidthProvider(Responsive);
 
@@ -71,20 +69,18 @@ export let widgets: WidgetData[] = [
         data: <CurrentTime/>,
     },
     {
-        title: "Live Data",
-        data: <LiveData topicName="/topic"></LiveData>
-    },
-    {
         title: "Autonomy Feedback",
-        data: <AutoFeedback/>,
+        data: <Feedback topicName="/auto/feedback"/>,
     },
     {
         title: "Core Control",
-        data: <CoreControl />
+        data: <CoreControl />,
+        height: 3,
+        minH: 3
     },
     {
         title: "Core Feedback",
-        data: <CoreFeedback />
+        data: <Feedback />
     },
     {
         title: "Map",
@@ -93,36 +89,41 @@ export let widgets: WidgetData[] = [
         minW: 4
     },
     {
-        title: "Bio Arm",
+        title: "CITADEL Bio Arm",
         data: <BioArm />,
         minW: 3,
         width: 3
     },
     {
-        title: "Fan/Pump Status",
-        data: <PumpStatus />
+        title: "CITADEL Status",
+        data: <Feedback topicName="/bio/feedback"/>
     },
     {
-        title: "Fan Control",
+        title: "CITADEL Fan Control",
         data: <FanControl />,
-        width: 3
+        width: 3,
+        minW: 3,
+        height: 4,
+        minH: 4
     },
     {
-        title: "Chemical Dispersion",
+        title: "CITADEL Chemical Dispersion",
         data: <ChemicalDispersion />,
         width: 3,
-        height: 3
+        minW: 3,
+        height: 5,
+        minH: 5
     },
     {
-        title: "FAERIE Motor Speed",
-        data: <FaerieMotor />
+        title: "FAERIE Control",
+        data: <FaerieControl />,
+        width: 4,
+        minW: 4,
+        height: 5,
+        minH: 5
     },
     {
-        title: "FAERIE Laser",
-        data: <FaerieLaser />
-    },
-    {
-        title: "Humidity/Temp Sensor Data",
+        title: "FAERIE Sensor Data",
         data: <FaerieSensors />
     },
     {
@@ -130,36 +131,42 @@ export let widgets: WidgetData[] = [
         data: <ArmPos />
     },
     {
-        title: "Arm Control Presets",
+        title: "Arm Control",
         data: <ArmControl />,
         minW: 3,
-        width: 3
+        width: 3,
+        minH: 5,
+        height: 5
     },
     {
-        title: "Arm Laser",
-        data: <ArmLaser />
+        title: "Arm Feedback",
+        data: <Feedback topicName="/arm/feedback"/>
     },
+    {
+        title: "Autonomy Control",
+        data: <AutonomyControl />,
+        minW: 6,
+        width: 6,
+        minH: 4,
+        height: 4,
+    },
+    {
+        title: "Camera 1",
+        data: <CameraData defaultTopic={'/camera0/image_raw/compressed'}/>,
+        minW: 3,
+        width: 3,
+        minH: 6,
+        height: 6
+    },
+     {
+        title: "Raw Telemetry",
+        data: <Telemetry />,
+        height: 7,
+        minH: 7
+    }
 ];
 
-// const BiosensorPreset: LayoutItem[] = [
-//     {i: "Bio Arm",
-//     x: 0,
-//     y: 0,
-//     height: 3,
-//     width: 3,
-//     minW: 3,
-//     minH: 3}
-// ];
-
-// export const Presets = ['None', 'Biosensor'];
-
-// interface SelectPreset {
-//     [key: string]: LayoutItem[]
-// }
-// const PresetMap: SelectPreset = {
-//     'None': [],
-//     'Biosensor': BiosensorPreset
-// }
+widgets.sort((a, b) => a.title > b.title ? 1 : -1);
 
 type WidgetSpaceProps = {
     props?: JSX.ElementAttributesProperty,
@@ -180,6 +187,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         }
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
+        this.onRemove = this.onRemove.bind(this);
 
     }
 
@@ -202,7 +210,7 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
             if (this.isInLayout(widget)) {
                 return (
                     <div key={widget.title} className="widget">
-                        <Widget title={widget.title} data={widget.data}/>
+                        <Widget title={widget.title} data={widget.data} parent_space={this}/>
                     </div>
                 )
             }
@@ -235,6 +243,14 @@ export class WidgetSpace extends React.PureComponent<WidgetSpaceProps, WidgetSpa
         layout_.push(item);
 
         this.onLayoutChange(layout_);      
+    }
+
+    onRemove(remove_widget, camera_topic="") {
+        if(camera_topic) socket.emit('camera_close', camera_topic);
+        // Set the state to the layout with the widget filtered out
+        this.setState({ layout: this.state.layout.filter(widget => widget.i != remove_widget.title)} );
+        // Perform some state updates
+        WidgetSpace.staticLayout = this.state.layout;
     }
 
     render() {

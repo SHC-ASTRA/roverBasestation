@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react';
 import SideBar from './components/sidebar.tsx'
 import { WidgetSpace } from './widgets/widget_space.tsx';
 import Toggle from 'react-toggle'
-import Dropdown from 'react-dropdown'
-import 'react-dropdown/style.css';
+import { ConnectionStatus } from './components/taskbar/ConnectionLatency.tsx'
 import "./App.css";
+import { useElapsedTime } from 'use-elapsed-time';
 
 function App() {
     const [staticWidgets, setStaticWidgets] = useState(false);
@@ -20,18 +20,22 @@ function App() {
     }
 
     function Taskbar() {
+        const { elapsedTime, reset } = useElapsedTime({isPlaying: true});
+
         return (
             <div className="taskbar">
-                <div className="toggle">
-                    <Toggle checked={staticWidgets} onChange={(event) => {
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <div style={{padding: '5px', margin: '5px'}}>{`Elapsed: ${new Date(elapsedTime * 1000).toISOString().substring(11, 19)}`}</div>
+                    <button className='taskbar-button' onClick={() => {reset(0)}}>Reset Timer</button>
+                </div>
+                <ConnectionStatus />
+                <div className="toggle" style={{display:'flex', flexDirection:'row'}}>
+                    <Toggle checked={staticWidgets} style={{marginRight: '1em'}} onChange={(event) => {
                         setStaticWidgets(event.target.checked)
                     }}/>
-                    <p>{staticWidgets ? "Live Mode" : "Edit Mode"}</p>
+                    <div className="side-text">{staticWidgets ? "Live Mode" : "Edit Mode"}</div>
                 </div>
                 <SideBar />
-                {/* <Dropdown options={Presets} value={Presets[0]} onChange={(event) => {
-                    setPreset(event.value);
-                }}/> */}
             </div>
         )
     }
@@ -41,6 +45,7 @@ function App() {
         return (
             <div className="body-background">
                 <div className="widget-space">
+
                     <WidgetSpace staticWidgets={staticWidgets} />
                 </div>  
             </div>
