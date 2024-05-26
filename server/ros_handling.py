@@ -19,6 +19,8 @@ from rclpy._rclpy_pybind11 import RCLError
 import threading
 # For system functionality and interaction to add directories to path
 import sys
+# For inspecting the call stack
+import inspect
 
 # Autonomy
 from autonomy_handling import AutonomyClient
@@ -30,7 +32,9 @@ from core_telemetry_handler import TelemetryHandler
 # so that message files can be imported
 # Equivalent to sourcing the directory prior
 sys.path.insert(1, 'ros_msgs/install/interfaces_pkg/')
-from interfaces_pkg.msg import FaerieTelemetry
+# Interfaces Package
+    # FaerieTelemetry
+import interfaces_pkg.msg
 
 # sys.path.insert(1, 'ros_msgs/install/astra_auto_interfaces/')
 # from astra_auto_interfaces.action import NavigateRover
@@ -50,8 +54,8 @@ BIO_CONTROL = '/astra/bio/control'
 FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
 FAERIE_CONTROL = '/astra/arm/bio/control'
 
-
 class RosNode(Node):
+
     # Dictionary of Publishers
     publishers = {}
     # Dictionary of Subscribers
@@ -83,8 +87,6 @@ class RosNode(Node):
         # Initalize the autonomy client
         self.autonomy_client = AutonomyClient(self, autonomy_result_callback)
 
-        self.create_subscription(FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback, 0)
-
         self.telemetry_handler = TelemetryHandler(self)
 
         # Services
@@ -102,30 +104,38 @@ class RosNode(Node):
         # OpenCV Bridge
         self.opencv_bridge = CvBridge()
 
+        ACTIVE_SUBSCRIBERS = [
+            (std_msgs.msg.String, CORE_FEEDBACK, self.core_feedback_callback),
+            (std_msgs.msg.String, ARM_FEEDBACK, self.arm_feedback_callback),
+            (std_msgs.msg.String,  BIO_FEEDBACK, self.bio_feedback_callback),
+            (interfaces_pkg.msg.FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback)
+        ]
+
+        ## Feedback Subscribers
+        for [interface, topic_name, callback] in ACTIVE_SUBSCRIBERS:
+            print(f"Subscribing to {topic_name} with interface type {str(interface)} and callback {callback.__name__}")
+            self.subscribers[topic_name] = self.create_subscription(interface, topic_name, callback, 0);
+
     ## Subscriber Callbacks
 
     # Primary ROS topic feedback topics
     # String-based topics
     # They use of a dictionary of topic names as keys, storing the message data in arrays 
-    
-    def chatter_callback(self, msg):
-        print(f'chatter cb received: {msg.data}')
-        self.message_data[CHATTER_TOPIC] = msg.data
 
     def core_feedback_callback(self, msg):
-        print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(CORE_FEEDBACK, msg)
+        print(f"Received data from {inspect.stack()[0][3]} topic: {msg.data}")
+        self.append_topic_data(CORE_FEEDBACK, msg)
 
     def bio_feedback_callback(self, msg):
-        print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(BIO_FEEDBACK, msg)
+        print(f"Received data from {inspect.stack()[0][3]} feedback topic: {msg.data}")
+        self.append_topic_data(BIO_FEEDBACK, msg)
 
     def arm_feedback_callback(self, msg):
-        print(f"Received data from feedback topic: {msg.data}")
-        self.append_key_list(ARM_FEEDBACK, msg)
+        print(f"Received data from {inspect.stack()[0][3]} feedback topic: {msg.data}")
+        self.append_topic_data(ARM_FEEDBACK, msg)
 
     def faerie_feedback_callback(self, msg):
-        print(f"Received data from feedback topic: {msg.humidity}, {msg.temperature}")
+        print(f"Received data from {inspect.stack()[0][3]} feedback topic: {msg.humidity}, {msg.temperature}")
         # Check if key is in dictionary
         try:
             self.message_data[FAERIE_FEEDBACK]
