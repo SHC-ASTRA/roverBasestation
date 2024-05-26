@@ -4,7 +4,7 @@ import "./Map.css"
 import L, { LatLngExpression, Icon } from "leaflet"
 
 export const Map = ({
-    topicName = '/astra/auto/feedback'
+    topicName='/core/telemetry'
     }) => {
 
     const [gpsCoords, setGPSCoords] = useState({
@@ -27,7 +27,6 @@ export const Map = ({
     useEffect(() => {
         let intervalValue = setInterval(() => {
             fetch(topicName)
-            fetch('/auto/feedback')
                 .then((response) => response.json())
                 .then((data) => {
                     setGPSCoords({longitude: data['gps_long'], latitude: data['gps_lat']})
@@ -38,7 +37,7 @@ export const Map = ({
             clearInterval(intervalValue);
             // points.push([data.latitude, data.longitude])
         })
-    }, [data]);
+    }, []);
 
     function ChangeView({ center, zoom }) {
         const map = useMap();
@@ -47,17 +46,12 @@ export const Map = ({
         return null;
     }
 
-    const [state, setState] = useState({
-        longitude: 0,
-        latitude: 0,
-    });
-
     // user location
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             function (position) {
                 console.log(position);
-                setState({
+                setGPSCoords({
                     longitude: position.coords.longitude,
                     latitude: position.coords.latitude,
                 });
@@ -71,23 +65,6 @@ export const Map = ({
         }, 
     []);
 
-    let points: LatLngExpression[] = [
-        [38.40643400834641, -110.79181336126874]
-    ]
-
-   let lastPoint = points[points.length - 1]
-   
-    for (let i=0; i < 15; i++) {
-        lastPoint = points[points.length - 1]
-        points.push([lastPoint[0] - 0.0002 * Math.random(), lastPoint[1] + 0.0005 * Math.random()])
-    }
-
-    const cluckyIcon = new Icon({
-        iconUrl : "clucky.png",
-        iconSize : [42, 40]
-    })
-    
-
     console.log(points)
     // "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
@@ -99,7 +76,7 @@ export const Map = ({
                     <TileLayer
                         url="./tiles/{z}/{x}/{y}.png"
                     />
-                    <Marker position={[state.latitude, state.longitude]}>
+                    <Marker position={[gpsCoords.latitude, gpsCoords.longitude]}>
                         <Popup>
                             User location.
                         </Popup>
