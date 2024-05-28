@@ -12,7 +12,7 @@ import { Widget } from "./widgets.tsx"
 import TestbedControl from "../components/testbedMotorControl.tsx"
 import {CurrentTime} from "../components/time.tsx"
 import { CoreControl } from "../components/core/CoreControl.tsx";
-import { Feedback } from "../components/core/Feedback.tsx";
+import { Feedback } from "../components/feedback/Feedback.tsx";
 import { Map } from "../components/auto/Map.tsx";
 import { FanControl } from "../components/bio/FanControl.tsx";
 import { FaerieControl } from "../components/bio/FaerieControl.tsx";
@@ -59,6 +59,26 @@ export type WidgetData = {
     minH?: number
 }
 
+// Create a list of feedback topic titles
+let feedbackWidgets = [
+    {
+        title: "Core Feedback",
+        topic: "/core/feedback"
+    },
+    {
+        title: "CITADEL Feedback",
+        topic: "/bio/feedback"
+    },
+    {
+        title: "Arm Feedback",
+        topic: "/arm/feedback"
+    },
+    {
+        title: "Autonomy Feedback",
+        TOPIC: "/auto/feedback"
+    }
+]
+// Widgets that are shown in the sidebar
 export let widgets: WidgetData[] = [
     {
         title: "Visual Gamepad",
@@ -69,18 +89,10 @@ export let widgets: WidgetData[] = [
         data: <CurrentTime/>,
     },
     {
-        title: "Autonomy Feedback",
-        data: <Feedback topicName="/auto/feedback"/>,
-    },
-    {
         title: "Core Control",
         data: <CoreControl />,
         height: 3,
         minH: 3
-    },
-    {
-        title: "Core Feedback",
-        data: <Feedback />
     },
     {
         title: "Map",
@@ -93,10 +105,6 @@ export let widgets: WidgetData[] = [
         data: <BioArm />,
         minW: 3,
         width: 3
-    },
-    {
-        title: "CITADEL Status",
-        data: <Feedback topicName="/bio/feedback"/>
     },
     {
         title: "CITADEL Fan Control",
@@ -139,10 +147,6 @@ export let widgets: WidgetData[] = [
         height: 5
     },
     {
-        title: "Arm Feedback",
-        data: <Feedback topicName="/arm/feedback"/>
-    },
-    {
         title: "Autonomy Control",
         data: <AutonomyControl />,
         minW: 6,
@@ -163,7 +167,20 @@ export let widgets: WidgetData[] = [
         data: <Telemetry />,
         height: 7,
         minH: 7
-    }
+    },
+    // Perform a form of "list comprehension" adapted to Typescript / Javascript functionality
+    ...feedbackWidgets.map((widgetData) => {
+        return({
+            title: widgetData.title,
+            data: <Feedback topicName={widgetData.topic}/>,
+            // Width
+            minW: 2,
+            width: 4,
+            // Height
+            minH: 4,
+            height: 4
+        })
+    })
 ];
 
 widgets.sort((a, b) => a.title > b.title ? 1 : -1);
