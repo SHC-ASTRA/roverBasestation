@@ -2,7 +2,8 @@ import React, {useState} from 'react'
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'
 import Toggle from 'react-toggle';
-import "react-toggle/style.css"
+import "react-toggle/style.css";
+import "./FaerieControl.css";
 
 export const FaerieControl = ({
     topicName = '/arm/bio/control'
@@ -53,6 +54,31 @@ export const FaerieControl = ({
         <div>
             <div style={{padding: '0.7em 2em 0.7em 2em'}}>
                 <h6>Motor Speed</h6>
+                <label>
+                    Motor Speed Slider:
+                </label>
+                
+                <br/>
+                <br/>
+                <span>-50%</span>
+                <input type="range" list="motor-speed-range" min={-0.5} max={0.5} step={0.001} defaultValue={0} onMouseUp={(event) => {
+                    let value: number = Number(event.currentTarget.value);
+                    // Convert value down to scale for ROS transport to Faerie node
+                    // on a scale from -0.5 to 0.5
+                    console.log(value);
+                    // if(value) 
+                }}/>
+                <span>50%</span>
+                <datalist id="motor-speed-range">
+                    <option value="-0.5" /* label="-50%" */></option>
+                    <option value="-0.25" /* label="-25%" */></option>
+                    <option value="-0.02" /* label="-2%" */></option>
+                    <option value="0" label="0%"></option>
+                    <option value="0.02" /* label="2%" */></option>
+                    <option value="0.25" /* label="25%" */></option>
+                    <option value="0.5" /* label="50%" */></option>
+                </datalist>
+                {/*
                 <Slider dotStyle={{width: '10em', height: '10em'}} min={0} max={100} step={1} defaultValue={50} onChangeComplete={(value) => {
                     if (typeof value === "number") { // i love union types i love union types
                         value -= 50
@@ -63,6 +89,7 @@ export const FaerieControl = ({
                         send_command_post(duty_cycle_command, {valueParam: value});
                     } 
                 }}/>
+                */}
             </div>
             <div style={{padding: '1em'}}>
                 <input type="text" onChange={(e) => {
@@ -97,9 +124,11 @@ export const FaerieControl = ({
                 }}/>
             </div>
 
+            {/*
             <div>
                 <span>Last Command: {lastCommand}</span>
             </div>
+            */}
         </div>
         
     )
