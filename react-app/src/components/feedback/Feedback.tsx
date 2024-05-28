@@ -16,7 +16,7 @@ export const Feedback = ({
             fetch(topicName)
                 .then((response) => response.json())
                 .then((response) => {setData(response['data']);})
-        }, 1500);
+        }, 1000);
 
         // If the TextRef exists for an element and the user has autoscroll enabled
         // Scroll down the text element to the bottom 
