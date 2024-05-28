@@ -18,22 +18,22 @@ export const AutonomyControl = ({
         <>
             <div>Current Mode: {mode}</div>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly"}}>
-                <input type="text" placeholder="GPS Latitude" onChange={(e) => {
+                <input className="input_box" type="text" placeholder="GPS Latitude" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 180 || value < -180) return;
                     setLat(value);
                 }}></input>
-                <input type="text" placeholder="GPS Longitude" onChange={(e) => {
+                <input className="input_box" type="text" placeholder="GPS Longitude" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 180 || value < -180) return;
                     setLong(value);
                 }}></input>
-                <input type="text" placeholder="Period" onChange={(e) => {
+                <input className="input_box" type="text" placeholder="Period" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 1 || value <= 0) return;
                     setPeriod(value);
                 }}></input>
-                <input type="text" placeholder="Target Radius" onChange={(e) => {
+                <input className="input_box" type="text" placeholder="Target Radius" onChange={(e) => {
                     let value: number = Number(e.target.value);
                     if (Number.isNaN(value) || value > 20 || value <= 0) return;
                     setTargetRadius(value);
