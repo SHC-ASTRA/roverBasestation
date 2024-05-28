@@ -10,6 +10,7 @@ export const AutonomyControl = ({
     const [gpsLat, setLat] = useState<number>(0);
     const [gpsLong, setLong] = useState<number>(0);
     const [period, setPeriod] = useState<number>(0);
+    const [targetRadius, setTargetRadius] = useState<number>(0);
     const [mode, setMode] = useState<AutonomyModes>("Stop");
 
 
@@ -29,8 +30,13 @@ export const AutonomyControl = ({
                 }}></input>
                 <input type="text" placeholder="Period" onChange={(e) => {
                     let value: number = Number(e.target.value);
-                    if (Number.isNaN(value) || value > 180 || value < -180) return;
+                    if (Number.isNaN(value) || value > 1 || value <= 0) return;
                     setPeriod(value);
+                }}></input>
+                <input type="text" placeholder="Target Radius" onChange={(e) => {
+                    let value: number = Number(e.target.value);
+                    if (Number.isNaN(value) || value > 20 || value <= 0) return;
+                    setTargetRadius(value);
                 }}></input>
             </div>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly"}}>
@@ -62,7 +68,8 @@ export const AutonomyControl = ({
                             command: 'GoTo',
                             gpsLat: gpsLat,
                             gpsLong: gpsLong,
-                            period: period
+                            period: period,
+                            targetRadius: targetRadius
                         })
                     })
                 }}>Go To</button>
@@ -80,7 +87,8 @@ export const AutonomyControl = ({
                             command: 'ARUCO',
                             gpsLat: gpsLat,
                             gpsLong: gpsLong,
-                            period: period
+                            period: period,
+                            targetRadius: targetRadius
                         })
                     })
                 }}>ARUCO</button>
@@ -98,7 +106,8 @@ export const AutonomyControl = ({
                             command: 'Object',
                             gpsLat: gpsLat,
                             gpsLong: gpsLong,
-                            period: period
+                            period: period,
+                            targetRadius: targetRadius
                         })
                     })
                 }}>Object Detection</button>

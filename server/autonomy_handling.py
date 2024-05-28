@@ -30,14 +30,27 @@ class AutonomyClient(ActionClient):
         self.node_result_callback = end_callback
         # Flag to confirm that the action server has initialized and was seen
         self.actions_started = False
+
+    def cancel_goal(self):
+        print("Cancelling goal")
+
+        future = self.goal_handle.cancel_goal_async()
+        future.add_done_callback(self.cancel_done)
+
+    def cancel_done(self, future):
+        if len(future.result().goals_canceling) > 0:
+            print("Goal has been successfully cancelled.")
+        else:
+            print("Goal failed to cancel.")
     
     # Send a goal to the autonomy 
-    def send_autonomy_goal(self, navigation_type, lat, long, period):
+    def send_autonomy_goal(self, navigation_type, lat, long, period, target_radius):
         goal_msg = NavigateRover.Goal()
         goal_msg.navigate_type = navigation_type
         goal_msg.gps_lat_target = lat
         goal_msg.gps_long_target = long
         goal_msg.period = period
+        goal_msg.target_radius = target_radius
 
         if not self.actions_started:
             print("Could not handle autonomy goal sending, actions not started")
@@ -52,14 +65,14 @@ class AutonomyClient(ActionClient):
         self.goal_future.add_done_callback(self.response_callback)
 
     def response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
+        self.goal_handle = future.result()
+        if not self.goal_handle.accepted:
             print('The autonomy goal was rejected.')
             return
         
         print('The autonomy goal has been accepted by the server.')
 
-        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future = self.goal_handle.get_result_async()
         self.get_result_future.add_done_callback(self.result_callback)
 
     def result_callback(self, future):

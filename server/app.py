@@ -190,13 +190,13 @@ def auto_control():
             return {'data': ""}
 
         if command == "Stop":
-            ros_node.autonomy_client.send_autonomy_goal(0, 0.0, 0.0, 1.0)
+            ros_node.autonomy_client.cancel_goal()
         elif command == "GoTo":
-            ros_node.autonomy_client.send_autonomy_goal(1, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+            ros_node.autonomy_client.send_autonomy_goal(1, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']), float(request.get_json()['targetRadius']))
         elif command == "ARUCO":
-            ros_node.autonomy_client.send_autonomy_goal(2, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+            ros_node.autonomy_client.send_autonomy_goal(2, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']), float(request.get_json()['targetRadius']))
         elif command == "Object":
-            ros_node.autonomy_client.send_autonomy_goal(3, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']))
+            ros_node.autonomy_client.send_autonomy_goal(3, float(request.get_json()['gpsLat']), float(request.get_json()['gpsLong']), float(request.get_json()['period']), float(request.get_json()['targetRadius']))
 
         return {'data': command}
     else:
