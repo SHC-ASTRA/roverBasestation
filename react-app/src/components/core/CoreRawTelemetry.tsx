@@ -14,14 +14,14 @@ type GPS = {
 export const Telemetry = ({
     topicName='/core/telemetry'
 }) => {
-    const [accel, setAccel] = useState<Vec3D>();
-    const [altitude, setAlt] = useState<number>();
-    const [gpsCoords, setGPSCoords] = useState<GPS>();
-    const [gpsSats, setGPSSats] = useState<number>();
-    const [gyro, setGyro] = useState<Vec3D>();
-    const [orientation, setOrientation] = useState<number>();
-    const [pressure, setPressure] = useState<number>();
-    const [temperature, setTemperature] = useState<number>();
+    const [accel, setAccel] = useState<Vec3D>({x: 0, y: 0, z: 0});
+    const [altitude, setAlt] = useState<number>(0);
+    const [gpsCoords, setGPSCoords] = useState<GPS>({lat: 0, long: 0});
+    const [gpsSats, setGPSSats] = useState<number>(0);
+    const [gyro, setGyro] = useState<Vec3D>({x: 0, y: 0, z: 0});
+    const [orientation, setOrientation] = useState<number>(0);
+    const [pressure, setPressure] = useState<number>(0);
+    const [temperature, setTemperature] = useState<number>(0);
 
     useEffect(() => {
         let intervalValue = setInterval(() => {
@@ -46,14 +46,14 @@ export const Telemetry = ({
 
     return (
         <>
-            <div>{`GPS Latitude: ${gpsCoords ? gpsCoords.lat : ""}, Longitude: ${gpsCoords ? gpsCoords.long : ""}`}</div>
-            <div>{`GPS Satellites: ${gpsSats ? gpsSats : ""}`}</div>
-            <div>{`Gyroscope: ${gyro ? gyro.x : ""}, ${gyro ? gyro.y : ""}, ${gyro ? gyro.z : ""}`}</div>
-            <div>{`Acceleration: ${accel ? accel.x : ""}, ${accel ? accel.y : ""}, ${accel ? accel.z : ""}`}</div>
-            <div>{`Orientation: ${orientation ? orientation : ""}`}</div>
-            <div>{`Temperature: ${temperature ? temperature : ""}`}</div>
-            <div>{`Altitude: ${altitude ? altitude : ""}`}</div>
-            <div>{`Pressure: ${pressure ? pressure : ""}`}</div>
+            <div>{`GPS Latitude: ${gpsCoords.lat}, Longitude: ${gpsCoords.long} degrees`}</div>
+            <div>{`GPS Satellites: ${gpsSats}`}</div>
+            <div>{`Gyroscope: ${gyro.x}, ${gyro.y}, ${gyro.z} rad/s`}</div>
+            <div>{`Acceleration: ${accel.x}, ${accel.y}, ${accel.z} m/s^2`}</div>
+            <div>{`Orientation: ${orientation} degrees`}</div>
+            <div>{`Temperature: ${temperature} deg C`}</div>
+            <div>{`Altitude: ${altitude} m`}</div>
+            <div>{`Pressure: ${pressure} Pa`}</div>
         </>
     )
 }
