@@ -54,6 +54,8 @@ BIO_CONTROL = '/astra/bio/control'
 FAERIE_FEEDBACK = '/astra/arm/bio/feedback'
 FAERIE_CONTROL = '/astra/arm/bio/control'
 
+AUTO_FEEDBACK = '/astra/auto/feedback'
+
 class RosNode(Node):
 
     # Dictionary of Publishers
@@ -85,7 +87,7 @@ class RosNode(Node):
             print("Finished and received callback")
             pass
         # Initalize the autonomy client
-        self.autonomy_client = AutonomyClient(self, autonomy_result_callback)
+        # self.autonomy_client = AutonomyClient(self, autonomy_result_callback)
 
         self.telemetry_handler = TelemetryHandler(self)
 
@@ -108,13 +110,14 @@ class RosNode(Node):
             (std_msgs.msg.String, CORE_FEEDBACK, self.core_feedback_callback),
             (std_msgs.msg.String, ARM_FEEDBACK, self.arm_feedback_callback),
             (std_msgs.msg.String,  BIO_FEEDBACK, self.bio_feedback_callback),
-            (interfaces_pkg.msg.FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback)
+            (interfaces_pkg.msg.FaerieTelemetry, FAERIE_FEEDBACK, self.faerie_feedback_callback),
+            (std_msgs.msg.String, AUTO_FEEDBACK, self.autonomy_feedback_callback)
         ]
 
         ## Feedback Subscribers
         for [interface, topic_name, callback] in ACTIVE_SUBSCRIBERS:
             print(f"Subscribing to {topic_name} with interface type {str(interface)} and callback {callback.__name__}")
-            self.subscribers[topic_name] = self.create_subscription(interface, topic_name, callback, 0);
+            self.subscribers[topic_name] = self.create_subscription(interface, topic_name, callback, 0)
 
     ## Subscriber Callbacks
 
@@ -144,6 +147,10 @@ class RosNode(Node):
         # Append to the key's list
         self.message_data[FAERIE_FEEDBACK].append(msg)
 
+    def autonomy_feedback_callback(self, msg):
+        print(f"Received data from {inspect.stack()[0][3]} feedback topic: {msg.data}")
+        self.append_topic_data(AUTO_FEEDBACK, msg)
+
     
     # Send a ping
     def send_ping(self):
@@ -165,14 +172,14 @@ class RosNode(Node):
 
     def connect_to_autonomy_action(self):
         print("Waiting for autonomy action to connect...")
-        try:
-            while not self.autonomy_client.wait_for_server(timeout_sec=5.0):
-                print("CANNOT CONNECT TO AUTONOMY SERVICE")
-                continue
-            print("All action servers have connected.")
-            self.autonomy_client.actions_started = True
-        except RCLError:
-            print("Action thread did not completely connect.")
+        # try:
+        #     while not self.autonomy_client.wait_for_server(timeout_sec=5.0):
+        #         print("CANNOT CONNECT TO AUTONOMY SERVICE")
+        #         continue
+        #     print("All action servers have connected.")
+        #     self.autonomy_client.actions_started = True
+        # except RCLError:
+        #     print("Action thread did not completely connect.")
 
 
     # Create a ROS publisher of String type

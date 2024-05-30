@@ -75,7 +75,7 @@ let feedbackWidgets = [
     },
     {
         title: "Autonomy Feedback",
-        TOPIC: "/auto/feedback"
+        topic: "/auto/feedback"
     }
 ]
 // Widgets that are shown in the sidebar
@@ -135,10 +135,6 @@ export let widgets: WidgetData[] = [
         data: <FaerieSensors />
     },
     {
-        title: "Arm Position",
-        data: <ArmPos />
-    },
-    {
         title: "Arm Control",
         data: <ArmControl />,
         minW: 3,
@@ -163,10 +159,12 @@ export let widgets: WidgetData[] = [
         height: 6
     },
      {
-        title: "Raw Telemetry",
+        title: "Core Telemetry",
         data: <Telemetry />,
         height: 7,
-        minH: 7
+        minH: 7,
+        width: 4,
+        minW: 4,
     },
     // Perform a form of "list comprehension" adapted to Typescript / Javascript functionality
     ...feedbackWidgets.map((widgetData) => {
