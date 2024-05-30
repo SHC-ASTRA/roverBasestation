@@ -1,0 +1,5 @@
+.leaflet-container {
+    height: 40vh;
+    width: 38vw;
+    display: flex;
+}
