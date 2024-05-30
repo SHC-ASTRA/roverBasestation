@@ -13,6 +13,7 @@ export const Map = ({
     });
 
     const [gpsPoints, setGPSPoints] = useState<LatLngExpression[]>([]);
+    const [pointsLength, setLength] = useState<number>(0);
    
     const cluckyIcon = new Icon({
         iconUrl : "clucky.png",
@@ -28,7 +29,18 @@ export const Map = ({
                     if (data['gps_long'] && data['gps_lat']) {
                         const newPoint = { latitude: data['gps_lat'], longitude: data['gps_long'] };
                         setGPSCoords(newPoint);
-                        setGPSPoints(prevPoints => [...prevPoints, [newPoint.latitude, newPoint.longitude]]);
+                        if (pointsLength == 0
+                            || gpsPoints[pointsLength - 1][0] != data['gps_lat'] 
+                            || gpsPoints[pointsLength - 1][1] != data['gps_long']) {
+                            
+                            console.log(pointsLength);
+                            if (pointsLength != 0) {
+                                console.log(gpsPoints[pointsLength - 1][0], data['gps_lat'])
+                                console.log(gpsPoints[pointsLength - 1][1], data['gps_long'])
+                            }
+                            setLength(previousLength => previousLength + 1);
+                            setGPSPoints(prevPoints => [...prevPoints, [newPoint.latitude, newPoint.longitude]]);
+                        }
                     }    
                 })
         }, 1000);
