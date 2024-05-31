@@ -4,8 +4,8 @@ export const FanControl = ({
     topicName = '/bio/control'
     }) => {
 
-    const longFan = 3000;
-    const shortFan = 250;
+    const longFan = 15000;
+    const shortFan = 3000;
 
     return (
         <div>

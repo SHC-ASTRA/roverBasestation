@@ -109,8 +109,8 @@ export let widgets: WidgetData[] = [
     {
         title: "CITADEL Chemical Dispersion",
         data: <ChemicalDispersion />,
-        width: 3,
-        minW: 3,
+        width: 4,
+        minW: 4,
         height: 5,
         minH: 5
     },

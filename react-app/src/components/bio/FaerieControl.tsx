@@ -15,7 +15,8 @@ export const FaerieControl = ({
     const duty_cycle_command = 'faerie,ctrl,duty,'
     const laser_command = 'faerie,ctrl,laser,'
     const stop_command = 'faerie,stop'
-
+    const shake_command = 'faerie,ctrl,shake,'
+    
     function send_command_post(command, {toggleParam='off', valueParam=0}) {
         let command_to_send;
         
@@ -78,18 +79,7 @@ export const FaerieControl = ({
                     <option value="0.25" /* label="25%" */></option>
                     <option value="0.5" /* label="50%" */></option>
                 </datalist>
-                {/*
-                <Slider dotStyle={{width: '10em', height: '10em'}} min={0} max={100} step={1} defaultValue={50} onChangeComplete={(value) => {
-                    if (typeof value === "number") { // i love union types i love union types
-                        value -= 50
-                        console.log("Motor speed set to " + value * 2 + "%");
-                        value /= 100
-                        setMotorSpeed(value);
-                        
-                        send_command_post(duty_cycle_command, {valueParam: value});
-                    } 
-                }}/>
-                */}
+
             </div>
             <div style={{padding: '1em'}}>
                 <input type="text" onChange={(e) => {
@@ -114,6 +104,18 @@ export const FaerieControl = ({
                 send_command_post(stop_command, {});
             }} style={{width: '8em', height: '4em'}}>Stop Motor</button>
 
+            <button className="red-button" onClick={() => {
+                console.log("Shaking SCABBARD open");
+                
+                send_command_post(shake_command, {toggleParam: 'open'});
+            }} style={{width: '8em', height: '4em'}}>Shake Open</button>
+
+            <button className="red-button" onClick={() => {
+                console.log("Shaking SCABBARD closed");
+                
+                send_command_post(shake_command, {toggleParam: 'closed'});
+            }} style={{width: '8em', height: '4em'}}>Shake Closed</button>
+
             <div style={{paddingTop: '2em'}}>
                 <h6>Laser Toggle</h6>
                 <Toggle defaultChecked={false} onChange={(e) => {
@@ -123,12 +125,6 @@ export const FaerieControl = ({
                     send_command_post(laser_command, {toggleParam: toggle});
                 }}/>
             </div>
-
-            {/*
-            <div>
-                <span>Last Command: {lastCommand}</span>
-            </div>
-            */}
         </div>
         
     )
