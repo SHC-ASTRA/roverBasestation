@@ -4,8 +4,7 @@ import signal
 import threading
 # Custom ROS class
 from ros_handling import RosNode, ros2_thread
-from ros_handling import CORE_CONTROL, CORE_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK
-from autonomy_handling import AUTO_NAME
+from ros_handling import CORE_CONTROL, CORE_FEEDBACK, ARM_CONTROL, ARM_FEEDBACK, ARM_COMMAND, BIO_CONTROL, BIO_FEEDBACK, FAERIE_CONTROL, FAERIE_FEEDBACK, AUTO_FEEDBACK
 # Flask
 from flask import Flask, send_from_directory, send_file, request
 # Flask SocketIO
@@ -112,7 +111,7 @@ def get_faerie_feedback():
 @app.route('/auto/feedback')
 def get_auto_feedback():
     try:
-        return {'data': ros_node.message_data[AUTO_NAME]}
+        return {'data': ros_node.message_data[AUTO_FEEDBACK]}
     except KeyError:
         return {'data': 'No data was found'}
     
