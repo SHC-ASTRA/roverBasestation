@@ -12,45 +12,10 @@ export const FaerieControl = ({
     const [textInput, setText] = useState<number>(0);
     const [lastCommand, setLastCommand] = useState<string>("");
 
-    const duty_cycle_command = 'faerie,ctrl,duty,'
-    const laser_command = 'faerie,ctrl,laser,'
+    const duty_cycle_command = 'faerie,ctrl,duty'
+    const laser_command = 'faerie,ctrl,laser'
     const stop_command = 'faerie,stop'
-    const shake_command = 'faerie,ctrl,shake,'
-    
-    function send_command_post(command, {toggleParam='off', valueParam=0}) {
-        let command_to_send;
-        
-        // STOP COMMAND
-        if(command.includes('stop')) {
-            // TODO: FIX THIS BY WORKING WITH DAVID S. ON MICROCONTROLLER END
-            // command_to_send = stop_command;
-
-            command_to_send = duty_cycle_command;
-            valueParam = 0;
-        }
-        // LASER COMMAND
-        else if(command.includes('laser')) {
-            command_to_send = laser_command + toggleParam;
-        }
-        // DUTY CYCLE COMMAND
-        else {
-            command_to_send = duty_cycle_command + valueParam;
-        }
-        fetch(topicName, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                command: command_to_send
-            })
-        })
-
-        setLastCommand(command_to_send);
-        // console.log(`Sent command ${command_to_send}`);
-    }
-
+    const shake_command = 'faerie,ctrl,shake'
     return (
         <div>
             <div style={{padding: '0.7em 2em 0.7em 2em'}}>
@@ -93,27 +58,66 @@ export const FaerieControl = ({
                     console.log("Motor speed set to " + value + "%");
                     value /= 200
                     setMotorSpeed(value);
-                    
-                    send_command_post(duty_cycle_command, {valueParam: value});
+
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: `${duty_cycle_command},${value}`,
+                        })
+                    })
                 }}></input>
             </div>
 
             <button className="red-button" onClick={() => {
                 console.log("Stopping the motor");
-                
-                send_command_post(stop_command, {});
+
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `${stop_command}`,
+                    })
+                })
+            
             }} style={{width: '8em', height: '4em'}}>Stop Motor</button>
 
             <button className="red-button" onClick={() => {
                 console.log("Shaking SCABBARD open");
+
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `${shake_command},open`,
+                    })
+                })
                 
-                send_command_post(shake_command, {toggleParam: 'open'});
             }} style={{width: '8em', height: '4em'}}>Shake Open</button>
 
             <button className="red-button" onClick={() => {
                 console.log("Shaking SCABBARD closed");
-                
-                send_command_post(shake_command, {toggleParam: 'closed'});
+
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `${shake_command},closed`,
+                    })
+                })
+        
             }} style={{width: '8em', height: '4em'}}>Shake Closed</button>
 
             <div style={{paddingTop: '2em'}}>
@@ -121,8 +125,18 @@ export const FaerieControl = ({
                 <Toggle defaultChecked={false} onChange={(e) => {
                     const toggle: string = e.target.checked ? "on" : "off";
                     console.log("Setting the lasers to be " + toggle);
+
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: `${laser_command},${toggle}`,
+                        })
+                    })
                     
-                    send_command_post(laser_command, {toggleParam: toggle});
                 }}/>
             </div>
         </div>
