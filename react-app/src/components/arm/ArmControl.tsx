@@ -56,11 +56,11 @@ export const ArmControl = ({
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            command: 'arm,aux,lynx_reset',
+                            command: 'arm,aux,lynx_reset\n',
                         })
                     })
                 }}>
-                    Homing
+                    Reset
                 </button>
                 <button className="control-button" onClick={() => {
                     console.log("Homing the arm.");

@@ -23,18 +23,15 @@ export const FaerieControl = ({
                 <label>
                     Motor Speed Slider:
                 </label>
-                
-                <br/>
-                <br/>
-                <span>-50%</span>
+                <span>{motorSpeed}</span>
                 <input type="range" list="motor-speed-range" min={-0.5} max={0.5} step={0.001} defaultValue={0} onMouseUp={(event) => {
                     let value: number = Number(event.currentTarget.value);
                     // Convert value down to scale for ROS transport to Faerie node
                     // on a scale from -0.5 to 0.5
                     console.log(value);
+                    setMotorSpeed(value);
                     // if(value) 
                 }}/>
-                <span>50%</span>
                 <datalist id="motor-speed-range">
                     <option value="-0.5" /* label="-50%" */></option>
                     <option value="-0.25" /* label="-25%" */></option>

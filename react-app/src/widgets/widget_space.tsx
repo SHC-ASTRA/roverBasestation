@@ -129,8 +129,8 @@ export let widgets: WidgetData[] = [
         data: <FaerieControl />,
         width: 4,
         minW: 4,
-        height: 5,
-        minH: 5
+        height: 7,
+        minH: 7
     },
     {
         title: "FAERIE Sensor Data",
