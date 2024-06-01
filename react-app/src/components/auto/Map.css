@@ -3,3 +3,7 @@
     width: 38vw;
     display: flex;
 }
+
+.text-input {
+    width: 10em;
+}

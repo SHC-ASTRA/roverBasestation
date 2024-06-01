@@ -47,6 +47,21 @@ export const ArmControl = ({
         <>
             <p>Controlling over controller {gamepadIndex}</p>
             <div className="button-wrapper">
+            <button className="control-button" onClick={() => {
+                    console.log("Resetting the arm.");
+                    fetch(topicName, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            command: 'arm,aux,lynx_reset\n',
+                        })
+                    })
+                }}>
+                    Reset
+                </button>
                 <button className="control-button" onClick={() => {
                     console.log("Homing the arm.");
                     fetch(topicName, {

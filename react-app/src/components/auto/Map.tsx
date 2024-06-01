@@ -3,6 +3,11 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-
 import "./Map.css"
 import { LatLngExpression, Icon } from "leaflet"
 
+type Waypoint = {
+    coords: LatLngExpression
+    annotation?: string
+}
+
 export const Map = ({
     topicName='/core/telemetry'
     }) => {
@@ -14,6 +19,11 @@ export const Map = ({
 
     const [gpsPoints, setGPSPoints] = useState<LatLngExpression[]>([]);
     const [pointsLength, setLength] = useState<number>(0);
+
+    const [latitude, setLat] = useState<number>(0);
+    const [longitude, setLong] = useState<number>(0);
+    const [annotation, setAnnotation] = useState<string | undefined>();
+    const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
    
     const cluckyIcon = new Icon({
         iconUrl : "clucky.png",
@@ -50,8 +60,6 @@ export const Map = ({
         })
     }, []);
 
-    console.log(gpsPoints);
-
     function ChangeView({ center }) {
         const map = useMap();
         map.setView(center)
@@ -62,17 +70,56 @@ export const Map = ({
     return (
         <div >
             <div className='leaflet-container'>
-                <MapContainer center={[34.727, -86.639]} zoom={10} scrollWheelZoom={true} id="map" >
+                <MapContainer center={[38.39621, -110.79357]} zoom={10} scrollWheelZoom={true} id="map" >
                     <ChangeView center={[gpsCoords.latitude, gpsCoords.longitude]} />
                     <TileLayer
                         url="./tiles/{z}/{x}/{y}.png"
                     />
+                    {waypoints.map((site) => {
+                        console.log(site.coords);
+                        return (<Marker position={site.coords}>
+                            <Popup>
+                                <div>{`${site.annotation ? site.annotation : ""}\n
+                                Latitude: ${site.coords[0]}, Longitude: ${site.coords[1]}`}</div>
+                                
+                            </Popup>
+                        </Marker>)
+                    })}
                     <Marker position={[gpsCoords.latitude, gpsCoords.longitude]} icon={cluckyIcon}> </Marker>
                     <Polyline positions={gpsPoints} color="red"/>
                 </MapContainer>
             </div>
             
-            Current position: [ {gpsCoords.latitude} , {gpsCoords.longitude} ]
+            <div>Current position: [ {gpsCoords.latitude} , {gpsCoords.longitude} ]</div>
+
+            <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "space-evenly"}}>
+                <input className="text-input" type="text" placeholder="GPS Latitude" onChange={(e) => {
+                    let value: number = Number(e.target.value);
+                    if (Number.isNaN(value) || value > 180 || value < -180) return;
+                    setLat(value);
+                }}></input>
+                <input className="text-input" type="text" placeholder="GPS Longitude" onChange={(e) => {
+                    let value: number = Number(e.target.value);
+                    if (Number.isNaN(value) || value > 180 || value < -180) return;
+                    setLong(value);
+                }}></input>
+                <input className="text-input" type="text" placeholder="Waypoint Annotation" onChange={(e) => {
+                    let value: string = e.target.value;
+                    setAnnotation(value);
+                }}></input>
+
+                <button  className="control-button" onClick={() => {
+                    if (latitude === 0 || longitude === 0) return;
+                    let waypoint: Waypoint = {
+                        coords: [latitude, longitude],
+                        annotation: annotation
+                    }
+                    setWaypoints(previousWaypoints => [...previousWaypoints, waypoint]);
+                    console.log(`Adding waypoint\nLatitude: ${waypoint.coords[0]}, Longitude: ${waypoint.coords[1]}`)
+                }}>
+                    Add Waypoint
+                </button>
+            </div>
         </div>
     )
 }

@@ -97,9 +97,9 @@ export let widgets: WidgetData[] = [
     {
         title: "Map",
         data: <Map />,
-        minH: 7,
+        minH: 8,
         minW: 5,
-        height: 7,
+        height: 8,
         width: 5
     },
     {
@@ -119,8 +119,8 @@ export let widgets: WidgetData[] = [
     {
         title: "CITADEL Chemical Dispersion",
         data: <ChemicalDispersion />,
-        width: 3,
-        minW: 3,
+        width: 4,
+        minW: 4,
         height: 5,
         minH: 5
     },
@@ -129,8 +129,8 @@ export let widgets: WidgetData[] = [
         data: <FaerieControl />,
         width: 4,
         minW: 4,
-        height: 5,
-        minH: 5
+        height: 7,
+        minH: 7
     },
     {
         title: "FAERIE Sensor Data",
