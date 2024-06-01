@@ -14,7 +14,6 @@ export const FaerieControl = ({
 
     const duty_cycle_command = 'faerie,ctrl,duty'
     const laser_command = 'faerie,ctrl,laser'
-    const stop_command = 'faerie,stop'
     const shake_command = 'faerie,ctrl,shake'
     return (
         <div>
@@ -46,14 +45,14 @@ export const FaerieControl = ({
             <div style={{padding: '1em'}}>
                 <input type="text" onChange={(e) => {
                     let value: number = Number(e.target.value);
-                    if (Number.isNaN(value) || value > 100 || value < -100) return;
+                    if (Number.isNaN(value) || value > 50 || value < -50) return;
                     setText(value);
                 }}></input>
             
                 <input type="submit" onClick={() => {
                     let value: number = textInput;
                     console.log("Motor speed set to " + value + "%");
-                    value /= 200
+                    value /= 100
                     setMotorSpeed(value);
 
                     fetch(topicName, {
@@ -70,22 +69,6 @@ export const FaerieControl = ({
             </div>
 
             <button className="red-button" onClick={() => {
-                console.log("Stopping the motor");
-
-                fetch(topicName, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        command: `${stop_command}`,
-                    })
-                })
-            
-            }} style={{width: '8em', height: '4em'}}>Stop Motor</button>
-
-            <button className="red-button" onClick={() => {
                 console.log("Shaking SCABBARD open");
 
                 fetch(topicName, {
@@ -99,7 +82,26 @@ export const FaerieControl = ({
                     })
                 })
                 
-            }} style={{width: '8em', height: '4em'}}>Shake Open</button>
+            }} style={{width: '8em', height: '4em', backgroundColor: "blue"}}>Shake Open</button>
+            {// hehe red button with bg color blue
+            // get fucked alex - jamie
+            }
+
+            <button className="red-button" onClick={() => {
+                console.log("Stopping the motor");
+
+                fetch(topicName, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: `${duty_cycle_command},0`,
+                    })
+                })
+            
+            }} style={{width: '8em', height: '4em'}}>Stop Motor</button>
 
             <button className="red-button" onClick={() => {
                 console.log("Shaking SCABBARD closed");
@@ -111,11 +113,11 @@ export const FaerieControl = ({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        command: `${shake_command},closed`,
+                        command: `${shake_command},close`,
                     })
                 })
         
-            }} style={{width: '8em', height: '4em'}}>Shake Closed</button>
+            }} style={{width: '8em', height: '4em', backgroundColor: "blue"}}>Shake Closed</button>
 
             <div style={{paddingTop: '2em'}}>
                 <h6>Laser Toggle</h6>
