@@ -97,9 +97,9 @@ export let widgets: WidgetData[] = [
     {
         title: "Map",
         data: <Map />,
-        minH: 7,
+        minH: 8,
         minW: 5,
-        height: 7,
+        height: 8,
         width: 5
     },
     {
