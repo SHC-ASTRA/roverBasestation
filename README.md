@@ -1,102 +1,78 @@
-# ASTRA Base Station
-Welcome! This is the repository for UAH's ASTRA Base Station for the University Rover Challenge in 2024.
-ASTRA is a project under the AutoSat branch of Space Hardware Club as part of the University of Alabama in Huntsville.
+# Getting Started with Create React App
 
-## Development Platform Recommendations
-Primary development is being done on Ubuntu 22.04.3 LTS, if you intend to fork or continue development this version of Ubuntu or newer is recommended.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-It is possible to perform development on any device that supports Docker Engine through Docker Desktop or CLI interface. This is not recommended as the `Dockerfile` may take extended amounts of time to rebuild for each change. This can reduce the amount of time spent doing actual development.
+## Note
 
-If you are unable to obtain a physical Ubuntu device it is recommended to make use of a Google Cloud Computer or an Akamai Linode with the minumum specifications as listed
-* 2 virtual cores, 4 **recommended**
-* 2Gb of RAM, 4Gb **recommended**
-* 20Gb of total storage, 30Gb **recommended**
+This project makes use of multiple other dependencies. \
+It is recommended to use `yarn install` prior to attempting to run any scripts.
 
-## Running the Base Station
-### Dependencies
-* Docker Engine ([Install](https://docs.docker.com/engine/install/ubuntu/))
-* Network Connection
+## Available Scripts
 
-### Running Docker
-It is first important that you have the Docker commandline engine installed. The installation process can be found [here](https://docs.docker.com/engine/install/). It is recommended to install on Ubuntu Jammy (22.04.3) LTS.
+In the project directory, you can run:
 
-It is then possible to clone this repository. SSH is recommended if you intend to make any changes. The documentation for how to add an SSH key to your Github account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
-```
-git clone git@github.com:SHC-ASTRA/rover-Basestation.git
-```
-After cloning the repository the following can be run
-```bash
-# Change directories into the repo's docker folder
-cd rover-basestation/basestation-docker
-# Build the docker image from the directory
-# A network connection is necessary for this portion
-docker build -t basestation .
-# Run the docker image and expose the necessary port
-# The server will be broadcast to all network interfaces
-docker run -p 8000:8000 basestation
-```
+### `yarn start`
 
-## Non-Docker Development
-### Development Dependencies
-* NodeJS v18.18.2 (Recommended install with [Node Version Manager](https://github.com/nvm-sh/nvm#installing-and-updating))
-    * `corepack` npm package for use of Yarn (Recommended)
-* ROS2 Humble ([Install](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html))
-* APT Packages
-    * `software-properties-common`
-    * `make`, `build-essential`, `cmake`
-    * `python3-colcon-common-extensions` ([Install](https://colcon.readthedocs.io/en/released/user/installation.html))
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
+This option will display errors and issues with webpack and deployment. \
+It is not an optimized production build and should not be used in production.
 
-### Running the Basestation without Docker
-The basestation can be run outside of the Docker image by similarly following the docker `RUN` commands. The below makes use of Yarn, which is designed to be faster and easier than NPM.
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-```bash
-# Enable yarn with corepack
-corepack enable
+### `yarn test`
 
-# Start inside the root of the repository, move to the main server
-cd basestation-docker
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-# Build the ROS2 service interface package
-cd health_interface
-source /opt/ros/humble/setup.bash
-colcon build
-cd ..
+### `yarn build`
 
-# Install Nodejs packages with yarn
-# In order to install the server packages, ROS2 must be sourced.
-# We do not do it here because it has already been done for the ROS2 package building.
-cd server && yarn install && cd ..
-cd react-app && yarn install && cd ..
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-# Make use of the rclnodejs-cli package.
-# Convert the interface package to rclnodejs supported Javascript.
-source health_interface/install/setup.bash
-cd server && yarn rclnodejs-cli generate-ros-messages && cd ..
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-# Build the React and Typescript ROS2 / HTTP host server
-# The server interface implements this to simplify
-cd server && yarn build
-# Then run the program
-yarn prod
-```
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-If you are only performing client-side updates it is possible to rebuild the React while the program is running (in another command terminal). This is possible - without restarting the program and rebuilding the Typescript - with the below command in the `basestation-docker/server` directory.
-```bash
-yarn build-react
-```
-Refresh the browser page after running this command, and the UI will update. This is possible because the web-page is served as a static HTML page by an Express HTTP handler. When you refresh the page, Express re-fetches the page from the `basestation-docker/react/build` directory.
+### `yarn eject`
 
-After building the ROS2 interface package, compiling it into `rclnodejs` Javascript, it is possible to only worry about sourcing ROS2 packages, and running the program without pre-emptively building the React & Typescript. This can be done with the below command - that builds the Typescript and React - in the `basestation-docker/server` directory.
-```bash
-source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash
-yarn dev
-```
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-## Contributors
-For anyone adding to this repository, please add your name to the README before making a pull request.
-- Jamie Roberson
-- Alexander Resurreccion
-- Anshika Sinha
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
