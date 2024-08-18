@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/SHC-ASTRA/rover-Basestation-Backend/
+[submodule "react-app"]
+	path = react-app
+	url = https://github.com/SHC-ASTRA/rover-Basestation-Frontend/
