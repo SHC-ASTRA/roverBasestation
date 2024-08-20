@@ -1,0 +1,5 @@
+services:
+  basestation:
+    image: basestation:latest
+    build: .
+    network_mode: host

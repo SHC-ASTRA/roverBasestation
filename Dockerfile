@@ -4,7 +4,8 @@
 FROM ros:humble-ros-core-jammy
 
 # Make use of bash, not the system shell
-RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
+#RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
+SHELL ["/bin/bash", "-c"]
 
 ######################
 # WORK FILES
@@ -13,7 +14,10 @@ RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
 WORKDIR $HOME
 COPY ./ ./
 # Remove all possibly copied node modules
-RUN rm -rf node_modules server/node_modules react-app/node_modules
+RUN rm -rf \
+    node_modules \
+    server/node_modules \
+    react-app/node_modules
 
 ######################
 # ROS2 Humble Install
@@ -51,7 +55,12 @@ RUN apt update
 RUN apt install -y ca-certificates gnupg
 RUN mkdir -p /etc/apt/keyrings
 # common software properties, curl, make, build-essentials, cmake
-RUN apt install -y software-properties-common curl make build-essential cmake
+RUN apt install -y \
+    software-properties-common \
+    curl \
+    make \
+    build-essential \
+    cmake
 
 # Add colcon repository
 # https://colcon.readthedocs.io/en/released/user/installation.html
@@ -81,28 +90,59 @@ RUN npm install -g corepack
 # Enable yarn
 RUN corepack enable
 
+# Install python and pip
+# we need python-is-python3 because poetry invokes python3 with `python`
+# we also need python's development headers to build wheels
+RUN apt install -y \
+    python3 \
+    python3-pip \
+    python-is-python3 \
+    python3-dev
+
+# always source the ros humble script
+#SHELL ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash &&"]
+
 ##########################
 # Install node packages
 ##########################
 
-RUN cd server && source /opt/ros/humble/setup.bash && yarn install
-RUN cd react-app && yarn install
+RUN cd server \
+    && source /opt/ros/humble/setup.bash \
+    && yarn install
+RUN cd react-app \
+    && source /opt/ros/humble/setup.bash \
+    && yarn install
 
 #################
 # ROS Building
 #################
 
 # Build the ROS interface
-RUN cd health_interface && source /opt/ros/humble/setup.bash && colcon build
+RUN cd server/ros_msgs \
+    && source /opt/ros/humble/setup.bash \
+    && colcon build
+
 # Compile the interface to Javascript
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
-RUN cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn rclnodejs-cli generate-ros-messages
+RUN cd server \
+    && source /opt/ros/humble/setup.bash \
+    && source ros_msgs/install/setup.bash \
+    && cd ../react-app \
+    && yarn build
 
-#################
-# Final builds
-#################
+# set up the python environment
+RUN cd server \
+    && pip install -r requirements.txt
 
-# Build the Typescript & React
-RUN cd server && source /opt/ros/humble/setup.bash && yarn build
-# Source the health_interface and start the server
-CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash && yarn prod"]
+# install python modules that aren't available via pip
+# libboost is required for cv_bridge
+# openvc is required for cv_bridge
+# libopencv-dev is required for cv_bridge
+# dotenv is required for our flask config
+RUN apt install -y \
+    libboost-python-dev \
+    python3-dotenv \
+    libopencv-dev \
+    ros-humble-cv-bridge
+
+CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ros_msgs/install/setup.bash && python3 -m flask run --no-reload --host=0.0.0.0 --port="]
