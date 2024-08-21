@@ -3,8 +3,7 @@
 # https://hub.docker.com/_/ros/
 FROM ros:humble-ros-core-jammy
 
-# Make use of bash, not the system shell
-#RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
+# change shell to bash
 SHELL ["/bin/bash", "-c"]
 
 ######################
@@ -13,11 +12,6 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR $HOME
 COPY ./ ./
-# Remove all possibly copied node modules
-RUN rm -rf \
-    node_modules \
-    server/node_modules \
-    react-app/node_modules
 
 ######################
 # ROS2 Humble Install
@@ -76,18 +70,16 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 ########################
 # Update repositories
 ########################
- 
+
 RUN apt update
 
-# Install colcon
-RUN apt install -y python3-colcon-common-extensions
+# install runtimes
+RUN apt install -y \
+    python3-colcon-common-extensions \
+    nodejs
 
-# Install nodejs
-RUN apt install -y nodejs
-
-# Install corepack
-RUN npm install -g corepack
 # Enable yarn
+RUN npm install -g corepack
 RUN corepack enable
 
 # Install python and pip
@@ -99,18 +91,15 @@ RUN apt install -y \
     python-is-python3 \
     python3-dev
 
-# always source the ros humble script
-#SHELL ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash &&"]
-
 ##########################
 # Install node packages
 ##########################
 
-RUN cd server \
-    && source /opt/ros/humble/setup.bash \
+RUN source /opt/ros/humble/setup.bash \
+    && cd server \
     && yarn install
-RUN cd react-app \
-    && source /opt/ros/humble/setup.bash \
+RUN source /opt/ros/humble/setup.bash \
+    && cd react-app \
     && yarn install
 
 #################
@@ -118,21 +107,19 @@ RUN cd react-app \
 #################
 
 # Build the ROS interface
-RUN cd server/ros_msgs \
-    && source /opt/ros/humble/setup.bash \
+RUN source /opt/ros/humble/setup.bash \
+    && cd server/ros_msgs \
     && colcon build
 
 # Compile the interface to Javascript
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
-RUN cd server \
-    && source /opt/ros/humble/setup.bash \
-    && source ros_msgs/install/setup.bash \
-    && cd ../react-app \
+RUN source /opt/ros/humble/setup.bash \
+    && source server/ros_msgs/install/setup.bash \
+    && cd react-app \
     && yarn build
 
 # set up the python environment
-RUN cd server \
-    && pip install -r requirements.txt
+RUN cd server && pip install -r requirements.txt
 
 # install python modules that aren't available via pip
 # libboost is required for cv_bridge
@@ -140,9 +127,7 @@ RUN cd server \
 # libopencv-dev is required for cv_bridge
 # dotenv is required for our flask config
 RUN apt install -y \
-    libboost-python-dev \
     python3-dotenv \
-    libopencv-dev \
     ros-humble-cv-bridge
 
-CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ros_msgs/install/setup.bash && python3 -m flask run --no-reload --host=0.0.0.0 --port="]
+CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ros_msgs/install/setup.bash && python3 -m flask run --no-reload --host=0.0.0.0 --port=80"]
