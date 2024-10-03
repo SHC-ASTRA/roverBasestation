@@ -15,30 +15,20 @@ COPY ./ /app
 # Install node packages
 ##########################
 
-RUN source /opt/ros/humble/setup.bash \
-    && cd server \
-    && yarn install
-RUN source /opt/ros/humble/setup.bash \
-    && cd react-app \
-    && yarn install
+RUN bash scripts/install_node_packages.sh
 
 #################
 # ROS Building
 #################
 
 # Build the ROS interface
-RUN source /opt/ros/humble/setup.bash \
-    && cd server/ros_msgs \
-    && colcon build
+RUN bash sripts/build_ros_interface.sh
 
 # Compile the interface to Javascript
 # https://github.com/RobotWebTools/rclnodejs-cli/tree/develop/message-generator-tool
-RUN source /opt/ros/humble/setup.bash \
-    && source server/ros_msgs/install/setup.bash \
-    && cd react-app \
-    && yarn build
+RUN bash scripts/build_yarn.sh
 
 # set up the python environment
-RUN cd server && pip install -r requirements.txt
+RUN bash scripts/set_up_python.sh
 
-CMD ["/bin/bash", "-c", "cd server && source /opt/ros/humble/setup.bash && source ros_msgs/install/setup.bash && python3 -m flask run --no-reload --host=0.0.0.0 --port=80"]
+CMD bash scripts/launch.sh
