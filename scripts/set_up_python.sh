@@ -1,4 +1,4 @@
 #!/bin/env bash
 
 cd server
-poetry install
+pip install -r requirements.txt
