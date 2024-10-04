@@ -73,7 +73,6 @@ After connecting to the dev container, run the following command in a new termin
 and press 'y' as necessary. Once all dependencies have finished installing, the web server
 should start and visible on localhost.
 
-## Running the Base Station
 ### Windows
 
 After installing Docker, proceed to clone this repository. The recommended method is to
