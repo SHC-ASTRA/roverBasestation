@@ -25,39 +25,93 @@ specifications as listed:
 * 2Gb of RAM, 4Gb recommended
 * 20Gb of total storage, 30Gb recommended
 
-## Running the Base Station
-
-### Dependencies
+## Dependencies
 
 * Docker Engine ([Install](https://docs.docker.com/engine/install/ubuntu/))
+* Visual Studio Code ([Install](https://code.visualstudio.com/download))
+* Github CLI (Windows) ([Install](https://cli.github.com/))
 * Network Connection
 
 ### Running Docker
 
 It is first important that you have the Docker commandline engine installed. The
 installation process can be found [here](https://docs.docker.com/engine/install/).
-It is recommended to install on MacOS or Linux, though Windows may work too.
 
-It is then possible to clone this repository. SSH is recommended if you intend
+## Running the Base Station
+### Linux
+
+After installing Docker, proceed to clone this repository. SSH is recommended if you intend
 to make any changes. The documentation for how to add an SSH key to your Github
 account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
 ```bash
 # Clone
-git clone git@github.com:SHC-ASTRA/rover-Basestation.git
+git clone git@github.com:SHC-ASTRA/rover-Basestation.git -b dockerization
+
+# Change directories into the repo
+cd rover-Basestation-Release
+
 # Set up submodules
 git submodule init
 git submodule update
 ```
 
-After cloning the repository the following can be run
+After cloning the repository, open it with VSCode:
 
 ```bash
+# Start the docker container
+code .
+```
+
+VSCode will suggest numerous plugins to install. Once you have installed the plugins, press
+```Control + Shift + P``` and type ```reopen in dev container```.
+
+After connecting to the dev container, run the following command in a new terminal:
+```bash
+. scripts/full_rebuild.sh
+```
+and press 'y' as necessary. Once all dependencies have finished installing, the web server
+should start and visible on localhost.
+
+## Running the Base Station
+### Windows
+
+After installing Docker, proceed to clone this repository. The recommended method is to
+use the Github CLI in the target parent directory:
+
+```bash
+# Clone
+gh repo clone SHC-ASTRA/rover-Basestation-Release -- -b dockerization
+
 # Change directories into the repo
 cd rover-Basestation-Release
-# Start the docker container
-sudo docker-compose up
+
+# Set up submodules
+git submodule init
+git submodule update
 ```
+
+After cloning the repository, open it with VSCode:
+
+```bash
+# Start the docker container
+code .
+```
+
+VSCode will suggest numerous plugins to install. Once you have installed the plugins, press
+```Control + Shift + P``` and type ```reopen in dev container```.
+
+After connecting to the dev container, run the following command in a new terminal:
+```bash
+. scripts/full_rebuild.sh
+```
+and press 'y' as necessary. Once all dependencies have finished installing, the web server
+should start and visible on localhost.
+
+It is possible that the shell scripts will not work on your windows machine. If this happens,
+ensure that the scripts are set to 'LF' line endings by opening each file in VSCode. In the
+bottom right there will be an indicator that may say 'CRLF'; click it will give the option to
+convert it to LF. Repeat for all .sh scripts and rerun the prior command.
 
 ## Non-Docker Development
 
@@ -86,3 +140,4 @@ making a pull request.
 - Alexander Resurreccion
 - Anshika Sinha
 - Riley McLain
+- Roald Schaum
