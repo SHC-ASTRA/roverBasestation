@@ -4,6 +4,8 @@
         "ms-vscode-remote.remote-containers",
         "ms-python.python",
         "ms-vscode.cpptools",
-        "ms-vscode.vscode-typescript-next"
+        "ms-vscode.vscode-typescript-next",
+        //"ms-python.black-formatter",
+        //"ms-python.vscode-pylance"
     ]
 }
