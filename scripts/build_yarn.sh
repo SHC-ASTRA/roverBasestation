@@ -1,6 +1,8 @@
-#1/bin/env bash
+#!/bin/env bash
 
-source /opt/ros/humble/setup.bash
-source server/ros_msgs/install/setup.bash
+# Create a statically build production version of the
+# react webpage that will be hosted by the Flask
+# backend 
+
 cd react-app
 yarn build
