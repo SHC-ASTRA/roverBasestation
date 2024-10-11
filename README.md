@@ -29,24 +29,62 @@ specifications as listed:
 
 * Docker Engine ([Install](https://docs.docker.com/engine/install/ubuntu/))
 * Visual Studio Code ([Install](https://code.visualstudio.com/download))
-* Github CLI (Windows) ([Install](https://cli.github.com/))
-* Network Connection
+* Github CLI ([Install](https://cli.github.com/))
 
-### Running Docker
+## Running the Base Station
+
+
+### Windows
+
+Open "Windows Features' and enable "Windows Subsystem for Linux".
+
+In a terminal run
+```bash
+wsl --install
+```
+
+Follow the instructions on screen, creating an account for the ubuntu vm.
+Proceed with linux install instructions.
+
+### Linux
 
 It is first important that you have the Docker commandline engine installed. The
 installation process can be found [here](https://docs.docker.com/engine/install/).
 
-## Running the Base Station
-### Linux
+Install VSCode:
+```bash
+sudo snap install code --classic
+```
 
-After installing Docker, proceed to clone this repository. SSH is recommended if you intend
-to make any changes. The documentation for how to add an SSH key to your Github
-account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+Generate an SSH key:
+```bash
+ssh-keygen -t ed25519 -C "email@example.com"  -f ~/.ssh/github
+```
 
+Tell SSH to use your key for github.com:
+```bash
+cat << EOF >> ~/.ssh/config 
+Host github.com
+        IdentityFile ~/.ssh/github
+EOF
+```
+
+[Install Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_linux.md#debian-ubuntu-linux-raspberry-pi-os-apt).
+
+Login to Github CLI:
+```bash
+gh auth login
+GitHub.com
+SSH
+/home/[username]/.ssh/github.pub
+GitHub CLI
+Login with a web browser
+```
+
+Proceed to clone this repository.
 ```bash
 # Clone
-git clone git@github.com:SHC-ASTRA/rover-Basestation.git -b dockerization
+gh repo clone SHC-ASTRA/rover-Basestation-Release
 
 # Change directories into the repo
 cd rover-Basestation-Release
@@ -57,14 +95,13 @@ git submodule update
 ```
 
 After cloning the repository, open it with VSCode:
-
 ```bash
 # Start the docker container
 code .
 ```
 
 VSCode will suggest numerous plugins to install. Once you have installed the plugins, press
-```Control + Shift + P``` and type ```reopen in dev container```.
+`Control + Shift + P` and type `reopen in dev container`.
 
 After connecting to the dev container, run the following command in a new terminal:
 ```bash
@@ -72,63 +109,6 @@ After connecting to the dev container, run the following command in a new termin
 ```
 and press 'y' as necessary. Once all dependencies have finished installing, the web server
 should start and visible on localhost.
-
-### Windows
-
-After installing Docker, proceed to clone this repository. The recommended method is to
-use the Github CLI in the target parent directory:
-
-```bash
-# Clone
-gh repo clone SHC-ASTRA/rover-Basestation-Release -- -b dockerization
-
-# Change directories into the repo
-cd rover-Basestation-Release
-
-# Set up submodules
-git submodule init
-git submodule update
-```
-
-After cloning the repository, open it with VSCode:
-
-```bash
-# Start the docker container
-code .
-```
-
-VSCode will suggest numerous plugins to install. Once you have installed the plugins, press
-```Control + Shift + P``` and type ```reopen in dev container```.
-
-After connecting to the dev container, run the following command in a new terminal:
-```bash
-. scripts/full_rebuild.sh
-```
-and press 'y' as necessary. Once all dependencies have finished installing, the web server
-should start and visible on localhost.
-
-It is possible that the shell scripts will not work on your windows machine. If this happens,
-ensure that the scripts are set to 'LF' line endings by opening each file in VSCode. In the
-bottom right there will be an indicator that may say 'CRLF'; click it will give the option to
-convert it to LF. Repeat for all .sh scripts and rerun the prior command.
-
-## Non-Docker Development
-
-### Development Dependencies
-
-* **NodeJS** v18.18.2 (Recommended install with [Node Version Manager](https://github.com/nvm-sh/nvm#installing-and-updating))
-    * `corepack` npm package for use of Yarn (Recommended)
-* **ROS2 Humble** ([Install](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html))
-* **APT Packages**
-
-    * APT packages will change as the project develops. It is recommended to
-    follow the `apt install` commands in `Dockerfile` to find the most
-    up-to-date package list.
-
-### Running the Basestation without Docker
-
-The basestation can be run outside of the Docker image by similarly following
-the docker `RUN` commands.
 
 ## Contributors
 
