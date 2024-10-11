@@ -27,7 +27,6 @@ specifications as listed:
 
 ## Dependencies
 
-* Docker Engine ([Install](https://docs.docker.com/engine/install/ubuntu/))
 * Visual Studio Code ([Install](https://code.visualstudio.com/download))
 * Github CLI ([Install](https://cli.github.com/))
 
@@ -37,6 +36,8 @@ specifications as listed:
 ### Windows
 
 Open "Windows Features' and enable "Windows Subsystem for Linux".
+
+Install [Visual Studio Code](https://code.visualstudio.com/download).
 
 In a terminal run
 ```bash
@@ -92,6 +93,12 @@ cd rover-Basestation-Release
 # Set up submodules
 git submodule init
 git submodule update
+```
+
+Add your local user to the docker group.
+```bash
+sudo usermod -aG docker $USER
+exec newgrp docker
 ```
 
 After cloning the repository, open it with VSCode:
