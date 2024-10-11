@@ -95,15 +95,8 @@ git submodule init
 git submodule update
 ```
 
-Add your local user to the docker group.
+Open the repository with VSCode:
 ```bash
-sudo usermod -aG docker $USER
-exec newgrp docker
-```
-
-After cloning the repository, open it with VSCode:
-```bash
-# Start the docker container
 code .
 ```
 
@@ -116,6 +109,31 @@ After connecting to the dev container, run the following command in a new termin
 ```
 and press 'y' as necessary. Once all dependencies have finished installing, the web server
 should start and visible on localhost.
+
+
+## Troubleshooting
+	
+If you get an error related to push permissions, it's possible that your SSH key
+was not properly registered to the SSH agent. Run the following commands to fix this:
+
+Add your local user to the docker group:
+```bash
+sudo usermod -aG docker $USER
+exec newgrp docker
+```
+
+Bind github to the ssh agent:
+```bash
+	cat << EOF >> ~/.bashrc
+	eval \$(ssh-agent) > /dev/null
+	ssh-add -q ~/.ssh/github
+	EOF
+
+	exec bash
+
+	pkill "code"
+	code .
+```
 
 ## Contributors
 
