@@ -1,68 +1,101 @@
 # ASTRA Base Station
 
 Welcome! This is the repository for UAH's ASTRA Base Station for the University
-Rover Challenge in 2024.
+Rover Challenge in 2025.
 
 ASTRA is a project under the AutoSat branch of Space Hardware Club as part of
-the University of Alabama in Huntsville.
+The University of Alabama in Huntsville.
 
 ## Development Platform Recommendations
 
-Primary development is being done on Ubuntu 22.04.3 LTS, if you intend to fork
-or continue development this version of Ubuntu or newer is recommended.
-
-It is possible to perform development on any device that supports Docker Engine
-through Docker Desktop or CLI interface. It is recommended to use an Ubuntu
-virtual machine as the `Dockerfile` may take extended amounts of time to rebuild
-for each change. This can reduce the amount of time spent doing actual
-development (though [some developers may prefer this](https://xkcd.com/303/)).
-
-If you are unable to create an Ubuntu virtual machine, it is recommended to make
-use of a Google Cloud Computer or an Akamai Linode with the minumum
-specifications as listed:
-
-* 2 virtual cores, 4 recommended
-* 2Gb of RAM, 4Gb recommended
-* 20Gb of total storage, 30Gb recommended
-
-## Dependencies
-
-* Visual Studio Code ([Install](https://code.visualstudio.com/download))
-* Github CLI ([Install](https://cli.github.com/))
+Basestation development occurs in Visual Studio Code Docker development
+containers. You can find setup instructions for Windows and Linux below.
 
 ## Running the Base Station
 
+[See here.](scripts/README.md)
 
-### Windows
+## Windows Setup
 
-Open "Windows Features' and enable "Windows Subsystem for Linux".
+> [!CAUTION]
+> Using Docker Engine directly in Windows will cause many issues, including
+> increasing build times by up to 20x ([though some developers may prefer this](https://xkcd.com/303/)).
 
-Install [Visual Studio Code](https://code.visualstudio.com/download).
+### Visual Studio Code in Windows
 
-In a terminal run
-```bash
-wsl --install
+[Install Visual Studio Code (VSC).](https://code.visualstudio.com/download)
+
+### Windows Subsystem for Linux (WSL)
+
+To install WSL, run this in PowerShell:
+
+```powershell
+wsl --install -d Ubuntu
 ```
 
-Follow the instructions on screen, creating an account for the ubuntu vm.
-Proceed with linux install instructions.
+Use the arrow keys to navigate the installer. Pick a username and a password you
+won't forget!
 
-### Linux
+Once WSL is set up, you should have a Bash prompt that starts with a `$`. Use
+this terminal to follow the Linux instructions below.
 
-It is first important that you have the Docker commandline engine installed. The
-installation process can be found [here](https://docs.docker.com/engine/install/).
+> [!NOTE]
+> The distribution installed in WSL is Ubuntu, which you'll need to know for the
+> Linux instructions below.
 
-Install VSCode:
+<details open>
+ <summary>
+  A properly set up WSL prompt.
+ </summary>
+
+Your prompt may look a bit different, but if it ends with a `$` then you're good
+to go.
+
+![A properly set up WSL prompt.](./images/wsl_prompt.png)
+
+</details>
+
+## Linux Setup
+
+### Docker
+
+> [!NOTE]
+> Basestation now uses Docker for development!
+
+Follow the instructions to [install Docker Engine on your system](https://docs.docker.com/engine/install/).
+
+Run these commands:
+
 ```bash
-sudo snap install code --classic
+# add current user to `docker` group
+sudo usermod -aG docker $USER
+# restart the shell with the new group list
+exec newgrp docker
 ```
 
-Generate an SSH key:
+### Git and GitHub Setup
+
+> [!NOTE]
+> You'll need a GitHub account to contribute to Basestation's code.
+
+First, ensure you have `git` installed:
+
 ```bash
-ssh-keygen -t ed25519 -C "email@example.com"  -f ~/.ssh/github
+which git
+```
+
+If `which` doesn't complain about not finding `git`, you're good to go.
+
+Next, install [Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_linux.md).
+
+Generate an SSH key for use with GitHub:
+
+```bash
+ssh-keygen -t ed25519 -C "YOUR_EMAIL_HERE@example.com"  -f ~/.ssh/github
 ```
 
 Tell SSH to use your key for github.com:
+
 ```bash
 cat << EOF >> ~/.ssh/config 
 Host github.com
@@ -70,78 +103,82 @@ Host github.com
 EOF
 ```
 
-[Install Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_linux.md#debian-ubuntu-linux-raspberry-pi-os-apt).
+Check if you have an SSH agent running:
+
+```bash
+ssh-agent -l
+```
+
+If you get an error like
+`Could not open a connection to your authentication agent.`, then follow these instructions:
+
+<details>
+ <summary>
+  Set up SSH agent
+ </summary>
+ Run these commands:
+
+ ```bash
+ # modify .bashrc
+ cat << EOF >> ~/.bashrc
+ # start ssh agent
+ eval \$(ssh-agent) > /dev/null
+ # add github ssh key
+ ssh-add -q ~/.ssh/github
+ EOF
+ 
+ # restart shell
+ exec bash
+ ```
+
+</details>
+<br />
 
 Login to Github CLI:
+
 ```bash
-gh auth login
-GitHub.com
-SSH
-/home/[username]/.ssh/github.pub
-GitHub CLI
-Login with a web browser
+gh auth login -p ssh -h github.com -w
 ```
 
-Proceed to clone this repository.
+* Select the SSH key you just generated
+* Log in via web browser
+
+> [!TIP]
+> GitHub CLI might not be able to open your browser, depending on your system
+> configuration. If you get an error, navigate to
+> <https://github.com/login/device> and paste your one-time authentication code there.
+
+Finally, clone the repository and submodules:
+
 ```bash
-# Clone
-gh repo clone SHC-ASTRA/rover-Basestation-Release
-
-# Change directories into the repo
-cd rover-Basestation-Release
-
-# Set up submodules
-git submodule init
-git submodule update
+gh repo clone SHC-ASTRA/rover-Basestation-Release --recurse-submodules
 ```
 
-Open the repository with VSCode:
-```bash
-code .
-```
+### Visual Studio Code in Linux
 
-VSCode will suggest numerous plugins to install. Once you have installed the plugins, press
-`Control + Shift + P` and type `reopen in dev container`.
+[Install VSCode](https://code.visualstudio.com/docs/setup/linux). After
+installation, run `code` in your terminal and then open up the repository you
+just cloned with `File` > `Open Folder...`. The directory will be called `rover-Basestation-Release`.
 
-After connecting to the dev container, run the following command in a new terminal:
-```bash
-. scripts/full_rebuild.sh
-```
-and press 'y' as necessary. Once all dependencies have finished installing, the web server
-should start and visible on localhost.
+> [!TIP]
+> Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open the Command
+> Palette in VSC.
 
+Show the required extensions with `>Extensions: Show Recommended Extensions` in
+the command palette. Make sure you install all of them!
 
-## Troubleshooting
-	
-If you get an error related to push permissions, it's possible that your SSH key
-was not properly registered to the SSH agent. Run the following commands to fix this:
+Once installed, open up the dev container with
+`>Dev Containers: Rebuild and Reopen in Container`.
 
-Add your local user to the docker group:
-```bash
-sudo usermod -aG docker $USER
-exec newgrp docker
-```
-
-Bind github to the ssh agent:
-```bash
-	cat << EOF >> ~/.bashrc
-	eval \$(ssh-agent) > /dev/null
-	ssh-add -q ~/.ssh/github
-	EOF
-
-	exec bash
-
-	pkill "code"
-	code .
-```
+If the dev container built and connected with no issues, you're all set.
 
 ## Contributors
 
 For anyone adding to this repository, please add your name to the README before
 making a pull request.
 
-- Jamie Roberson
-- Alexander Resurreccion
-- Anshika Sinha
-- Riley McLain
-- Roald Schaum
+* Jamie Roberson
+* Alexander Resurreccion
+* Anshika Sinha
+* Riley McLain
+* Roald Schaum
