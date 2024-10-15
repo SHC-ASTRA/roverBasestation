@@ -1,0 +1,19 @@
+{
+    "[markdown]": {
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "on",
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "cSpell.enabledLanguageIds": [
+        "markdown"
+    ],
+    "cSpell.ignoreWords": [
+        "basestation",
+        "astra",
+        "uah"
+    ],
+    "cSpell.ignoreRegExpList": [
+        "^```(.|\n)+?(?=```)```$",
+        "(?<!`)`[^`]+`(?!`)"
+    ]
+}
