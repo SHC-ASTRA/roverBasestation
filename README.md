@@ -106,16 +106,15 @@ Next, install [Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_li
 Generate an SSH key for use with GitHub:
 
 > [!TIP]
-> Ensure you replace the example Email with the Email associated
-> with your github account.
+> Ensure you replace the example email with one associated with your GitHub account.
 
 ```bash
 ssh-keygen -t ed25519 -C "YOUR_EMAIL_HERE@example.com"  -f ~/.ssh/github
 ```
 
 > [!NOTE]
-> This command requests a passphrase for the key. This is unnecessary for most users,
-> and can be skipped by pressing enter twice after running it.
+> This command requests a passphrase for the key. This is unnecessary for our
+> use case, and can be skipped by pressing enter twice after running it.
 
 Tell SSH to use your key for github.com:
 
@@ -129,7 +128,7 @@ EOF
 Check if you have an SSH agent running:
 
 ```bash
-ssh-agent
+ssh-add
 ```
 
 If you get an error like
@@ -174,12 +173,7 @@ gh auth login -p ssh -h github.com -w
 Finally, clone the repository and submodules:
 
 ```bash
-gh repo clone SHC-ASTRA/rover-Basestation-Release
-
-cd rover-Basestation-Release
-
-git submodule init
-git submodule update
+gh repo clone SHC-ASTRA/rover-Basestation-Release -- --recurse-submodules
 ```
 
 ### Visual Studio Code in Linux
@@ -187,8 +181,12 @@ git submodule update
 > [!NOTE]
 > It is recommended to install VSCode through the Snap store.
 
-[Install VSCode](https://code.visualstudio.com/docs/setup/linux). After
-installation, run `code .` in your terminal.
+[Install VSCode](https://code.visualstudio.com/docs/setup/linux#_snap). After
+installation, open the project in VSC:
+
+```bash
+code ~/rover-Basestation-Release
+```
 
 > [!TIP]
 > Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open the Command
@@ -197,7 +195,7 @@ installation, run `code .` in your terminal.
 Show the required extensions with `>Extensions: Show Recommended Extensions` in
 the command palette. Make sure you install all of them! It is possible that you
 will not get recommended any extensions. If this is the case, install the
-"Dev containers" extension and proceed with the next step, then repeat this step.
+extension `ms-vscode-remote.remote-containers`.
 
 Once installed, open up the dev container with
 `>Dev Containers: Rebuild and Reopen in Container`.
