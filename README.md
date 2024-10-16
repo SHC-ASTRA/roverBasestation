@@ -17,7 +17,7 @@ containers. You can find setup instructions for Windows and Linux below.
 
 ## Windows Setup
 
-> [!CAUTION]
+> [!WARNING]
 > Using Docker Engine directly in Windows will cause many issues, including
 > increasing build times by up to 20x ([though some developers may prefer this](https://xkcd.com/303/)).
 
@@ -44,12 +44,11 @@ To install WSL, run this in PowerShell:
 wsl --install -d Ubuntu
 ```
 
-> [!NOTE]
-> This command may require you to restart your computer. If this is the case,
-> Restart and run the command again.
-
 Use the arrow keys to navigate the installer. Pick a username and a password you
-won't forget!
+won't forget! If prompted, go ahead and restart your computer.
+
+> [!TIP]
+> You can reopen WSL by launching it from the search feature in Windows.
 
 Once WSL is set up, you should have a Bash prompt that starts with a `$`. Use
 this terminal to follow the Linux instructions below.
@@ -105,16 +104,16 @@ Next, install [Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_li
 
 Generate an SSH key for use with GitHub:
 
-> [!TIP]
-> Ensure you replace the example email with one associated with your GitHub account.
-
 ```bash
+# ensure the proper directory exists
+mkdir -p ~/.ssh
+# generate the key
 ssh-keygen -t ed25519 -C "YOUR_EMAIL_HERE@example.com"  -f ~/.ssh/github
 ```
 
-> [!NOTE]
-> This command requests a passphrase for the key. This is unnecessary for our
-> use case, and can be skipped by pressing enter twice after running it.
+> [!TIP]
+> If you don't want to set a password for your SSH key, just leave it blank and
+> press enter.
 
 Tell SSH to use your key for github.com:
 
@@ -165,7 +164,7 @@ gh auth login -p ssh -h github.com -w
 - Select the SSH key you just generated
 - Log in via web browser
 
-> [!TIP]
+> [!WARNING]
 > GitHub CLI might not be able to open your browser, depending on your system
 > configuration. If you get an error, navigate to
 > <https://github.com/login/device> and paste your one-time authentication code there.
@@ -176,10 +175,14 @@ Finally, clone the repository and submodules:
 gh repo clone SHC-ASTRA/rover-Basestation-Release -- --recurse-submodules
 ```
 
+> [!WARNING] WSL Warning
+> Make certain you are **not** cloning to a Windows folder! Windows folders have
+> paths starting with `/mnt/c`. You can get to your Linux home directory with `cd`.
+
 ### Visual Studio Code in Linux
 
 > [!NOTE]
-> It is recommended to install VSCode through the Snap store.
+> We recommend you install the Snap version for simplicity's sake.
 
 [Install VSCode](https://code.visualstudio.com/docs/setup/linux#_snap). After
 installation, open the project in VSC:
