@@ -7,8 +7,6 @@ source /opt/ros/humble/setup.bash
 
 # Move to the server directory
 cd server
-# Source the Python virtual environment
-source .flaskenv
 # Move to the ros_msgs ROS2 package
 cd ros_msgs
 # Build the ROS2 interfaces package
