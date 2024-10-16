@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+# To be run from the main repository directory
+
 # Source ROS2 dependency
 source /opt/ros/humble/setup.bash
 
@@ -25,3 +27,5 @@ colcon build
 cd ..
 # Ensure the back-end python dependencies are installed
 pip install -r requirements.txt
+# Return to the main directory
+cd ..
