@@ -25,6 +25,17 @@ containers. You can find setup instructions for Windows and Linux below.
 
 [Install Visual Studio Code (VSC).](https://code.visualstudio.com/download)
 
+### Git for Windows
+
+[Install Git for Windows.](https://git-scm.com/downloads/win)
+During installation, make to enable the following options:
+
+- Git from the command line and also from 3rd-party software
+- Use the OpenSSL library
+- Checkout as-is, commit Unix-style line endings
+- Fast-Forward or merge
+- Git Credential Manager
+
 ### Windows Subsystem for Linux (WSL)
 
 To install WSL, run this in PowerShell:
@@ -32,6 +43,10 @@ To install WSL, run this in PowerShell:
 ```powershell
 wsl --install -d Ubuntu
 ```
+
+> [!NOTE]
+> This command may require you to restart your computer. If this is the case,
+> Restart and run the command again.
 
 Use the arrow keys to navigate the installer. Pick a username and a password you
 won't forget!
@@ -90,9 +105,17 @@ Next, install [Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_li
 
 Generate an SSH key for use with GitHub:
 
+> [!TIP]
+> Ensure you replace the example Email with the Email associated
+> with your github account.
+
 ```bash
 ssh-keygen -t ed25519 -C "YOUR_EMAIL_HERE@example.com"  -f ~/.ssh/github
 ```
+
+> [!NOTE]
+> This command requests a passphrase for the key. This is unnecessary for most users,
+> and can be skipped by pressing enter twice after running it.
 
 Tell SSH to use your key for github.com:
 
@@ -106,7 +129,7 @@ EOF
 Check if you have an SSH agent running:
 
 ```bash
-ssh-agent -l
+ssh-agent
 ```
 
 If you get an error like
@@ -140,8 +163,8 @@ Login to Github CLI:
 gh auth login -p ssh -h github.com -w
 ```
 
-* Select the SSH key you just generated
-* Log in via web browser
+- Select the SSH key you just generated
+- Log in via web browser
 
 > [!TIP]
 > GitHub CLI might not be able to open your browser, depending on your system
@@ -151,21 +174,30 @@ gh auth login -p ssh -h github.com -w
 Finally, clone the repository and submodules:
 
 ```bash
-gh repo clone SHC-ASTRA/rover-Basestation-Release --recurse-submodules
+gh repo clone SHC-ASTRA/rover-Basestation-Release
+
+cd rover-Basestation-Release
+
+git submodule init
+git submodule update
 ```
 
 ### Visual Studio Code in Linux
 
+> [!NOTE]
+> It is recommended to install VSCode through the Snap store.
+
 [Install VSCode](https://code.visualstudio.com/docs/setup/linux). After
-installation, run `code` in your terminal and then open up the repository you
-just cloned with `File` > `Open Folder...`. The directory will be called `rover-Basestation-Release`.
+installation, run `code .` in your terminal.
 
 > [!TIP]
 > Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open the Command
 > Palette in VSC.
 
 Show the required extensions with `>Extensions: Show Recommended Extensions` in
-the command palette. Make sure you install all of them!
+the command palette. Make sure you install all of them! It is possible that you
+will not get recommended any extensions. If this is the case, install the
+"Dev containers" extension and proceed with the next step, then repeat this step.
 
 Once installed, open up the dev container with
 `>Dev Containers: Rebuild and Reopen in Container`.
@@ -177,8 +209,8 @@ If the dev container built and connected with no issues, you're all set.
 For anyone adding to this repository, please add your name to the README before
 making a pull request.
 
-* Jamie Roberson
-* Alexander Resurreccion
-* Anshika Sinha
-* Riley McLain
-* Roald Schaum
+- Jamie Roberson
+- Alexander Resurreccion
+- Anshika Sinha
+- Riley McLain
+- Roald Schaum
