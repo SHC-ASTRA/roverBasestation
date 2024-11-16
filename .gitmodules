@@ -1,0 +1,9 @@
+[submodule "rover-Basestation-Frontend"]
+	path = rover-Basestation-Frontend
+	url = git@github.com:SHC-ASTRA/rover-Basestation-Frontend.git
+[submodule "rover-Basestation-Backend"]
+	path = rover-Basestation-Backend
+	url = git@github.com:SHC-ASTRA/rover-Basestation-Backend.git
+[submodule "ROS2_Interfaces"]
+	path = ROS2_Interfaces
+	url = git@github.com:SHC-ASTRA/ROS2_Interfaces.git
