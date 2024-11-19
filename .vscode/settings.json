@@ -4,6 +4,11 @@
         "editor.wordWrap": "on",
         "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
     },
+    "[python]": {
+        "editor.formatOnType": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     "cSpell.enabledLanguageIds": [
         "markdown"
     ],
