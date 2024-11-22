@@ -1,102 +1,217 @@
 # ASTRA Base Station
-Welcome! This is the repository for UAH's ASTRA Base Station for the University Rover Challenge in 2024.
-ASTRA is a project under the AutoSat branch of Space Hardware Club as part of the University of Alabama in Huntsville.
+
+Welcome! This is the repository for UAH's ASTRA Base Station for the University
+Rover Challenge in 2025.
+
+ASTRA is a project under the AutoSat branch of Space Hardware Club as part of
+The University of Alabama in Huntsville.
 
 ## Development Platform Recommendations
-Primary development is being done on Ubuntu 22.04.3 LTS, if you intend to fork or continue development this version of Ubuntu or newer is recommended.
 
-It is possible to perform development on any device that supports Docker Engine through Docker Desktop or CLI interface. This is not recommended as the `Dockerfile` may take extended amounts of time to rebuild for each change. This can reduce the amount of time spent doing actual development.
-
-If you are unable to obtain a physical Ubuntu device it is recommended to make use of a Google Cloud Computer or an Akamai Linode with the minumum specifications as listed
-* 2 virtual cores, 4 **recommended**
-* 2Gb of RAM, 4Gb **recommended**
-* 20Gb of total storage, 30Gb **recommended**
+Basestation development occurs in Visual Studio Code Docker development
+containers. You can find setup instructions for Windows and Linux below.
 
 ## Running the Base Station
-### Dependencies
-* Docker Engine ([Install](https://docs.docker.com/engine/install/ubuntu/))
-* Network Connection
 
-### Running Docker
-It is first important that you have the Docker commandline engine installed. The installation process can be found [here](https://docs.docker.com/engine/install/). It is recommended to install on Ubuntu Jammy (22.04.3) LTS.
+[See here.](scripts/README.md)
 
-It is then possible to clone this repository. SSH is recommended if you intend to make any changes. The documentation for how to add an SSH key to your Github account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+## Windows Setup
+
+> [!WARNING]
+> Using Docker Engine directly in Windows will cause many issues, including
+> increasing build times by up to 20x ([though some developers may prefer this](https://xkcd.com/303/)).
+
+### Visual Studio Code in Windows
+
+[Install Visual Studio Code (VSC).](https://code.visualstudio.com/download)
+
+### Git for Windows
+
+[Install Git for Windows.](https://git-scm.com/downloads/win)
+During installation, make to enable the following options:
+
+- Git from the command line and also from 3rd-party software
+- Use the OpenSSL library
+- Checkout as-is, commit Unix-style line endings
+- Fast-Forward or merge
+- Git Credential Manager
+
+### Windows Subsystem for Linux (WSL)
+
+To install WSL, run this in PowerShell:
+
+```powershell
+wsl --install -d Ubuntu
 ```
-git clone git@github.com:SHC-ASTRA/rover-Basestation.git
-```
-After cloning the repository the following can be run
+
+Use the arrow keys to navigate the installer. Pick a username and a password you
+won't forget! If prompted, go ahead and restart your computer.
+
+> [!TIP]
+> You can reopen WSL by launching it from the search feature in Windows.
+
+Once WSL is set up, you should have a Bash prompt that starts with a `$`. Use
+this terminal to follow the Linux instructions below.
+
+> [!NOTE]
+> The distribution installed in WSL is Ubuntu, which you'll need to know for the
+> Linux instructions below.
+
+<details open>
+ <summary>
+  A properly set up WSL prompt.
+ </summary>
+
+Your prompt may look a bit different, but if it ends with a `$` then you're good
+to go.
+
+![A properly set up WSL prompt.](./images/wsl_prompt.png)
+
+</details>
+
+## Linux Setup
+
+### Docker
+
+> [!NOTE]
+> Basestation now uses Docker for development!
+
+Follow the instructions to [install Docker Engine on your system](https://docs.docker.com/engine/install/).
+
+Run these commands:
+
 ```bash
-# Change directories into the repo's docker folder
-cd rover-basestation/basestation-docker
-# Build the docker image from the directory
-# A network connection is necessary for this portion
-docker build -t basestation .
-# Run the docker image and expose the necessary port
-# The server will be broadcast to all network interfaces
-docker run -p 8000:8000 basestation
+# add current user to `docker` group
+sudo usermod -aG docker $USER
+# restart the shell with the new group list
+exec newgrp docker
 ```
 
-## Non-Docker Development
-### Development Dependencies
-* NodeJS v18.18.2 (Recommended install with [Node Version Manager](https://github.com/nvm-sh/nvm#installing-and-updating))
-    * `corepack` npm package for use of Yarn (Recommended)
-* ROS2 Humble ([Install](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html))
-* APT Packages
-    * `software-properties-common`
-    * `make`, `build-essential`, `cmake`
-    * `python3-colcon-common-extensions` ([Install](https://colcon.readthedocs.io/en/released/user/installation.html))
+### Git and GitHub Setup
 
+> [!NOTE]
+> You'll need a GitHub account to contribute to Basestation's code.
 
-### Running the Basestation without Docker
-The basestation can be run outside of the Docker image by similarly following the docker `RUN` commands. The below makes use of Yarn, which is designed to be faster and easier than NPM.
+First, ensure you have `git` installed:
 
 ```bash
-# Enable yarn with corepack
-corepack enable
-
-# Start inside the root of the repository, move to the main server
-cd basestation-docker
-
-# Build the ROS2 service interface package
-cd health_interface
-source /opt/ros/humble/setup.bash
-colcon build
-cd ..
-
-# Install Nodejs packages with yarn
-# In order to install the server packages, ROS2 must be sourced.
-# We do not do it here because it has already been done for the ROS2 package building.
-cd server && yarn install && cd ..
-cd react-app && yarn install && cd ..
-
-# Make use of the rclnodejs-cli package.
-# Convert the interface package to rclnodejs supported Javascript.
-source health_interface/install/setup.bash
-cd server && yarn rclnodejs-cli generate-ros-messages && cd ..
-
-# Build the React and Typescript ROS2 / HTTP host server
-# The server interface implements this to simplify
-cd server && yarn build
-# Then run the program
-yarn prod
+which git
 ```
 
-If you are only performing client-side updates it is possible to rebuild the React while the program is running (in another command terminal). This is possible - without restarting the program and rebuilding the Typescript - with the below command in the `basestation-docker/server` directory.
+If `which` doesn't complain about not finding `git`, you're good to go.
+
+Next, install [Github CLI](https://github.com/cli/cli/blob/trunk/docs/install_linux.md).
+
+Generate an SSH key for use with GitHub:
+
 ```bash
-yarn build-react
+# ensure the proper directory exists
+mkdir -p ~/.ssh
+# generate the key
+ssh-keygen -t ed25519 -C "YOUR_EMAIL_HERE@example.com"  -f ~/.ssh/github
 ```
-Refresh the browser page after running this command, and the UI will update. This is possible because the web-page is served as a static HTML page by an Express HTTP handler. When you refresh the page, Express re-fetches the page from the `basestation-docker/react/build` directory.
 
-After building the ROS2 interface package, compiling it into `rclnodejs` Javascript, it is possible to only worry about sourcing ROS2 packages, and running the program without pre-emptively building the React & Typescript. This can be done with the below command - that builds the Typescript and React - in the `basestation-docker/server` directory.
+> [!TIP]
+> If you don't want to set a password for your SSH key, just leave it blank and
+> press enter.
+
+Tell SSH to use your key for github.com:
+
 ```bash
-source /opt/ros/humble/setup.bash && source ../health_interface/install/setup.bash
-yarn dev
+cat << EOF >> ~/.ssh/config 
+Host github.com
+        IdentityFile ~/.ssh/github
+EOF
 ```
 
+Check if you have an SSH agent running:
 
+```bash
+ssh-add
+```
+
+If you get an error like
+`Could not open a connection to your authentication agent.`, then follow these instructions:
+
+<details>
+ <summary>
+  Set up SSH agent
+ </summary>
+ Run these commands:
+
+ ```bash
+ # modify .bashrc
+ cat << EOF >> ~/.bashrc
+ # start ssh agent
+ eval \$(ssh-agent) > /dev/null
+ # add github ssh key
+ ssh-add -q ~/.ssh/github
+ EOF
+ 
+ # restart shell
+ exec bash
+ ```
+
+</details>
+<br />
+
+Login to Github CLI:
+
+```bash
+gh auth login -p ssh -h github.com -w
+```
+
+- Select the SSH key you just generated
+- Log in via web browser
+
+> [!WARNING]
+> GitHub CLI might not be able to open your browser, depending on your system
+> configuration. If you get an error, navigate to
+> <https://github.com/login/device> and paste your one-time authentication code there.
+
+Finally, clone the repository and submodules:
+
+```bash
+gh repo clone SHC-ASTRA/rover-Basestation-Release -- --recurse-submodules
+```
+
+> [!WARNING] WSL Warning
+> Make certain you are **not** cloning to a Windows folder! Windows folders have
+> paths starting with `/mnt/c`. You can get to your Linux home directory with `cd`.
+
+### Visual Studio Code in Linux
+
+> [!NOTE]
+> We recommend you install the Snap version for simplicity's sake.
+
+[Install VSCode](https://code.visualstudio.com/docs/setup/linux#_snap). After
+installation, open the project in VSC:
+
+```bash
+code ~/rover-Basestation-Release
+```
+
+> [!TIP]
+> Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open the Command
+> Palette in VSC.
+
+Show the required extensions with `>Extensions: Show Recommended Extensions` in
+the command palette. Make sure you install all of them! It is possible that you
+will not get recommended any extensions. If this is the case, install the
+extension `ms-vscode-remote.remote-containers`.
+
+Once installed, open up the dev container with
+`>Dev Containers: Rebuild and Reopen in Container`.
+
+If the dev container built and connected with no issues, you're all set.
 
 ## Contributors
-For anyone adding to this repository, please add your name to the README before making a pull request.
+
+For anyone adding to this repository, please add your name to the README before
+making a pull request.
+
 - Jamie Roberson
 - Alexander Resurreccion
 - Anshika Sinha
+- Riley McLain
+- Roald Schaum

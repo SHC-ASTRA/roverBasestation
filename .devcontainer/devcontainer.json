@@ -1,0 +1,21 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "ms-vscode.vscode-typescript-next",
+                "DavidAnson.vscode-markdownlint",
+                "yzhang.markdown-all-in-one",
+                "streetsidesoftware.code-spell-checker"
+            ]
+        }
+    },
+    "updateRemoteUserUID": true,
+    "runArgs": [
+        "--network=host"
+    ]
+}
