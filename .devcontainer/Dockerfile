@@ -1,95 +1,71 @@
-# ROS image, ros-humble-ros-core package installed
-# on Ubuntu Jammy
+# using image with ros humble already installed
 # https://hub.docker.com/_/ros/
 FROM ros:humble-ros-core-jammy
 
 # change shell to bash
 SHELL ["/bin/bash", "-c"]
 
-######################
-# ROS2 Humble Install
-######################
+# set up astra user
+RUN useradd -m -U astra \
+    && usermod -a -G sudo astra \
+    && chsh -s /usr/bin/bash astra \
+    && passwd -d astra
 
-# Using the ROS docker image
-# It is no longer necessary to install ROS2
-# or source.
-# The ROS2 image makes use of an entrypoint script
 
-# See the dockerfile here:
-# https://github.com/osrf/docker_images/tree/20e3ba685bb353a3c00be9ba01c1b7a6823c9472/ros/humble/ubuntu/jammy 
+###########################
+# INSTALL SYSTEM PACKAGES #
+###########################
 
-#####################
-# Packages install
-#####################
+RUN apt-get update
 
-# Update packages repositories
-RUN apt update
-# Add standard packages
-RUN apt install -y software-properties-common
-RUN add-apt-repository -y universe
-# Update the repositories again
-RUN apt update
+# add standard packages
+RUN apt-get install -y software-properties-common \
+    && add-apt-repository -y universe \
+    && apt-get update
 
-#####################
-# Install packages
-#####################
+# add development tools (this is a dev container)
+RUN apt-get install -y \
+    curl make build-essential cmake \
+    git vim sudo g++
 
-# Add standard packages
-RUN add-apt-repository -y universe
-# Update packages repositories
-RUN apt update
-# Repository keys & certificates
-RUN apt install -y ca-certificates gnupg
-RUN mkdir -p /etc/apt/keyrings
-# common software properties, curl, make, build-essentials, cmake
-RUN apt install -y \
-    software-properties-common \
-    curl \
-    make \
-    build-essential \
-    cmake
+# add colcon
+# see: <https://colcon.readthedocs.io/en/released/user/installation.html>
+RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list \
+    && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
+    && apt-get update \
+    && apt-get install -y python3-colcon-common-extensions
 
-# Add colcon repository
-# https://colcon.readthedocs.io/en/released/user/installation.html
-RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+# install python build requirements for pyenv
+# see: <https://github.com/pyenv/pyenv/wiki#suggested-build-environment>
+RUN apt-get install -y \
+    libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
+    libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev \
+    libxmlsec1-dev libffi-dev liblzma-dev
 
-# Install Node Version Manager
+
+###########################
+# SWITCH TO NON-ROOT USER #
+###########################
+
+USER astra
+
+# install nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+# install node and npm
 ENV NODE_VERSION=20
-
-# Install nvm with node and npm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash \
-    && source ~/.nvm/nvm.sh \
+RUN source ~/.nvm/nvm.sh \
     && nvm install $NODE_VERSION --latest-npm \
     && nvm alias default $NODE_VERSION \
     && nvm use default
 
+# install pyenv
+RUN curl https://pyenv.run | bash \
+    && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
+    && echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+ENV PYENV_ROOT="/home/astra/.pyenv"
 
-########################
-# Update repositories
-########################
-
-RUN apt update
-
-# install runtimes
-RUN apt install -y \
-    python3-colcon-common-extensions
-
-# Install python and pip
-# we need python-is-python3 because poetry invokes python3 with `python`
-# we also need python's development headers to build wheels
-RUN apt install -y \
-    python3 \
-    python3-pip \
-    python-is-python3 \
-    python3-dev \
-    python3-venv
-
-# Install extra required python packages that pip can't install
-# dotenv is required for our flask config
-RUN apt install -y \
-    python3-dotenv \
-    ros-humble-cv-bridge
-
-# Install development tools
-RUN apt install -y git
+# install python
+ENV PY_VERSION=3.12
+RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
+    && $PYENV_ROOT/bin/pyenv global $PY_VERSION

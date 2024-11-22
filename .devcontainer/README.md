@@ -9,7 +9,12 @@ This file contains the configuration for the VSCode development containers.
 `.devcontainer/devcontainer.json` contains the VSCode configuration for inside
 the container.
 
-Container development is optional, but it's a great choice for people who are
-already using Linux and don't want to switch to Ubuntu. Container development
-will work on any distribution that Docker supports. Container development is not
-recommended for Windows users, please use a virtual machine instead.
+Basestation uses exclusively container development. You can technically get away
+with bare metal development by following the commands in the Dockerfile on
+Ubuntu Jammy Jellyfish, but why would you do that?
+
+Windows users should either use a Linux virtual machine or WSL. Do not use
+Docker Engine directly on Windows! It is significantly slower than any other option.
+
+If you haven't already, check out [the main read me](../README.md) for
+instructions on setting up the development environment.
