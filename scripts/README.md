@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > All scripts are intended to be run from the root directory of
-> the r`over-Basestation-Release` repository.
+> the `rover-Basestation-Release` repository.
 
 ## Submodule Updates
 
