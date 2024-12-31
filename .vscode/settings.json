@@ -8,16 +8,22 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "cSpell.enabledLanguageIds": [
-        "markdown"
-    ],
-    "cSpell.ignoreWords": [
-        "basestation",
-        "astra",
-        "uah"
-    ],
+    "python.languageServer": "Pylance",
+    "python.defaultInterpreterPath": "~/.pyenv/shims/python",
+    "cSpell.enabledFileTypes": {
+        "all": false,
+        "markdown": true
+    },
     "cSpell.ignoreRegExpList": [
         "^```(.|\n)+?(?=```)```$",
         "(?<!`)`[^`]+`(?!`)"
+    ],
+    "remote.autoForwardPorts": false,
+    "cSpell.words": [
+        "protoc",
+        "rclpy",
+        "basestation",
+        "astra",
+        "uah"
     ]
 }

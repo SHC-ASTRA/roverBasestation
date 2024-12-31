@@ -1,4 +1,5 @@
 {
+    "name": "Basestation Release",
     "build": {
         "dockerfile": "Dockerfile"
     },
@@ -13,12 +14,15 @@
                 "yzhang.markdown-all-in-one",
                 "streetsidesoftware.code-spell-checker",
                 "ms-azuretools.vscode-docker",
-                "ms-iot.vscode-ros"
+                "ms-iot.vscode-ros",
+                "dbaeumer.vscode-eslint",
+                "svelte.svelte-vscode"
             ]
         }
     },
     "updateRemoteUserUID": true,
     "runArgs": [
         "--network=host"
-    ]
+    ],
+    "postStartCommand": "sudo caddy start"
 }

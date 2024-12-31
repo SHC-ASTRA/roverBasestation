@@ -1,0 +1,10 @@
+:80 # host on port 80
+
+bind 0.0.0.0
+
+# backend is on port 8080
+reverse_proxy /api/* :8080
+
+# serve built frontend files
+root * ./frontend/build
+file_server
