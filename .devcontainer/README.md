@@ -4,10 +4,12 @@ This file contains the configuration for the VSCode development containers.
 
 <https://code.visualstudio.com/docs/devcontainers/containers>
 
-`.devcontainer/Dockerfile` contains the docker configuration for use inside the container.
-
-`.devcontainer/devcontainer.json` contains the VSCode configuration for inside
+- `Dockerfile` contains the docker configuration for use inside the container.
+- `devcontainer.json` contains the VSCode configuration for inside
 the container.
+- `.bashrc` is the bash startup file. A symlink gets placed in the home
+  directory that points here.
+- `starship.toml` is the configuration for our prompt.
 
 Basestation uses exclusively container development. You can technically get away
 with bare metal development by following the commands in the Dockerfile on

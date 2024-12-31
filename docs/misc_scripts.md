@@ -1,8 +1,8 @@
-# Performing Development Builds
+# Misc Scripts and Commands
 
 > [!NOTE]
-> All scripts are intended to be run from the root directory of
-> the r`over-Basestation-Release` repository.
+> All instructions are intended to be begin in the root directory of the
+> `rover-Basestation-Release` repository.
 
 ## Submodule Updates
 
