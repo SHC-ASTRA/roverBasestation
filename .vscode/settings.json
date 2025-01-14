@@ -11,7 +11,7 @@
     "python.languageServer": "Pylance",
     "python.defaultInterpreterPath": "~/.pyenv/shims/python",
     "cSpell.enabledFileTypes": {
-        "all": false,
+        "*": false,
         "markdown": true
     },
     "cSpell.ignoreRegExpList": [
@@ -20,10 +20,13 @@
     ],
     "remote.autoForwardPorts": false,
     "cSpell.words": [
-        "protoc",
-        "rclpy",
-        "basestation",
         "astra",
-        "uah"
+        "basestation",
+        "colcon",
+        "protoc",
+        "pyenv",
+        "rclpy",
+        "uah",
+        "venv"
     ]
 }
