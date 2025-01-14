@@ -72,7 +72,12 @@ eval "$(starship init bash)"
 source /opt/ros/humble/setup.bash
 
 # set up ros interface
-source /workspaces/rover-Basestation-Release/interfaces/install/setup.bash
+interface_script="/workspaces/rover-Basestation-Release/interfaces/install/setup.bash"
+if [[ -f $interface_script ]]; then
+  source $interface_script
+else
+  echo 'Please build the interfaces!'
+fi
 
 # set up nvm
 export NVM_DIR="$HOME/.nvm"

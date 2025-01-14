@@ -84,10 +84,5 @@ RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
     && $PYENV_ROOT/bin/pyenv global $PY_VERSION \
     && $PYENV_ROOT/bin/pyenv virtualenv $PY_VERSION $VENV
 
-# build interface
-RUN cd /workspaces/rover-Basestation-Release/interface/ \
-    && source /opt/ros/humble/setup.bash \
-    && colcon build
-
 # set up bashrc
 RUN rm ~/.bashrc && ln -s /workspaces/rover-Basestation-Release/.devcontainer/.bashrc ~/.bashrc
