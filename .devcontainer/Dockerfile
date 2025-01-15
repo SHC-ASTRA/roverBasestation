@@ -26,7 +26,7 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get install -y curl make build-essential \
     cmake git vim sudo g++ man-db bash-completion \
-    jq unzip
+    jq unzip gnupg2
 
 # add colcon
 # see: <https://colcon.readthedocs.io/en/released/user/installation.html>
@@ -79,10 +79,12 @@ ENV PYENV_ROOT="/home/astra/.pyenv"
 
 # install python
 ENV PY_VERSION=3.10
-ENV VENV=astra
 RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
-    && $PYENV_ROOT/bin/pyenv global $PY_VERSION \
-    && $PYENV_ROOT/bin/pyenv virtualenv $PY_VERSION $VENV
+    && $PYENV_ROOT/bin/pyenv global $PY_VERSION
+
+# install poetry
+RUN $PYENV_ROOT/bin/pyenv exec pip install -U pipx \
+    && $PYENV_ROOT/bin/pyenv exec python -m pipx install poetry
 
 # set up bashrc
 RUN rm ~/.bashrc && ln -s /workspaces/rover-Basestation-Release/.devcontainer/.bashrc ~/.bashrc

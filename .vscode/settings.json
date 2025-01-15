@@ -9,7 +9,7 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.languageServer": "Pylance",
-    "python.defaultInterpreterPath": "~/.pyenv/shims/python",
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python",
     "cSpell.enabledFileTypes": {
         "*": false,
         "markdown": true
