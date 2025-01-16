@@ -63,6 +63,20 @@ RUN curl --output protoc.zip -L 'https://github.com/protocolbuffers/protobuf/rel
 
 USER astra
 
+# python stuff first for better caching (it takes eons)
+# install pyenv
+RUN curl https://pyenv.run | bash
+ENV PYENV_ROOT="/home/astra/.pyenv"
+
+# install python
+ENV PY_VERSION=3.10
+RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
+    && $PYENV_ROOT/bin/pyenv global $PY_VERSION
+
+# set up python venv
+ENV VENV=astra
+RUN $PYENV_ROOT/bin/pyenv virtualenv $PY_VERSION $VENV
+
 # install nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
@@ -72,17 +86,6 @@ RUN source ~/.nvm/nvm.sh \
     && nvm install $NODE_VERSION --latest-npm \
     && nvm alias default $NODE_VERSION \
     && nvm use default
-
-# install pyenv
-RUN curl https://pyenv.run | bash
-ENV PYENV_ROOT="/home/astra/.pyenv"
-
-# install python
-ENV PY_VERSION=3.10
-ENV VENV=astra
-RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
-    && $PYENV_ROOT/bin/pyenv global $PY_VERSION \
-    && $PYENV_ROOT/bin/pyenv virtualenv $PY_VERSION $VENV
 
 # set up bashrc
 RUN rm ~/.bashrc && ln -s /workspaces/rover-Basestation-Release/.devcontainer/.bashrc ~/.bashrc
