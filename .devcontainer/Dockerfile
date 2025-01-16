@@ -35,6 +35,9 @@ RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -
     && apt-get update \
     && apt-get install -y python3-colcon-common-extensions
 
+# add ros-dev-tools for development toolchain
+RUN apt-get install ros-dev-tools -y
+
 # install python build requirements for pyenv
 # see: <https://github.com/pyenv/pyenv/wiki#suggested-build-environment>
 RUN apt-get update \
