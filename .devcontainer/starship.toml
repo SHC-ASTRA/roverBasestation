@@ -1,0 +1,9 @@
+format = '$git_branch$git_commit$git_state$directory\$ '
+add_newline = false
+
+[directory]
+format = '[$path]($style)[$read_only]($read_only_style)'
+style = 'bold fg:4'
+
+[git_branch]
+format = '[$branch(:$remote_branch)]($style) '
