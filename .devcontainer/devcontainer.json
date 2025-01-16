@@ -16,7 +16,9 @@
                 "ms-azuretools.vscode-docker",
                 "ms-iot.vscode-ros",
                 "dbaeumer.vscode-eslint",
-                "svelte.svelte-vscode"
+                "svelte.svelte-vscode",
+                "eamodio.gitlens",
+                "ardenivanov.svelte-intellisense"
             ]
         }
     },
