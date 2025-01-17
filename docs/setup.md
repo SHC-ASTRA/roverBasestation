@@ -160,7 +160,7 @@ gh auth login -p ssh -h github.com -w
 Finally, clone the repository and submodules:
 
 ```bash
-gh repo clone SHC-ASTRA/rover-Basestation-Release -- --recurse-submodules --remote-submodules
+gh repo clone SHC-ASTRA/rover-Basestation-Release -- --recurse-submodules
 ```
 
 > [!WARNING] WSL Warning

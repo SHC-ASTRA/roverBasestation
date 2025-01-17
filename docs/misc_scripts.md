@@ -6,11 +6,10 @@
 
 ## Submodule Updates
 
-To update submodules to their latest versions, please use this command:
+To build the submodules, first ensure that the submodule repositories are at their
+latest versions by running the following commands.
 
 ```bash
-git submodule update --init --remote
+git submodule init
+git submodule update
 ```
-
-This will update submodules, initializing them if they are not already. It will
-also have them track the latest changes on GitHub (`--remote`).

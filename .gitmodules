@@ -1,12 +1,9 @@
 [submodule "frontend"]
 	path = frontend
 	url = git@github.com:SHC-ASTRA/rover-Basestation-Frontend.git
-	branch = main
 [submodule "backend"]
 	path = backend
 	url = git@github.com:SHC-ASTRA/rover-Basestation-Backend.git
-	branch = main
 [submodule "interfaces"]
 	path = interfaces
 	url = git@github.com:SHC-ASTRA/ROS2_Interfaces.git
-	branch = main
