@@ -68,15 +68,16 @@ touch ~/.hushlogin
 export STARSHIP_CONFIG="/workspaces/rover-Basestation-Release/.devcontainer/starship.toml"
 eval "$(starship init bash)"
 
-# set up ros
+# set up ros paths and commands
 source /opt/ros/humble/setup.bash
 
 # set up ros interface
+# make the user build the interfaces package if it has not already been
 interface_script="/workspaces/rover-Basestation-Release/interfaces/install/setup.bash"
 if [[ -f $interface_script ]]; then
   source $interface_script
 else
-  echo 'Please build the interfaces!'
+  echo '[DEV CONTAINER] Please build the interfaces!'
 fi
 
 # set up nvm

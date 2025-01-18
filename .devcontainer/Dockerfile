@@ -35,6 +35,10 @@ RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -
     && apt-get update \
     && apt-get install -y python3-colcon-common-extensions
 
+# add ros-dev-tools for development toolchain
+RUN apt-get update \
+    && apt-get install ros-dev-tools -y
+
 # install python build requirements for pyenv
 # see: <https://github.com/pyenv/pyenv/wiki#suggested-build-environment>
 RUN apt-get update \
@@ -42,16 +46,20 @@ RUN apt-get update \
     libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
     libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev \
     libxmlsec1-dev libffi-dev liblzma-dev \
-# install caddy
     debian-keyring debian-archive-keyring apt-transport-https
+
+# install caddy repos
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
+# install caddy package
 RUN apt-get update && apt-get install -y caddy
 
 # install starship
+# a better bash prompt
 RUN curl -sS https://starship.rs/install.sh | sudo sh -s -- -y
 
 # install protoc
+# used for protobufs over websocket
 RUN curl --output protoc.zip -L 'https://github.com/protocolbuffers/protobuf/releases/download/v29.0/protoc-29.0-linux-x86_64.zip' \
     && unzip -q protoc.zip bin/protoc -d /usr/local \
     && chmod a+x /usr/local/bin/protoc \
@@ -63,16 +71,7 @@ RUN curl --output protoc.zip -L 'https://github.com/protocolbuffers/protobuf/rel
 
 USER astra
 
-# install nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-
-# install node and npm
-ENV NODE_VERSION=20
-RUN source ~/.nvm/nvm.sh \
-    && nvm install $NODE_VERSION --latest-npm \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default
-
+# python stuff first for better caching (it takes eons)
 # install pyenv
 RUN curl https://pyenv.run | bash
 ENV PYENV_ROOT="/home/astra/.pyenv"
@@ -86,5 +85,17 @@ RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
 RUN $PYENV_ROOT/bin/pyenv exec pip install -U pipx \
     && $PYENV_ROOT/bin/pyenv exec python -m pipx install poetry
 
+# install nvm
+# node version manager
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+# install specific node version and npm
+ENV NODE_VERSION=20
+RUN source ~/.nvm/nvm.sh \
+    && nvm install $NODE_VERSION --latest-npm \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
 # set up bashrc
+# link the repository .bashrc over the default Ubuntu
 RUN rm ~/.bashrc && ln -s /workspaces/rover-Basestation-Release/.devcontainer/.bashrc ~/.bashrc
