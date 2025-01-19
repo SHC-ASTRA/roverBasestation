@@ -37,7 +37,7 @@ RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -
 
 # add ros-dev-tools for development toolchain
 RUN apt-get update \
-    && apt-get install ros-dev-tools -y
+    && apt-get install -y ros-dev-tools
 
 # install python build requirements for pyenv
 # see: <https://github.com/pyenv/pyenv/wiki#suggested-build-environment>
