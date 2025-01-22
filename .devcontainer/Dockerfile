@@ -58,13 +58,6 @@ RUN apt-get update && apt-get install -y caddy
 # a better bash prompt
 RUN curl -sS https://starship.rs/install.sh | sudo sh -s -- -y
 
-# install protoc
-# used for protobufs over websocket
-RUN curl --output protoc.zip -L 'https://github.com/protocolbuffers/protobuf/releases/download/v29.0/protoc-29.0-linux-x86_64.zip' \
-    && unzip -q protoc.zip bin/protoc -d /usr/local \
-    && chmod a+x /usr/local/bin/protoc \
-    && rm protoc.zip
-
 ###########################
 # SWITCH TO NON-ROOT USER #
 ###########################
