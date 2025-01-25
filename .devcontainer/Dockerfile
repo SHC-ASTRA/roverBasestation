@@ -26,7 +26,7 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get install -y curl make build-essential \
     cmake git vim sudo g++ man-db bash-completion \
-    jq unzip
+    jq unzip gnupg2
 
 # add colcon
 # see: <https://colcon.readthedocs.io/en/released/user/installation.html>
@@ -37,7 +37,7 @@ RUN echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -
 
 # add ros-dev-tools for development toolchain
 RUN apt-get update \
-    && apt-get install ros-dev-tools -y
+    && apt-get install -y ros-dev-tools
 
 # install python build requirements for pyenv
 # see: <https://github.com/pyenv/pyenv/wiki#suggested-build-environment>
@@ -74,9 +74,9 @@ ENV PY_VERSION=3.10
 RUN $PYENV_ROOT/bin/pyenv install $PY_VERSION -v \
     && $PYENV_ROOT/bin/pyenv global $PY_VERSION
 
-# set up python venv
-ENV VENV=astra
-RUN $PYENV_ROOT/bin/pyenv virtualenv $PY_VERSION $VENV
+# install poetry
+RUN $PYENV_ROOT/bin/pyenv exec pip install -U pipx \
+    && $PYENV_ROOT/bin/pyenv exec python -m pipx install poetry
 
 # install nvm
 # node version manager
