@@ -28,5 +28,6 @@
         "rclpy",
         "uah",
         "venv"
-    ]
+    ],
+    "files.autoSave": "onFocusChange"
 }
